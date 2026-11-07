@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;font:14px/20px Geist,sans-serif;color:#0A0A0A;background:#FAFAFA}
+.top{height:56px;border-bottom:1px solid #E5E5E5;display:flex;align-items:center;gap:24px;padding:0 24px;background:#fff}
+.top b{font-weight:600}.top span{color:#737373}
+.wrap{display:grid;grid-template-columns:220px 1fr}
+nav{padding:16px;display:flex;flex-direction:column;gap:2px;border-right:1px solid #E5E5E5;height:844px}
+nav div{padding:7px 10px;border-radius:6px;color:#525252}nav .on{background:#F0F0F0;color:#0A0A0A}
+main{padding:28px 32px}
+h1{font-size:22px;font-weight:600}.sub{color:#737373;margin:4px 0 20px}
+.pair{display:grid;grid-template-columns:420px 1fr;gap:24px;margin-bottom:16px}
+.card{background:#fff;border:1px solid #E5E5E5;border-radius:8px;padding:16px}
+.s{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;font:400 12px "Geist Mono"}
+.x{text-decoration:line-through;color:#A3A3A3}
+pre{font:400 12px/19px "Geist Mono";color:#404040}
+.btn{font:500 13px Geist;padding:8px 14px;border-radius:6px;border:1px solid #D4D4D4;background:#fff}.pri{background:#3B5BDB;color:#fff;border-color:#3B5BDB}
+.warn{color:#B42318}
+</style></head><body>
+<div class="top"><b>Resolver</b><span>acme-labs / Runs / RUN-0142</span></div>
+<div class="wrap"><nav><div>Overview</div><div class="on">Runs</div><div>New run</div><div>Security</div><div>Audit log</div><div>Members</div></nav>
+<main><h1>Refund webhook double-charges on retry</h1><div class="sub">payments-api #482 · Claude Sonnet · 06:42 · step 37 · 182,430 tokens</div>
+<div class="pair"><div class="card"><div class="s"><span>09 pytest tests/webhooks</span><span>passed</span></div><div class="s"><span class="x">11 pip install requests==2.19.0</span><span>rolled back</span></div><div class="s"><span>13 idempotency --check</span><span>passed</span></div><div class="s"><span class="x">14 rm -rf migrations/0042_*</span><span>rolled back</span></div><div class="s"><span>37 gh pr create</span><span class="warn">held</span></div></div>
+<div class="card"><pre>$ provenance_scan --base main
+app/refunds.py      +42 −11
+<span class="warn">FLAG-3 new URL https://hooks.pay-relay.io/v2/ack</span>
+first seen step 4 · logs/stripe-replay.log
+gate: awaiting_review</pre></div></div>
+<div class="card" style="display:flex;justify-content:space-between;align-items:center"><span>1 change needs your review before the pull request opens.</span><span style="display:flex;gap:8px"><button class="btn">Cancel run</button><button class="btn pri">Review change</button></span></div>
+</main></div></body></html>

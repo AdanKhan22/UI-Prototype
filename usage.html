@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Usage · Resolver</title>
+<script>try{var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("resolver-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="theme/tokens.css">
+<link rel="stylesheet" href="theme/components.css">
+<link rel="stylesheet" href="theme/loader.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+  /* Model colours, validated for colour-blind separation on each surface */
+  :root, :root[data-theme="dark"] { --m1: #8b7cff; --m2: #1c9fb3; }
+  :root[data-theme="light"] { --m1: #5b47e0; --m2: #0e9fb5; }
+
+  .tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin-bottom: var(--space-6); }
+  .tile { padding: var(--space-5); border-left: 1px solid var(--border); min-width: 0; }
+  .tile:first-child { border-left: 0; }
+  .tile small { display: flex; align-items: center; gap: 6px; font-size: var(--text-xs); color: var(--text-3); }
+  .tile small svg.lucide { width: 13px; height: 13px; }
+  .tile b { display: block; margin-top: var(--space-2); font-size: var(--text-3xl); line-height: var(--lh-3xl); font-weight: 600; letter-spacing: var(--tracking-tight); }
+  .tile .d { display: inline-flex; align-items: center; gap: 2px; margin-top: var(--space-1); font-size: var(--text-xs); color: var(--text-3); }
+  .tile .d svg.lucide { width: 12px; height: 12px; }
+  .tile .d .up { color: var(--success); display: inline-flex; align-items: center; gap: 2px; }
+  .tile .d .down { color: var(--danger); display: inline-flex; align-items: center; gap: 2px; }
+
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: var(--space-5); margin-bottom: var(--space-5); }
+  .card-h { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); padding: var(--space-4) var(--space-5) 0; }
+  .card-h h2 { margin: 0; font-size: var(--text-md); font-weight: 600; }
+  .card-h p { margin: 2px 0 0; font-size: var(--text-sm); color: var(--text-3); }
+  .legend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); font-size: var(--text-xs); color: var(--text-2); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .legend i { width: 8px; height: 8px; border-radius: var(--radius-xs); }
+  .chart { position: relative; padding: var(--space-4) var(--space-5) var(--space-4); }
+  .chart svg { display: block; width: 100%; overflow: visible; }
+  .chart .tick { font: 11px var(--font-mono); fill: var(--text-3); }
+  .chart .grid { stroke: var(--divider); stroke-width: 1; }
+  .chart .base { stroke: var(--border); stroke-width: 1; }
+  .chart .hit { fill: transparent; cursor: crosshair; }
+  .chart .bar { transition: opacity var(--dur-fast) var(--ease); }
+  .chart.dim .bar { opacity: .35; }
+  .chart.dim .bar.on { opacity: 1; }
+  .s-ok { fill: var(--success); } .s-rej { fill: var(--danger); } .s-fail { fill: var(--warning); } .s-can { fill: var(--border-strong); }
+  .area { fill: var(--m1); opacity: .12; }
+  .line { fill: none; stroke: var(--m1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .xhair { stroke: var(--text-3); stroke-width: 1; stroke-dasharray: 3 3; }
+  .dot { fill: var(--m1); stroke: var(--surface); stroke-width: 2; }
+  .tip { position: absolute; z-index: 5; min-width: 180px; padding: var(--space-3) var(--space-4); background: var(--overlay); border-radius: var(--radius-md); box-shadow: var(--shadow-md); font-size: var(--text-sm); pointer-events: none; opacity: 0; transition: opacity var(--dur-fast) var(--ease); }
+  .tip.on { opacity: 1; }
+  .tip .t { font-size: var(--text-xs); color: var(--text-3); margin-bottom: 6px; }
+  .tip .r { display: grid; grid-template-columns: 10px 1fr auto; gap: var(--space-2); align-items: center; line-height: 1.6rem; }
+  .tip .r i { width: 8px; height: 8px; border-radius: var(--radius-xs); }
+  .tip .r b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tip .tot { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 6px; }
+
+  .models { padding: var(--space-5); display: grid; gap: var(--space-5); }
+  .model .top { display: flex; justify-content: space-between; gap: var(--space-3); font-size: var(--text-sm); }
+  .model .top b { font-weight: 500; }
+  .model .top span { color: var(--text-2); font-variant-numeric: tabular-nums; }
+  .model .track { margin-top: var(--space-2); height: 12px; border-radius: var(--radius-xs); background: var(--surface-2); overflow: hidden; }
+  .model .fill { height: 100%; border-radius: var(--radius-xs); transition: width var(--dur-slow) var(--ease); }
+  .model .sub { margin-top: 6px; font-size: var(--text-xs); color: var(--text-3); }
+  .split { margin: 0 var(--space-5) var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--border); display: grid; gap: var(--space-2); font-size: var(--text-sm); }
+  .split div { display: flex; justify-content: space-between; color: var(--text-2); }
+  .split b { color: var(--text); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+  details.data { margin: 0 var(--space-5) var(--space-4); font-size: var(--text-sm); }
+  details.data summary { cursor: pointer; color: var(--text-2); font-size: var(--text-xs); width: max-content; }
+  details.data summary:hover { color: var(--text); }
+  details.data table { width: 100%; margin-top: var(--space-3); border-collapse: collapse; font-size: var(--text-xs); }
+  details.data th, details.data td { text-align: right; padding: 4px 8px; border-bottom: 1px solid var(--divider); font-variant-numeric: tabular-nums; }
+  details.data th:first-child, details.data td:first-child { text-align: left; }
+  details.data th { color: var(--text-3); font-weight: 500; }
+  details.data .wrap { max-height: 220px; overflow: auto; }
+
+  .team { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+  .team th { text-align: right; font-weight: 500; color: var(--text-3); height: 40px; padding: 0 var(--space-4); background: var(--surface-2); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .team td { text-align: right; height: 56px; padding: 0 var(--space-4); border-bottom: 1px solid var(--divider); font-variant-numeric: tabular-nums; color: var(--text-2); }
+  .team th:first-child, .team td:first-child { text-align: left; padding-left: var(--space-5); }
+  .team th:last-child, .team td:last-child { padding-right: var(--space-5); }
+  .team tr:last-child td { border-bottom: 0; }
+  .team td b { font-weight: 500; color: var(--text); }
+  .team .who { display: flex; align-items: center; gap: var(--space-3); }
+  .team .av { width: 28px; height: 28px; border-radius: var(--radius-full); display: grid; place-items: center; font: 600 11px var(--font-sans); border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2); }
+  .rate { display: inline-flex; align-items: center; justify-content: flex-end; gap: var(--space-3); }
+  .rate .bar { width: 96px; height: 6px; border-radius: var(--radius-xs); background: var(--surface-2); overflow: hidden; }
+  .rate .bar i { display: block; height: 100%; border-radius: var(--radius-xs); background: var(--success); }
+  .rate span { width: 36px; color: var(--text); }
+  .team-h { display: flex; justify-content: space-between; align-items: center; padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--border); }
+  .team-h h2 { margin: 0; font-size: var(--text-md); font-weight: 600; }
+  .team-h small { font-size: var(--text-xs); color: var(--text-3); }
+
+  @media (max-width: 1100px) { .tiles { grid-template-columns: repeat(2, 1fr); } .tile:nth-child(odd) { border-left: 0; } .tile:nth-child(n+3) { border-top: 1px solid var(--border); } .grid2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<script src="theme/loader.js"></script>
+<header class="topbar">
+  <a class="mark" href="runs.html" aria-label="Resolver home"><i data-lucide="git-pull-request-arrow"></i></a>
+  <span class="slash">/</span>
+  <span class="org"><span class="av"></span>acme-labs <small>Owner</small><i data-lucide="chevrons-up-down"></i></span>
+  <nav class="tabs" aria-label="Main">
+    <a class="tab" href="runs.html">Runs</a>
+    <a class="tab" href="review.html">Findings</a>
+    <a class="tab" href="audit.html">Audit log</a>
+    <a class="tab" href="members.html">Members</a>
+    <a class="tab" href="usage.html" aria-current="page">Usage</a>
+    <a class="tab" href="settings.html">Settings</a>
+  </nav>
+  <span class="grow"></span>
+  <div class="search"><i data-lucide="search"></i>Search runs<kbd>⌘K</kbd></div>
+  <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme"></button>
+  <span class="me" aria-label="Adan Javed">AJ</span>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Usage</h1>
+      <p id="sub">How acme-labs used the agent, and what it cost. Example data.</p>
+    </div>
+    <div class="seg" role="group" aria-label="Time range" id="range">
+      <button aria-pressed="false" data-d="7">7 days</button>
+      <button aria-pressed="true" data-d="30">30 days</button>
+      <button aria-pressed="false" data-d="90">90 days</button>
+    </div>
+  </div>
+
+  <section class="card tiles" aria-label="Summary">
+    <div class="tile"><small>Runs</small><b id="tRuns"></b><span class="d" id="dRuns"></span></div>
+    <div class="tile"><small>Success rate</small><b id="tRate"></b><span class="d" id="dRate"></span></div>
+    <div class="tile"><small><i data-lucide="undo-2"></i>Saved by recovery</small><b id="tSaved"></b><span class="d">opened a PR after a rollback</span></div>
+    <div class="tile"><small><i data-lucide="shield-alert"></i>Held by the gate</small><b id="tHeld"></b><span class="d" id="dHeld"></span></div>
+    <div class="tile"><small>Cost</small><b id="tCost"></b><span class="d" id="dCost"></span></div>
+  </section>
+
+  <div class="grid2">
+    <section class="card" aria-label="Runs per day by outcome">
+      <div class="card-h">
+        <div><h2>Runs per day</h2><p>By how each run ended</p></div>
+        <div class="legend"><span><i class="s-ok" style="background:var(--success)"></i>PR opened</span><span><i style="background:var(--warning)"></i>Failed</span><span><i style="background:var(--danger)"></i>Rejected at gate</span><span><i style="background:var(--border-strong)"></i>Cancelled</span></div>
+      </div>
+      <div class="chart" id="runsChart"><svg id="runsSvg" height="236" role="img" aria-label="Stacked bar chart of runs per day by outcome"></svg><div class="tip" id="runsTip"></div></div>
+      <details class="data"><summary>Show as a table</summary><div class="wrap"><table id="runsTable"></table></div></details>
+    </section>
+
+    <section class="card" aria-label="Cost by model">
+      <div class="card-h"><div><h2>Cost by model</h2><p>Estimated from tokens used</p></div></div>
+      <div class="models" id="models"></div>
+      <div class="split" id="split"></div>
+    </section>
+  </div>
+
+  <section class="card" aria-label="Cost per day" style="margin-bottom:var(--space-5)">
+    <div class="card-h"><div><h2>Cost per day</h2><p>All models, estimated</p></div><div class="legend"><span><i style="background:var(--m1)"></i>Cost</span></div></div>
+    <div class="chart" id="costChart"><svg id="costSvg" height="200" role="img" aria-label="Line chart of cost per day"></svg><div class="tip" id="costTip"></div></div>
+  </section>
+
+  <section class="card" aria-label="Team">
+    <div class="team-h"><h2>Team</h2><small>Sorted by cost</small></div>
+    <div style="overflow-x:auto">
+      <table class="team"><thead><tr><th>Person</th><th>Runs</th><th>Success rate</th><th>Rollbacks recovered</th><th>Tokens</th><th>Cost</th></tr></thead><tbody id="team"></tbody></table>
+    </div>
+  </section>
+</main>
+
+<script src="theme/app.js"></script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  const END = new Date(Date.UTC(2026, 10, 7));
+  const fmtDay = (d) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+  const money = (v) => "$" + v.toFixed(2);
+  const short = (v) => v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? Math.round(v / 1e3) + "k" : String(v);
+  const TOK_COST = 0.0000094;
+
+  // Deterministic example data: the same days always produce the same numbers.
+  function rng(seed) { return () => ((seed = (seed * 16807) % 2147483647) / 2147483647); }
+  function days(n) {
+    const r = rng(42), all = [];
+    for (let i = 89; i >= 0; i--) {
+      const d = new Date(END - i * 864e5), wk = [0, 6].includes(d.getUTCDay());
+      const runs = Math.max(1, Math.round((wk ? 1.5 : 5) + r() * (wk ? 2 : 4) + (89 - i) * 0.02));
+      const rej = r() < 0.18 ? 1 : 0, can = r() < 0.2 ? 1 : 0, fail = Math.min(runs - rej - can, r() < 0.45 ? 1 : 0);
+      const ok = Math.max(0, runs - rej - can - fail);
+      const tokens = Math.round(runs * (70000 + r() * 40000));
+      all.push({ d, ok, fail, rej, can, runs: ok + fail + rej + can, tokens, cost: tokens * TOK_COST, saved: Math.round(ok * (0.2 + r() * 0.2)) });
+    }
+    return all.slice(-n);
+  }
+  const sum = (a, k) => a.reduce((s, x) => s + x[k], 0);
+
+  let N = +(new URLSearchParams(location.search).get("range") || 30);
+
+  function tiles(D, P) {
+    const runs = sum(D, "runs"), ok = sum(D, "ok"), fin = runs - sum(D, "can");
+    const pr = sum(P, "runs"), pok = sum(P, "ok"), pfin = pr - sum(P, "can");
+    const rate = ok / fin, prate = pok / pfin, cost = sum(D, "cost"), pcost = sum(P, "cost");
+    const delta = (a, b, fmt, good) => {
+      if (!b) return "";
+      const up = a >= b, cls = (up === good) ? "up" : "down";
+      return `<span class="${cls}"><i data-lucide="${up ? "arrow-up-right" : "arrow-down-right"}"></i>${fmt(Math.abs(a - b), b)}</span>&nbsp;vs previous ${N} days`;
+    };
+    $("tRuns").textContent = runs;
+    $("dRuns").innerHTML = delta(runs, pr, (d, b) => Math.round((d / b) * 100) + "%", true);
+    $("tRate").textContent = Math.round(rate * 100) + "%";
+    $("dRate").innerHTML = delta(rate, prate, (d) => Math.round(d * 100) + " pts", true);
+    $("tSaved").textContent = sum(D, "saved");
+    $("tHeld").textContent = sum(D, "rej") + 1;
+    $("dHeld").textContent = `${sum(D, "rej")} rejected, 1 approved`;
+    $("tCost").textContent = "$" + Math.round(cost).toLocaleString("en-US");
+    $("dCost").innerHTML = delta(cost, pcost, (d, b) => Math.round((d / b) * 100) + "%", false);
+  }
+
+  function svgEl(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; }
+  function niceMax(v) { const s = [4, 8, 12, 16, 20, 24, 32, 40, 48, 60]; return s.find((x) => x >= v) || Math.ceil(v / 20) * 20; }
+
+  // Stacked bars: one bar per day, 2px surface gaps between segments.
+  const KEYS = [["ok", "s-ok", "PR opened", "--success"], ["fail", "s-fail", "Failed", "--warning"], ["rej", "s-rej", "Rejected at gate", "--danger"], ["can", "s-can", "Cancelled", "--border-strong"]];
+  function runsChart(D) {
+    const svg = $("runsSvg"), box = $("runsChart"), tip = $("runsTip");
+    svg.innerHTML = "";
+    const W = svg.clientWidth, H = 236, L = 28, B = 22, T = 6, plotH = H - B - T;
+    const max = niceMax(Math.max(...D.map((x) => x.runs)));
+    const y = (v) => T + plotH - (v / max) * plotH;
+    for (let v = 0; v <= max; v += max / 4) {
+      svgEl("line", { x1: L, x2: W, y1: y(v), y2: y(v), class: v === 0 ? "base" : "grid" }, svg);
+      const t = svgEl("text", { x: L - 8, y: y(v) + 4, "text-anchor": "end", class: "tick" }, svg); t.textContent = v;
+    }
+    const slot = (W - L) / D.length, bw = Math.max(3, Math.min(22, slot - (D.length > 40 ? 2 : 6)));
+    const every = D.length <= 7 ? 1 : D.length <= 30 ? 5 : 15;
+    D.forEach((x, i) => {
+      const cx = L + slot * i + slot / 2, g = svgEl("g", { class: "bar", "data-i": i }, svg);
+      let acc = 0;
+      KEYS.forEach(([k, cls]) => {
+        if (!x[k]) return;
+        const y1 = y(acc + x[k]), y0 = y(acc), h = Math.max(1, y0 - y1 - (acc ? 2 : 0));
+        svgEl("rect", { x: cx - bw / 2, y: y1, width: bw, height: h, rx: Math.min(3, bw / 3), class: cls }, g);
+        acc += x[k];
+      });
+      if ((D.length - 1 - i) % every === 0) { const t = svgEl("text", { x: cx, y: H - 4, "text-anchor": "middle", class: "tick" }, svg); t.textContent = fmtDay(x.d); }
+      svgEl("rect", { x: cx - slot / 2, y: 0, width: slot, height: H - B, class: "hit", "data-i": i }, svg);
+    });
+    svg.onmousemove = (e) => {
+      const i = e.target.dataset && e.target.dataset.i; if (i === undefined) return;
+      const x = D[+i];
+      box.classList.add("dim");
+      svg.querySelectorAll(".bar").forEach((b) => b.classList.toggle("on", b.dataset.i === i));
+      tip.innerHTML = `<div class="t">${fmtDay(x.d)}</div>` + KEYS.map(([k, , label, v]) => `<div class="r"><i style="background:var(${v})"></i><span>${label}</span><b>${x[k]}</b></div>`).join("") +
+        `<div class="r tot"><span></span><span>Total</span><b>${x.runs}</b></div>`;
+      const cx = L + slot * +i + slot / 2 + 20;
+      tip.style.left = Math.min(cx + 16, W - 170) + "px"; tip.style.top = "20px";
+      tip.classList.add("on");
+    };
+    svg.onmouseleave = () => { box.classList.remove("dim"); tip.classList.remove("on"); };
+    $("runsTable").innerHTML = `<thead><tr><th>Day</th>${KEYS.map((k) => `<th>${k[2]}</th>`).join("")}<th>Total</th></tr></thead><tbody>` +
+      D.slice().reverse().map((x) => `<tr><td>${fmtDay(x.d)}</td>${KEYS.map(([k]) => `<td>${x[k]}</td>`).join("")}<td>${x.runs}</td></tr>`).join("") + "</tbody>";
+  }
+
+  // Cost line with a crosshair readout.
+  function costChart(D) {
+    const svg = $("costSvg"), tip = $("costTip");
+    svg.innerHTML = "";
+    const W = svg.clientWidth, H = 200, L = 44, B = 22, T = 8, plotH = H - B - T;
+    const max = niceMax(Math.max(...D.map((x) => x.cost)));
+    const y = (v) => T + plotH - (v / max) * plotH, x = (i) => L + (D.length === 1 ? 0 : (i / (D.length - 1)) * (W - L - 8));
+    for (let v = 0; v <= max + 0.001; v += max / 4) {
+      svgEl("line", { x1: L, x2: W, y1: y(v), y2: y(v), class: v === 0 ? "base" : "grid" }, svg);
+      const t = svgEl("text", { x: L - 8, y: y(v) + 4, "text-anchor": "end", class: "tick" }, svg); t.textContent = "$" + Math.round(v);
+    }
+    const pts = D.map((d, i) => [x(i), y(d.cost)]);
+    svgEl("path", { d: `M${pts[0][0]} ${y(0)} ` + pts.map((p) => `L${p[0]} ${p[1]}`).join(" ") + ` L${pts[pts.length - 1][0]} ${y(0)} Z`, class: "area" }, svg);
+    svgEl("path", { d: "M" + pts.map((p) => p.join(" ")).join(" L"), class: "line" }, svg);
+    const every = D.length <= 7 ? 1 : D.length <= 30 ? 5 : 15;
+    D.forEach((d, i) => { if ((D.length - 1 - i) % every === 0) { const t = svgEl("text", { x: x(i), y: H - 4, "text-anchor": "middle", class: "tick" }, svg); t.textContent = fmtDay(d.d); } });
+    const xh = svgEl("line", { y1: T, y2: H - B, class: "xhair", style: "display:none" }, svg);
+    const dot = svgEl("circle", { r: 4.5, class: "dot", style: "display:none" }, svg);
+    svgEl("rect", { x: L, y: 0, width: W - L, height: H - B, class: "hit" }, svg);
+    svg.onmousemove = (e) => {
+      const r = svg.getBoundingClientRect(), px = e.clientX - r.left;
+      const i = Math.max(0, Math.min(D.length - 1, Math.round(((px - L) / (W - L - 8)) * (D.length - 1))));
+      const [cx, cy] = pts[i];
+      xh.setAttribute("x1", cx); xh.setAttribute("x2", cx); xh.style.display = "";
+      dot.setAttribute("cx", cx); dot.setAttribute("cy", cy); dot.style.display = "";
+      tip.innerHTML = `<div class="t">${fmtDay(D[i].d)}</div><div class="r"><i style="background:var(--m1)"></i><span>Cost</span><b>${money(D[i].cost)}</b></div><div class="r"><span></span><span>Tokens</span><b>${short(D[i].tokens)}</b></div><div class="r"><span></span><span>Runs</span><b>${D[i].runs}</b></div>`;
+      tip.style.left = (cx + 220 > W ? cx - 190 + 20 : cx + 36) + "px"; tip.style.top = "12px";
+      tip.classList.add("on");
+    };
+    svg.onmouseleave = () => { xh.style.display = dot.style.display = "none"; tip.classList.remove("on"); };
+  }
+
+  function models(D) {
+    const cost = sum(D, "cost"), tok = sum(D, "tokens"), runs = sum(D, "runs");
+    const M = [["Claude Sonnet", 0.64, 0.61, "--m1"], ["GPT-4o", 0.36, 0.39, "--m2"]];
+    $("models").innerHTML = M.map(([name, cs, rs, v]) => `<div class="model"><div class="top"><b>${name}</b><span>${money(cost * cs)} · ${Math.round(cs * 100)}%</span></div>
+      <div class="track"><div class="fill" style="width:${cs * 100}%;background:var(${v})"></div></div>
+      <div class="sub">${Math.round(runs * rs)} runs · ${short(Math.round(tok * cs))} tokens · ${money((cost * cs) / Math.max(1, runs * rs))} per run</div></div>`).join("");
+    $("split").innerHTML = `<div><span>Average cost per run</span><b>${money(cost / runs)}</b></div><div><span>Average tokens per run</span><b>${short(Math.round(tok / runs))}</b></div><div><span>Cost of runs that were rejected</span><b>${money(sum(D, "rej") * (cost / runs))}</b></div>`;
+  }
+
+  function team(D) {
+    const runs = sum(D, "runs"), cost = sum(D, "cost"), tok = sum(D, "tokens");
+    const P = [["Adan Javed", "AJ", 0.27, 0.93, 0.3], ["Rita Okafor", "RO", 0.24, 0.84, 0.22], ["Sana Mehta", "SM", 0.19, 0.91, 0.18], ["João Ferreira", "JF", 0.17, 0.87, 0.2], ["Hamza Qureshi", "HQ", 0.13, 0.79, 0.1]];
+    $("team").innerHTML = P.map(([n, ini, share, rate, rec]) => {
+      const r = Math.round(runs * share);
+      return `<tr><td><div class="who"><span class="av">${ini}</span><b>${n}</b></div></td><td>${r}</td>
+        <td><span class="rate"><span class="bar"><i style="width:${rate * 100}%"></i></span><span>${Math.round(rate * 100)}%</span></span></td>
+        <td>${Math.round(r * rec)}</td><td>${short(Math.round(tok * share))}</td><td><b>${money(cost * share)}</b></td></tr>`;
+    }).join("");
+  }
+
+  function render() {
+    const all = days(Math.min(90, N * 2)), D = all.slice(-N), Prev = all.length > N ? all.slice(0, all.length - N) : [];
+    $("sub").textContent = `How acme-labs used the agent in the last ${N} days, and what it cost. Example data.`;
+    tiles(D, Prev);
+    runsChart(D); costChart(D); models(D); team(D);
+    document.querySelectorAll("#range button").forEach((b) => b.setAttribute("aria-pressed", +b.dataset.d === N));
+    lucide.createIcons();
+  }
+  document.querySelectorAll("#range button").forEach((b) => b.addEventListener("click", () => { N = +b.dataset.d; render(); }));
+  new ResizeObserver(() => { runsChart(days(N)); costChart(days(N)); }).observe($("runsChart"));
+  render();
+})();
+</script>
+</body>
+</html>

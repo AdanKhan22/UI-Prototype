@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New run · Resolver</title>
+<script>try{var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("resolver-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="theme/tokens.css">
+<link rel="stylesheet" href="theme/components.css">
+<link rel="stylesheet" href="theme/loader.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+  .back { display: inline-flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4); font-size: var(--text-sm); color: var(--text-2); }
+  .back:hover { color: var(--text); text-decoration: none; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--space-8); align-items: start; }
+  .steps { display: grid; gap: var(--space-5); }
+
+  .step-head { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--border); }
+  .num { width: 24px; height: 24px; border-radius: var(--radius-full); display: grid; place-items: center; font: 600 var(--text-xs) var(--font-mono); color: var(--text-2); border: 1px solid var(--border-strong); flex: none; }
+  .done .num { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .done .num span { display: none; }
+  .num svg.lucide { width: 13px; height: 13px; stroke-width: 2.5; display: none; }
+  .done .num svg.lucide { display: block; }
+  .step-head h2 { margin: 0; font-size: var(--text-md); font-weight: 600; }
+  .step-head .pick { margin-left: auto; font-size: var(--text-sm); color: var(--text-3); }
+  .step-body { padding: var(--space-4) var(--space-5) var(--space-5); }
+  .locked .step-body { display: none; }
+  .locked .step-head { border-bottom: 0; }
+  .locked h2 { color: var(--text-3); }
+
+  .search-in { position: relative; margin-bottom: var(--space-3); }
+  .src-tabs { margin-bottom: var(--space-4); }
+  .url-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-2); margin-bottom: var(--space-3); }
+  .url-in { position: relative; }
+  .url-in svg.lucide { position: absolute; left: 12px; top: 10px; color: var(--text-3); }
+  .url-in .input { padding-left: 36px; font-family: var(--font-mono); font-size: var(--text-sm); }
+  .pub-note { display: flex; gap: var(--space-2); align-items: flex-start; margin-top: var(--space-3); font-size: var(--text-xs); line-height: var(--lh-xs); color: var(--text-3); }
+  .pub-note svg.lucide { width: 14px; height: 14px; color: var(--success); margin-top: 1px; }
+  .connect-card { display: grid; justify-items: start; gap: var(--space-3); padding: var(--space-5); border: 1px dashed var(--border-strong); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text-2); }
+  .connect-card b { color: var(--text); font-weight: 500; }
+  .search-in svg.lucide { position: absolute; left: 12px; top: 10px; color: var(--text-3); }
+  .search-in .input { padding-left: 36px; }
+
+  .opts { display: grid; gap: 6px; }
+  .opt { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; align-items: center; gap: var(--space-3); min-height: 52px; padding: var(--space-2) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+  .opt:hover { background: var(--surface-3); }
+  .opt input { appearance: none; width: 16px; height: 16px; margin: 0; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface); display: grid; place-items: center; cursor: pointer; }
+  .opt input:checked { border: 5px solid var(--accent); background: #fff; }
+  .opt input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .opt:has(input:checked) { background: var(--accent-subtle); border-color: var(--accent-border); }
+  .opt b { display: block; font-weight: 500; }
+  .opt small { display: flex; align-items: center; gap: var(--space-3); margin-top: 2px; font-size: var(--text-xs); color: var(--text-3); }
+  .opt small span { display: inline-flex; align-items: center; gap: 5px; }
+  .opt .meta { font-size: var(--text-xs); color: var(--text-3); white-space: nowrap; }
+  .opt.off { cursor: not-allowed; background: var(--surface-2); }
+  .opt.off b { color: var(--text-2); }
+  .opt.off input { background: var(--surface-2); border-color: var(--border); }
+  .opt.off:hover { background: var(--surface-2); }
+  .lang { width: 8px; height: 8px; border-radius: 50%; }
+  .label { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: var(--radius-full); border: 1px solid var(--border); font-size: var(--text-xs); color: var(--text-2); }
+
+  .models { grid-template-columns: 1fr 1fr; }
+  .models .opt { grid-template-columns: 18px minmax(0, 1fr); min-height: 64px; }
+
+  .summary { position: sticky; top: calc(var(--topbar) + var(--space-6)); }
+  .summary h2 { margin: 0; padding: var(--space-4) var(--space-5); font-size: var(--text-md); font-weight: 600; border-bottom: 1px solid var(--border); }
+  .summary dl { margin: 0; padding: var(--space-2) var(--space-5); }
+  .summary dl div { display: grid; gap: 2px; padding: var(--space-3) 0; border-bottom: 1px solid var(--divider); }
+  .summary dl div:last-child { border-bottom: 0; }
+  .summary dt { font-size: var(--text-xs); color: var(--text-3); }
+  .summary dd { margin: 0; font-size: var(--text-sm); font-weight: 500; }
+  .summary dd.empty { color: var(--text-3); font-weight: 400; }
+  .sum-foot { padding: var(--space-4) var(--space-5) var(--space-5); border-top: 1px solid var(--border); display: grid; gap: var(--space-3); }
+  .sealed { display: flex; gap: var(--space-2); font-size: var(--text-xs); line-height: var(--lh-xs); color: var(--text-3); }
+  .sealed svg.lucide { width: 14px; height: 14px; color: var(--success); margin-top: 1px; }
+  .sum-foot .hint { text-align: center; }
+
+  @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } .summary { position: static; } }
+  @media (max-width: 720px) { .models { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<script src="theme/loader.js"></script>
+<header class="topbar">
+  <a class="mark" href="runs.html" aria-label="Resolver home"><i data-lucide="git-pull-request-arrow"></i></a>
+  <span class="slash">/</span>
+  <span class="org"><span class="av"></span>acme-labs <small>Owner</small><i data-lucide="chevrons-up-down"></i></span>
+  <nav class="tabs" aria-label="Main">
+    <a class="tab" href="runs.html" aria-current="page">Runs</a>
+    <a class="tab" href="review.html">Findings<span class="count">1</span></a>
+    <a class="tab" href="audit.html">Audit log</a>
+    <a class="tab" href="members.html">Members</a>
+    <a class="tab" href="usage.html">Usage</a>
+    <a class="tab" href="settings.html">Settings</a>
+  </nav>
+  <span class="grow"></span>
+  <div class="search"><i data-lucide="search"></i>Search runs<kbd>⌘K</kbd></div>
+  <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme"></button>
+  <span class="me" aria-label="Adan Javed">AJ</span>
+</header>
+
+<main class="page">
+  <a class="back" href="runs.html"><i data-lucide="arrow-left"></i>Runs</a>
+  <div class="page-head">
+    <div>
+      <h1>New run</h1>
+      <p>Choose what the agent should fix. It works in a sealed copy of the repository and never pushes without your pull request.</p>
+    </div>
+  </div>
+
+  <form class="layout" id="runForm" data-next="run.html">
+    <div class="steps">
+      <section class="card" id="s1">
+        <div class="step-head"><span class="num"><span>1</span><i data-lucide="check"></i></span><h2>Repository</h2><span class="pick" data-pick="repo"></span></div>
+        <div class="step-body">
+          <div class="seg src-tabs" role="tablist" aria-label="Where the repository comes from">
+            <button type="button" role="tab" aria-pressed="true" aria-selected="true" data-src="mine"><i data-lucide="github"></i>Your repositories</button>
+            <button type="button" role="tab" aria-pressed="false" aria-selected="false" data-src="public"><i data-lucide="globe"></i>Public repository URL</button>
+          </div>
+          <div id="srcMine">
+          <div class="connect-card" id="needGh" hidden><b>Connect GitHub to see acme-labs repositories</b>Private repositories need a connection. Public ones work from a URL without it.<a class="btn btn-secondary btn-sm" href="settings.html#github"><i data-lucide="github"></i>Connect GitHub</a></div>
+          <div id="mineList">
+          <div class="search-in"><i data-lucide="search"></i><input class="input" type="search" placeholder="Search acme-labs repositories" aria-label="Search repositories"></div>
+          <div class="opts" role="radiogroup" aria-label="Repository">
+            <label class="opt"><input type="radio" name="repo" value="acme-labs/payments-api"><div><b>acme-labs/payments-api</b><small><span><i class="lang" style="background:#3178c6"></i>TypeScript</span><span>14 open issues</span></small></div><span class="meta">Updated 2 h ago</span></label>
+            <label class="opt"><input type="radio" name="repo" value="acme-labs/web-dashboard"><div><b>acme-labs/web-dashboard</b><small><span><i class="lang" style="background:#3178c6"></i>TypeScript</span><span>23 open issues</span></small></div><span class="meta">Updated today</span></label>
+            <label class="opt"><input type="radio" name="repo" value="acme-labs/api-gateway"><div><b>acme-labs/api-gateway</b><small><span><i class="lang" style="background:#00add8"></i>Go</span><span>6 open issues</span></small></div><span class="meta">Updated 3 days ago</span></label>
+            <label class="opt"><input type="radio" name="repo" value="acme-labs/reports-service"><div><b>acme-labs/reports-service</b><small><span><i class="lang" style="background:#3572a5"></i>Python</span><span>9 open issues</span></small></div><span class="meta">Updated last week</span></label>
+          </div>
+          </div>
+          </div>
+          <div id="srcPublic" hidden>
+            <div class="url-row">
+              <label class="url-in"><span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Public repository URL</span><i data-lucide="link"></i><input class="input" id="pubUrl" placeholder="github.com/owner/repository" autocomplete="off" spellcheck="false"></label>
+              <button class="btn btn-secondary" id="lookup" type="button">Look up</button>
+            </div>
+            <span class="hint e" id="urlErr" hidden><i data-lucide="circle-alert"></i>Paste a GitHub address like github.com/owner/repository</span>
+            <span class="cpl" id="looking" hidden><span class="sq"><i></i><i></i><i></i><i></i><i></i></span>Reading the public repository…</span>
+            <div class="opts" id="pubFound" role="radiogroup" aria-label="Public repository" hidden>
+              <label class="opt"><input type="radio" name="repo" value="openledger/ledger-core" data-public="1"><div><b>openledger/ledger-core</b><small><span><i class="lang" style="background:#dea584"></i>Rust</span><span>41 open issues</span><span class="badge b-ok" style="height:20px"><i data-lucide="globe"></i>Public</span></small></div><span class="meta">Updated today</span></label>
+            </div>
+            <div class="pub-note"><i data-lucide="circle-check"></i><span>Public repositories are cloned without a GitHub connection. You'll connect only when a pull request is ready, and it opens from a fork if you can't write to the repository.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card locked" id="s2">
+        <div class="step-head"><span class="num"><span>2</span><i data-lucide="check"></i></span><h2>Open issue</h2><span class="pick" data-pick="issue">Choose a repository first</span></div>
+        <div class="step-body">
+          <div class="search-in"><i data-lucide="search"></i><input class="input" type="search" placeholder="Search open issues" aria-label="Search issues"></div>
+          <div class="opts" id="issuesPublic" role="radiogroup" aria-label="Issue" hidden>
+            <label class="opt"><input type="radio" name="issue" value="#1093 Rounding drift when splitting a payment three ways"><div><b>Rounding drift when splitting a payment three ways</b><small><span>#1093</span><span>opened 3 days ago by tvallis</span></small></div><span class="label">bug</span></label>
+            <label class="opt"><input type="radio" name="issue" value="#1088 CSV import skips rows with quoted commas"><div><b>CSV import skips rows with quoted commas</b><small><span>#1088</span><span>opened last week by nkoh</span></small></div><span class="label">bug</span></label>
+            <label class="opt"><input type="radio" name="issue" value="#1071 Document the ledger snapshot format"><div><b>Document the ledger snapshot format</b><small><span>#1071</span><span>opened 2 weeks ago by maintainers</span></small></div><span class="label">docs</span></label>
+          </div>
+          <div class="opts" id="issuesMine" role="radiogroup" aria-label="Issue">
+            <label class="opt"><input type="radio" name="issue" value="#482 Refund webhook double-charges on retry"><div><b>Refund webhook double-charges on retry</b><small><span>#482</span><span>opened 2 days ago by m-tanaka</span></small></div><span class="label">bug</span></label>
+            <label class="opt"><input type="radio" name="issue" value="#479 Currency rounding differs between invoice and receipt"><div><b>Currency rounding differs between invoice and receipt</b><small><span>#479</span><span>opened 4 days ago by j-ferreira</span></small></div><span class="label">bug</span></label>
+            <label class="opt"><input type="radio" name="issue" value="#477 Add idempotency key to the payouts endpoint"><div><b>Add idempotency key to the payouts endpoint</b><small><span>#477</span><span>opened last week by adan-javed</span></small></div><span class="label">enhancement</span></label>
+            <label class="opt off" title="A run already fixed this issue"><input type="radio" name="issue" disabled><div><b>Flaky test in auth token refresh</b><small><span>#475</span><span>PR #1287 already open from RUN-0139</span></small></div><span class="label">test</span></label>
+          </div>
+        </div>
+      </section>
+
+      <section class="card locked" id="s3">
+        <div class="step-head"><span class="num"><span>3</span><i data-lucide="check"></i></span><h2>Model</h2><span class="pick" data-pick="model">Choose an issue first</span></div>
+        <div class="step-body">
+          <div class="opts models" role="radiogroup" aria-label="Model">
+            <label class="opt"><input type="radio" name="model" value="Claude Sonnet"><div><b>Claude Sonnet</b><small><span>Anthropic</span></small></div></label>
+            <label class="opt"><input type="radio" name="model" value="GPT-4o"><div><b>GPT-4o</b><small><span>OpenAI</span></small></div></label>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="card summary" aria-label="Run summary">
+      <h2>Run summary</h2>
+      <dl>
+        <div><dt>Repository</dt><dd class="empty" data-sum="repo">Not chosen</dd></div>
+        <div><dt>Issue</dt><dd class="empty" data-sum="issue">Not chosen</dd></div>
+        <div><dt>Model</dt><dd class="empty" data-sum="model">Not chosen</dd></div>
+      </dl>
+      <div class="sum-foot">
+        <div class="sealed"><i data-lucide="shield-check"></i><span>Runs in a read-only, non-root container with no network access. Every step is checkpointed.</span></div>
+        <div class="sealed" id="ghNote" hidden><i data-lucide="github"></i><span>No GitHub connection needed to run a public repository. We'll ask when the pull request is ready.</span></div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit" id="start" disabled><i data-lucide="play"></i>Start run</button>
+        <span class="hint" id="startHint">Choose a repository, an issue and a model to start.</span>
+      </div>
+    </aside>
+  </form>
+</main>
+<script src="theme/app.js"></script>
+<script>
+  const form = document.getElementById("runForm");
+  const steps = [document.getElementById("s1"), document.getElementById("s2"), document.getElementById("s3")];
+  const names = ["repo", "issue", "model"];
+  const prompts = ["", "Choose a repository first", "Choose an issue first"];
+  const update = () => {
+    const vals = names.map((n) => (form.querySelector(`input[name="${n}"]:checked`) || {}).value);
+    names.forEach((n, i) => {
+      const unlocked = i === 0 || !!vals[i - 1];
+      steps[i].classList.toggle("locked", !unlocked);
+      steps[i].classList.toggle("done", !!vals[i]);
+      steps[i].querySelector(".pick").textContent = vals[i] ? "" : (unlocked ? "" : prompts[i]);
+      const dd = document.querySelector(`[data-sum="${n}"]`);
+      dd.textContent = vals[i] || "Not chosen";
+      dd.classList.toggle("empty", !vals[i]);
+    });
+    const ready = vals.every(Boolean);
+    document.getElementById("start").disabled = !ready;
+    document.getElementById("startHint").hidden = ready;
+  };
+  form.addEventListener("change", (e) => {
+    // Changing the repository clears the issue chosen from the old one.
+    if (e.target.name === "repo") form.querySelectorAll('input[name="issue"]').forEach((r) => (r.checked = false));
+    showIssues();
+    update();
+  });
+  // Which issues to list, and whether the run needs GitHub, depend on the repository picked.
+  function showIssues() {
+    const pub = !!form.querySelector('input[name="repo"][data-public]:checked');
+    document.getElementById("issuesPublic").hidden = !pub;
+    document.getElementById("issuesMine").hidden = pub;
+    document.getElementById("ghNote").hidden = !pub;
+  }
+  const $ = (id) => document.getElementById(id);
+  function setSrc(src) {
+    document.querySelectorAll("[data-src]").forEach((b) => { const on = b.dataset.src === src; b.setAttribute("aria-pressed", on); b.setAttribute("aria-selected", on); });
+    $("srcMine").hidden = src !== "mine"; $("srcPublic").hidden = src !== "public";
+  }
+  document.querySelectorAll("[data-src]").forEach((b) => b.addEventListener("click", () => setSrc(b.dataset.src)));
+  function lookup(done) {
+    const ok = /^(https?:\/\/)?(www\.)?github\.com\/[\w.-]+\/[\w.-]+\/?$/i.test($("pubUrl").value.trim());
+    $("urlErr").hidden = ok; $("pubUrl").classList.toggle("err", !ok);
+    if (!ok) { $("pubUrl").focus(); return; }
+    $("pubFound").hidden = true; $("looking").hidden = false;
+    setTimeout(() => {
+      $("looking").hidden = true; $("pubFound").hidden = false;
+      const r = form.querySelector('input[value="openledger/ledger-core"]');
+      r.checked = true; r.dispatchEvent(new Event("change", { bubbles: true }));
+      if (done) done();
+    }, done ? 0 : 800);
+  }
+  $("lookup").addEventListener("click", () => lookup());
+  $("pubUrl").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); lookup(); } });
+  // Without a GitHub connection only public repositories are available.
+  const params = new URLSearchParams(location.search);
+  let gh = "connected";
+  try { gh = sessionStorage.getItem("resolver-gh") || "connected"; } catch (e) {}
+  if (params.get("gh") === "none") gh = "none";
+  if (gh === "none") { $("needGh").hidden = false; $("mineList").hidden = true; setSrc("public"); }
+  // ?state=filled shows the completed form for screenshots.
+  if (params.get("state") === "public") {
+    setSrc("public"); $("pubUrl").value = "github.com/openledger/ledger-core";
+    lookup(() => { form.querySelector('#issuesPublic input[name="issue"]').checked = true; form.querySelector('input[value="Claude Sonnet"]').checked = true; showIssues(); update(); });
+  }
+  if (params.get("state") === "filled") {
+    form.querySelector('input[value="acme-labs/payments-api"]').checked = true;
+    form.querySelector('input[name="issue"]').checked = true;
+    form.querySelector('input[value="Claude Sonnet"]').checked = true;
+  }
+  update();
+</script>
+</body>
+</html>

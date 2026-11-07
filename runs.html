@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Runs · Resolver</title>
+<script>try{var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("resolver-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="theme/tokens.css">
+<link rel="stylesheet" href="theme/components.css">
+<link rel="stylesheet" href="theme/loader.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+  .review { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-4) var(--space-5); margin-bottom: var(--space-6); border: 1px solid var(--accent-border); background: var(--accent-subtle); border-radius: var(--radius-md); }
+  .review > svg.lucide { color: var(--accent-text); width: 18px; height: 18px; }
+  .review div { flex: 1; min-width: 0; font-size: var(--text-sm); color: var(--text-2); }
+  .review b { color: var(--text); font-weight: 600; }
+  .review code { font-size: var(--text-xs); color: var(--text); }
+
+  .toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-4); }
+  .filter { display: flex; align-items: center; gap: var(--space-2); height: 32px; width: 260px; padding: 0 var(--space-3); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text-3); font-size: var(--text-sm); }
+  .filter input { all: unset; flex: 1; color: var(--text); }
+  .filter input::placeholder { color: var(--text-3); }
+  .filter:focus-within { border-color: var(--accent-text); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 35%, transparent); }
+
+  .table-card { overflow-x: auto; }
+  .tbl tbody tr.needs { background: color-mix(in srgb, var(--accent-subtle) 55%, transparent); }
+  .tbl tbody tr.needs:hover { background: var(--accent-subtle); }
+  .step-of { font: var(--text-xs) var(--font-mono); color: var(--text-3); margin-top: 4px; display: block; }
+  .tl-cell { display: grid; gap: 0; }
+  @media (max-width: 1200px) { .tbl .opt { display: none; } }
+  .tbl-foot { display: flex; align-items: center; justify-content: space-between; padding: var(--space-3) var(--space-5); border-top: 1px solid var(--border); background: var(--surface-2); font-size: var(--text-sm); color: var(--text-3); border-radius: 0 0 var(--radius-md) var(--radius-md); }
+</style>
+</head>
+<body>
+<script src="theme/loader.js"></script>
+<header class="topbar">
+  <a class="mark" href="runs.html" aria-label="Resolver home"><i data-lucide="git-pull-request-arrow"></i></a>
+  <span class="slash">/</span>
+  <span class="org"><span class="av"></span>acme-labs <small>Owner</small><i data-lucide="chevrons-up-down"></i></span>
+  <nav class="tabs" aria-label="Main">
+    <a class="tab" href="runs.html" aria-current="page">Runs</a>
+    <a class="tab" href="review.html">Findings<span class="count">1</span></a>
+    <a class="tab" href="audit.html">Audit log</a>
+    <a class="tab" href="members.html">Members</a>
+    <a class="tab" href="usage.html">Usage</a>
+    <a class="tab" href="settings.html">Settings</a>
+  </nav>
+  <span class="grow"></span>
+  <div class="search"><i data-lucide="search"></i>Search runs<kbd>⌘K</kbd></div>
+  <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme"></button>
+  <span class="me" aria-label="Adan Javed">AJ</span>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Runs</h1>
+      <p>Every issue the agent has worked on in acme-labs.</p>
+    </div>
+    <a class="btn btn-primary" href="new-run.html"><i data-lucide="plus"></i>New run</a>
+  </div>
+
+  <div class="review" role="status">
+    <i data-lucide="shield-alert"></i>
+    <div><b>RUN-0142 is waiting for your review.</b> The diff gate found a new URL, <code>hooks.attacker.dev</code>, before the pull request opened.</div>
+    <a class="btn btn-secondary btn-sm" href="review.html">Review change<i data-lucide="arrow-right"></i></a>
+  </div>
+
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Filter by status">
+      <button aria-pressed="true">All <span class="n">8</span></button>
+      <button aria-pressed="false">Running <span class="n">2</span></button>
+      <button aria-pressed="false">Needs review <span class="n">1</span></button>
+      <button aria-pressed="false">Completed <span class="n">3</span></button>
+      <button aria-pressed="false">Stopped <span class="n">2</span></button>
+    </div>
+    <label class="filter"><i data-lucide="list-filter"></i><input type="search" placeholder="Filter by issue or repository"></label>
+  </div>
+
+  <div class="card table-card">
+    <table class="tbl">
+      <thead><tr>
+        <th><button>Run <i data-lucide="arrow-down"></i></button></th>
+        <th>Issue</th>
+        <th>Status</th>
+        <th>Timeline</th>
+        <th class="opt">Model</th>
+        <th class="opt">Started by</th>
+        <th class="r"><button>Started</button></th>
+      </tr></thead>
+      <tbody id="realRows">
+        <tr class="needs" data-href="run.html?state=held">
+          <td><span class="id">RUN-0142</span></td>
+          <td class="t"><b>Refund webhook double-charges on retry</b><span>payments-api · #482</span></td>
+          <td><span class="badge b-warn"><i data-lucide="eye"></i>Awaiting review</span></td>
+          <td><div class="tl-cell"><div class="mini" data-p="111f11111rrrrrrrr1111111111f"></div><span class="step-of">28 steps · held at gate</span></div></td>
+          <td class="opt muted">Claude Sonnet</td>
+          <td class="opt"><span class="person"><i>AJ</i>Adan J.</span></td>
+          <td class="r muted">12 min ago</td>
+        </tr>
+        <tr>
+          <td><span class="id">RUN-0141</span></td>
+          <td class="t"><b>Chart tooltip clips on narrow screens</b><span>web-dashboard · #219</span></td>
+          <td><span class="badge b-run"><span class="dot"></span>Running</span></td>
+          <td><div class="tl-cell"><div class="mini" data-p="11111111r1111111111ceeeeeeeeeeeee"></div><span class="step-of">step 19 · 6m 12s</span></div></td>
+          <td class="opt muted">GPT-4o</td>
+          <td class="opt"><span class="person"><i>RO</i>R. Okafor</span></td>
+          <td class="r muted">6 min ago</td>
+        </tr>
+        <tr>
+          <td><span class="id">RUN-0140</span></td>
+          <td class="t"><b>Rate limiter ignores burst setting</b><span>api-gateway · #77</span></td>
+          <td><span class="badge b-run"><span class="dot"></span>Running</span></td>
+          <td><div class="tl-cell"><div class="mini" data-p="1111111cceeeeeeeeeeeeeeeeeeeeeeee"></div><span class="step-of">step 8 · 2m 40s</span></div></td>
+          <td class="opt muted">Claude Sonnet</td>
+          <td class="opt"><span class="person"><i>SM</i>S. Mehta</span></td>
+          <td class="r muted">3 min ago</td>
+        </tr>
+        <tr>
+          <td><span class="id">RUN-0139</span></td>
+          <td class="t"><b>Flaky test in auth token refresh</b><span>payments-api · #475</span></td>
+          <td><span class="badge b-ok"><i data-lucide="git-pull-request"></i>PR #1287 opened</span></td>
+          <td><div class="tl-cell"><div class="mini" data-p="1111111111rr111111111111111"></div><span class="step-of">27 steps · 2 rolled back</span></div></td>
+          <td class="opt muted">Claude Sonnet</td>
+          <td class="opt"><span class="person"><i>AJ</i>Adan J.</span></td>
+          <td class="r muted">1 h ago</td>
+        </tr>
+        <tr>
+          <td><span class="id">RUN-0138</span></td>
+          <td class="t"><b>Upgrade lodash to patch prototype pollution</b><span>web-dashboard · #210</span></td>
+          <td><span class="badge b-bad"><i data-lucide="x"></i>Rejected</span></td>
+          <td><div class="tl-cell"><div class="mini" data-p="11111111111111f111111111"></div><span class="step-of">24 steps · new dependency</span></div></td>
+          <td class="opt muted">GPT-4o</td>
+          <td class="opt"><span class="person"><i>RO</i>R. Okafor</span></td>
+          <td class="r muted">3 h ago</td>
+        </tr>
+        <tr>
+          <td><span class="id">RUN-0137</span></td>
+          <td class="t"><b>Null value crashes the CSV export</b><span>reports-service · #64</span></td>
+          <td><span class="badge b-ok"><i data-lucide="git-pull-request"></i>PR #318 opened</span></td>
+          <td><div class="tl-cell"><div class="mini" data-p="111111111111111111"></div><span class="step-of">18 steps · clean</span></div></td>
+          <td class="opt muted">Claude Sonnet</td>
+          <td class="opt"><span class="person"><i>SM</i>S. Mehta</span></td>
+          <td class="r muted">Yesterday</td>
+        </tr>
+        <tr>
+          <td><span class="id">RUN-0136</span></td>
+          <td class="t"><b>Docker build fails on ARM runners</b><span>infra-scripts · #31</span></td>
+          <td><span class="badge b-neutral"><i data-lucide="circle-slash"></i>Cancelled</span></td>
+          <td><div class="tl-cell"><div class="mini" data-p="111rr1rrr111eeeeeeeeeee"></div><span class="step-of">12 steps · cancelled by user</span></div></td>
+          <td class="opt muted">GPT-4o</td>
+          <td class="opt"><span class="person"><i>AJ</i>Adan J.</span></td>
+          <td class="r muted">Yesterday</td>
+        </tr>
+        <tr>
+          <td><span class="id">RUN-0135</span></td>
+          <td class="t"><b>Typo in the onboarding email subject</b><span>notifications · #12</span></td>
+          <td><span class="badge b-ok"><i data-lucide="git-pull-request"></i>PR #96 opened</span></td>
+          <td><div class="tl-cell"><div class="mini" data-p="111111111"></div><span class="step-of">9 steps · clean</span></div></td>
+          <td class="opt muted">Claude Sonnet</td>
+          <td class="opt"><span class="person"><i>RO</i>R. Okafor</span></td>
+          <td class="r muted">2 days ago</td>
+        </tr>
+      </tbody>
+      <tbody id="skelRows" hidden aria-hidden="true"></tbody>
+    </table>
+    <div class="tbl-foot"><span>8 most recent runs · example data</span><span>Showing 1–8 of 211</span></div>
+  </div>
+</main>
+<script src="theme/app.js"></script>
+<script>
+  // A brand-new organization: no runs yet.
+  if (new URLSearchParams(location.search).get("state") === "empty") {
+    document.querySelectorAll(".review, .toolbar, .table-card").forEach((el) => el.remove());
+    const c = document.querySelector(".tab .count"); if (c) c.remove();
+    const e = document.createElement("section");
+    e.className = "empty"; e.setAttribute("aria-label", "No runs yet");
+    e.innerHTML = `<div class="ghost-tl" aria-hidden="true">${"<i></i>".repeat(12)}</div>
+      <h2>No runs yet</h2>
+      <p>Pick a repository and an open issue. The agent works on it in a sealed sandbox, checkpoints every step, and holds anything risky for you before a pull request opens.</p>
+      <div class="acts"><a class="btn btn-primary" href="new-run.html"><i data-lucide="play"></i>Start your first run</a><a class="btn btn-secondary" href="members.html"><i data-lucide="user-plus"></i>Invite teammates</a></div>
+      <div class="steps3">
+        <div><b><i data-lucide="history"></i>Every step checkpointed</b><span>A shadow-git snapshot before each command the agent runs.</span></div>
+        <div><b><i data-lucide="undo-2"></i>Failures roll back</b><span>Files are restored and the agent's memory is trimmed.</span></div>
+        <div><b><i data-lucide="shield-check"></i>Risky changes wait</b><span>New URLs and dependencies stop for a person to review.</span></div>
+      </div>`;
+    document.querySelector(".page-head").after(e);
+    if (window.lucide) lucide.createIcons();
+  }
+  // Skeleton rows for a moment while runs load; ?skeleton keeps them for screenshots.
+  (function () {
+    if (!document.getElementById("realRows") || !document.getElementById("realRows").isConnected) return;
+    const real = document.getElementById("realRows"), sk = document.getElementById("skelRows");
+    const opt = (w) => `<td class="opt"><span class="sk line sm" style="width:${w}px;display:block"></span></td>`;
+    sk.innerHTML = Array.from({ length: 8 }, (_, r) => `<tr>
+      <td><span class="sk chip"></span></td>
+      <td class="t"><div style="display:grid;gap:6px"><span class="sk line" style="width:${[230, 200, 250, 180, 240, 210, 190, 220][r]}px"></span><span class="sk line sm" style="width:${[130, 110, 140, 100, 120, 115, 105, 125][r]}px"></span></div></td>
+      <td><span class="sk pill" style="width:${[118, 84, 84, 120, 88, 112, 96, 108][r]}px;display:block"></span></td>
+      <td><div class="sk-tl">${Array.from({ length: 30 }, (_, i) => `<i style="animation-delay:${(i * 0.05 + r * 0.1).toFixed(2)}s"></i>`).join("")}</div></td>
+      ${opt(90)}${opt(80)}<td class="r"><span class="sk line sm" style="width:60px;display:block;margin-left:auto"></span></td></tr>`).join("");
+    real.hidden = true; sk.hidden = false;
+    const keep = new URLSearchParams(location.search).has("skeleton");
+    const show = () => { if (keep) return; sk.hidden = true; real.hidden = false; real.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300 }); };
+    (window.Loader && Loader.ready ? Loader.ready : Promise.resolve()).then(() => setTimeout(show, 900));
+  })();
+</script>
+</body>
+</html>

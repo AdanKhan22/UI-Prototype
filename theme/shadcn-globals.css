@@ -1,0 +1,27 @@
+/* shadcn/ui theme variables for the production Next.js app (paste into app/globals.css).
+   Do NOT load alongside tokens.css: the names --accent and --border collide. */
+
+:root, .dark {
+  --background: 240 10% 4%;  --foreground: 0 0% 98%;
+  --card: 240 6% 7%;  --card-foreground: 0 0% 98%;
+  --popover: 240 5% 8%;  --popover-foreground: 0 0% 98%;
+  --primary: 248 84% 63%;  --primary-foreground: 0 0% 100%;
+  --secondary: 240 6% 10%;  --secondary-foreground: 0 0% 98%;
+  --muted: 240 6% 10%;  --muted-foreground: 240 4% 57%;
+  --accent: 248 32% 15%;  --accent-foreground: 248 100% 77%;
+  --destructive: 358 62% 53%;  --destructive-foreground: 0 0% 100%;
+  --border: 240 4% 16%;  --input: 240 4% 42%;  --ring: 248 100% 77%;
+  --radius: 0.5rem;
+}
+.light {
+  --background: 0 0% 100%;  --foreground: 240 10% 4%;
+  --card: 0 0% 100%;  --card-foreground: 240 10% 4%;
+  --popover: 0 0% 100%;  --popover-foreground: 240 10% 4%;
+  --primary: 249 72% 58%;  --primary-foreground: 0 0% 100%;
+  --secondary: 240 5% 96%;  --secondary-foreground: 240 10% 4%;
+  --muted: 240 5% 96%;  --muted-foreground: 240 4% 42%;
+  --accent: 250 100% 96%;  --accent-foreground: 249 72% 58%;
+  --destructive: 0 72% 51%;  --destructive-foreground: 0 0% 100%;
+  --border: 240 6% 90%;  --input: 240 4% 57%;  --ring: 249 72% 58%;
+}
+

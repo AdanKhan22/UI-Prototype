@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RUN-0142 · Resolver</title>
+<script>try{var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("resolver-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="theme/tokens.css">
+<link rel="stylesheet" href="theme/components.css">
+<link rel="stylesheet" href="theme/loader.css">
+<link rel="stylesheet" href="theme/run.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<script src="theme/loader.js"></script>
+<header class="topbar">
+  <a class="mark" href="runs.html" aria-label="Resolver home"><i data-lucide="git-pull-request-arrow"></i></a>
+  <span class="slash">/</span>
+  <span class="org"><span class="av"></span>acme-labs <small>Owner</small><i data-lucide="chevrons-up-down"></i></span>
+  <nav class="tabs" aria-label="Main">
+    <a class="tab" href="runs.html" aria-current="page">Runs</a>
+    <a class="tab" href="review.html">Findings<span class="count">1</span></a>
+    <a class="tab" href="audit.html">Audit log</a>
+    <a class="tab" href="members.html">Members</a>
+    <a class="tab" href="usage.html">Usage</a>
+    <a class="tab" href="settings.html">Settings</a>
+  </nav>
+  <span class="grow"></span>
+  <div class="search"><i data-lucide="search"></i>Search runs<kbd>⌘K</kbd></div>
+  <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme"></button>
+  <span class="me" aria-label="Adan Javed">AJ</span>
+</header>
+
+<main class="page wide">
+  <a class="back" href="runs.html"><i data-lucide="arrow-left"></i>Runs</a>
+
+  <div class="run-head">
+    <div>
+      <h1>Refund webhook double-charges on retry</h1>
+      <div class="meta">
+        <span class="id">RUN-0142</span>
+        <span>acme-labs/payments-api · #482</span><span class="sep"></span>
+        <span>Claude Sonnet</span><span class="sep"></span>
+        <span>Started by Adan J.</span>
+      </div>
+    </div>
+    <div class="actions">
+      <span class="badge b-run" id="badge"><span class="dot"></span>Running</span>
+      <button class="btn btn-secondary" id="notifyBtn" type="button" aria-pressed="false"><i data-lucide="bell"></i><span>Notify me</span></button>
+      <div class="menu-wrap">
+        <button class="btn btn-secondary" id="exportBtn" type="button" aria-haspopup="menu" aria-expanded="false"><i data-lucide="download"></i>Export<i data-lucide="chevron-down"></i></button>
+        <div class="menu" id="exportMenu" role="menu" hidden>
+          <button role="menuitem" type="button" data-export="json"><i data-lucide="file-json"></i>Run log as JSON</button>
+          <button role="menuitem" type="button" data-export="csv"><i data-lucide="file-spreadsheet"></i>Run log as CSV</button>
+          <button role="menuitem" type="button" data-export="audit"><i data-lucide="shield-check"></i>Audit trail with hash chain</button>
+        </div>
+      </div>
+      <button class="btn btn-danger-outline" id="cancelBtn" type="button"><i data-lucide="square"></i>Cancel run</button>
+      <a class="btn btn-secondary" id="newRunBtn" href="new-run.html" hidden><i data-lucide="rotate-ccw"></i>Start a new run</a>
+      <a class="btn btn-primary" id="reviewBtn" href="review.html" hidden>Review change<i data-lucide="arrow-right"></i></a>
+    </div>
+  </div>
+
+  <section class="card graph-card" aria-label="Run graph">
+    <div class="g-top">
+      <div class="now"><span class="ph" id="phaseChip">Explore</span><span class="txt" id="nowTxt"></span></div>
+      <div class="g-right">
+        <div class="legend" id="legend">
+          <span><i style="background:var(--series-3)"></i><span id="lgOk">0 passed</span></span>
+          <span><i style="background:var(--series-4)"></i><span id="lgRb">0 rolled back</span></span>
+          <span id="lgFlag" hidden><i class="hatch"></i>Flag source</span>
+          <span id="lgCur"><i style="background:var(--series-1)"></i>Running now</span>
+        </div>
+        <div class="viewing" id="viewing" hidden><span id="viewTxt"></span><button class="btn btn-secondary btn-sm" id="backBtn" type="button">Back to live</button></div>
+        <button class="icon-btn" id="focusBtn" type="button" aria-pressed="false" aria-label="Focus mode"><i data-lucide="maximize-2"></i></button>
+      </div>
+    </div>
+
+    <div class="g-scroll">
+      <div class="g-wrap" id="gWrap" tabindex="0" role="slider" aria-label="Run graph. Drag, or use the arrow keys, to travel through the steps" aria-valuemin="1">
+        <div class="g-phases" id="gPhases"></div>
+        <svg class="g-svg" id="gSvg" aria-hidden="true">
+          <defs>
+            <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hatch-bar" width="3" height="6"></rect></pattern>
+            <mask id="provMask" maskUnits="userSpaceOnUse" x="-200" y="-400" width="4000" height="1200"><path id="provMaskPath" fill="none" stroke="#ffffff" stroke-width="8"></path></mask>
+          </defs>
+          <g id="gEdges"></g>
+          <g id="gFx"><path id="provPath" class="prov" mask="url(#provMask)"></path><circle id="rwDot" class="rw-dot" r="5" style="display:none"></circle></g>
+          <g id="gNodes"></g>
+        </svg>
+        <div class="g-cursor" id="gCursor" hidden></div>
+        <span class="chip root" id="chipRoot"><i data-lucide="crosshair"></i>Root cause · step 10</span>
+        <span class="chip resume" id="chipResume"><i data-lucide="undo-2"></i>Rewound to CP-10</span>
+        <span class="chip prov" id="chipProv"><i data-lucide="link"></i><code>hooks.attacker.dev</code> came from step 4</span>
+        <div class="g-bar" id="gBar"><div class="sweep" id="sweep"></div><div class="g-playhead" id="playhead"></div></div>
+        <div class="tip" id="tip" role="tooltip"></div>
+      </div>
+    </div>
+    <div class="g-foot">
+      <span>Drag across the graph or press <kbd><i data-lucide="arrow-left"></i></kbd> <kbd><i data-lucide="arrow-right"></i></kbd> to rewind · <kbd>F</kbd> for focus mode</span>
+      <span>Every node is a checkpoint in a shadow git repository</span>
+    </div>
+  </section>
+
+  <div class="lower">
+    <section class="card panel" aria-label="Steps">
+      <div class="panel-head"><h2>Steps</h2><small>Checkpoint saved before every command</small></div>
+      <div class="scroll" id="steps"></div>
+    </section>
+
+    <section class="card panel" aria-label="Output">
+      <div class="panel-head">
+        <div class="tabs-inline" role="tablist">
+          <button role="tab" type="button" data-tab="term" aria-selected="true"><i data-lucide="terminal"></i>Terminal</button>
+          <button role="tab" type="button" data-tab="changes" aria-selected="false"><i data-lucide="file-diff"></i>Changes <span class="n" id="changesN">0</span></button>
+        </div>
+        <span class="stream" id="stream"><i></i><span id="streamTxt"></span></span>
+      </div>
+      <div class="scroll" id="pane"></div>
+    </section>
+
+    <aside class="rail" aria-label="Run details">
+      <section class="card" aria-label="Live numbers">
+        <div class="live-grid">
+          <div><small>Elapsed</small><b id="elapsed">00:00</b></div>
+          <div><small id="stepLbl">Step</small><b id="stepNo">1</b></div>
+          <div><small>Tokens</small><b id="tokens">0</b></div>
+          <div><small>Cost</small><b id="cost">$0.00</b></div>
+        </div>
+        <div class="tc">
+          <div class="tc-head"><span id="tcLbl">Tokens per step</span><span class="mono" id="tcMax"></span></div>
+          <div class="tc-cols" id="tcCols"></div>
+        </div>
+      </section>
+
+      <section class="card" aria-label="Sandbox">
+        <div class="card-h"><h2>Sandbox</h2><span class="badge b-ok"><i data-lucide="lock"></i>Sealed</span></div>
+        <dl class="kv">
+          <div><dt>Network</dt><dd><code>--network none</code></dd></div>
+          <div><dt>Root filesystem</dt><dd>Read-only</dd></div>
+          <div><dt>User</dt><dd>Non-root <code>uid 1001</code></dd></div>
+          <div><dt>Image</dt><dd><code>node:20-slim</code></dd></div>
+          <div><dt>Checkpoints</dt><dd id="cpCount">0 saved</dd></div>
+          <div><dt>Secrets</dt><dd>Masked in output</dd></div>
+        </dl>
+      </section>
+
+      <section class="card" id="waitCard" aria-label="While you wait">
+        <div class="card-h">
+          <h2>While you wait</h2>
+          <div class="pager">
+            <button class="icon-btn" id="factPrev" type="button" aria-label="Previous fact"><i data-lucide="chevron-left"></i></button>
+            <span id="factN">1 / 14</span>
+            <button class="icon-btn" id="factNext" type="button" aria-label="Next fact"><i data-lucide="chevron-right"></i></button>
+          </div>
+        </div>
+        <div class="fact" id="fact" aria-live="polite"><span class="tag" id="factTag"></span><p id="factTxt"></p></div>
+        <div class="wait-foot"><button class="btn btn-secondary btn-block" id="playBtn" type="button"><i data-lucide="gamepad-2"></i>Play Rollback Runner</button></div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<dialog class="game cancel-dlg" id="cancelDlg" aria-labelledby="cTitle">
+  <div class="c-body">
+    <h2 id="cTitle">Cancel RUN-0142?</h2>
+    <p>The agent stops mid-step. This can't be resumed, but you can start a new run on the same issue.</p>
+    <ul>
+      <li>The Docker container is stopped immediately and the sandbox destroyed</li>
+      <li>Nothing reaches payments-api: no branch and no pull request</li>
+      <li>Checkpoints, logs and the audit trail are kept</li>
+    </ul>
+  </div>
+  <div class="c-foot"><button class="btn btn-secondary" id="cKeep" type="button">Keep running</button><button class="btn btn-danger" id="cGo" type="button"><i data-lucide="square"></i>Cancel run</button></div>
+</dialog>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="demo" id="demo" hidden>
+  <span>Demo playback · <b id="demoStep">Step 1 of 28</b></span>
+  <span class="prog"><i id="demoProg"></i></span>
+  <button class="icon-btn" id="demoPlay" type="button" aria-label="Pause"></button>
+  <button class="icon-btn" id="demoRestart" type="button" aria-label="Restart"><i data-lucide="rotate-ccw"></i></button>
+</div>
+
+<dialog class="game" id="game" aria-label="Rollback Runner">
+  <div class="game-head">
+    <div><h2>Rollback Runner</h2><p>Jump the failing tests. Crash and you roll back to your last checkpoint.</p></div>
+    <span class="grow"></span>
+    <span class="g-run" id="gRun"><span class="dot"></span>RUN-0142</span>
+    <button class="icon-btn" id="gClose" type="button" aria-label="Close game"><i data-lucide="x"></i></button>
+  </div>
+  <div class="game-stage">
+    <canvas id="gCanvas" tabindex="0" autofocus aria-label="Game area. Press Space to jump."></canvas>
+    <div class="g-alert" id="gAlert" role="alert" hidden>
+      <i data-lucide="shield-alert"></i>
+      <div><b>RUN-0142 needs you</b>Held at the gate: a new URL was found in the change.</div>
+      <a class="btn btn-primary btn-sm" id="gReview" href="review.html">Review change</a>
+    </div>
+  </div>
+  <div class="game-foot"><span><kbd>Space</kbd> or click to jump · <kbd>P</kbd> to pause · <kbd>Esc</kbd> to close</span><span>Five failures in a row ends the run</span></div>
+</dialog>
+
+<script src="theme/app.js"></script>
+<script src="theme/run-data.js"></script>
+<script src="theme/game.js"></script>
+<script src="theme/run.js"></script>
+</body>
+</html>

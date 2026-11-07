@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · Resolver</title>
+<script>try{var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("resolver-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="theme/tokens.css">
+<link rel="stylesheet" href="theme/components.css">
+<link rel="stylesheet" href="theme/loader.css">
+<link rel="stylesheet" href="theme/auth.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<script src="theme/loader.js"></script>
+<div class="auth">
+  <div class="auth-main">
+    <div class="auth-top">
+      <a class="brand" href="login.html"><span class="mark"><i data-lucide="git-pull-request-arrow"></i></span>Resolver</a>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme"></button>
+    </div>
+
+    <main class="auth-body">
+      <div class="auth-form">
+        <div>
+          <h1>Sign in to Resolver</h1>
+          <p class="sub">Pick up where your runs left off.</p>
+        </div>
+
+        <div class="alert al-ok" role="status" data-state="signedout" hidden>
+          <i data-lucide="log-out"></i>
+          <div><b>You've signed out</b>Runs you started keep going in their sandboxes. Sign in again to watch them.</div>
+        </div>
+
+        <div class="alert al-ok" role="status" data-state="reset" hidden>
+          <i data-lucide="key-round"></i>
+          <div><b>Password changed</b>Sign in with your new password. Your other sessions were signed out.</div>
+        </div>
+
+        <div class="alert al-info" role="status" data-state="deleted" hidden>
+          <i data-lucide="info"></i>
+          <div><b>acme-labs was deleted</b>Its 3 active sandboxes were terminated. Sign in to create or join another organization.</div>
+        </div>
+
+        <div class="alert al-bad" role="alert" data-state="error" hidden>
+          <i data-lucide="circle-alert"></i>
+          <div><b>Email or password is incorrect</b>Check both and try again, or reset your password.</div>
+        </div>
+
+        <div class="stack">
+          <a class="btn btn-secondary btn-lg btn-block" href="runs.html"><i data-lucide="github"></i>Continue with GitHub</a>
+        </div>
+
+        <div class="or">or sign in with email</div>
+
+        <form data-next="runs.html" novalidate>
+          <div class="field">
+            <label for="email">Email</label>
+            <input class="input" id="email" type="email" autocomplete="email" placeholder="you@company.com" value="adan@acme-labs.dev" data-state-class="error:err">
+          </div>
+          <div class="field">
+            <div class="field-row"><label for="pw">Password</label><a href="forgot-password.html">Forgot password?</a></div>
+            <div class="input-wrap">
+              <input class="input" id="pw" type="password" autocomplete="current-password" value="correct-horse-battery" data-state-class="error:err">
+              <button class="reveal" type="button" aria-label="Show password"><i data-lucide="eye"></i></button>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-lg btn-block" type="submit">Sign in</button>
+        </form>
+
+        <p class="swap">New to Resolver? <a href="signup.html">Create an account</a></p>
+      </div>
+    </main>
+
+    <div class="auth-foot"><span>Autonomous GitHub Resolver</span><span><a href="#">Terms</a> · <a href="#">Privacy</a></span></div>
+  </div>
+
+  <aside class="auth-aside" aria-label="About Resolver">
+    <div class="aside-inner calm">
+      <div>
+        <h2>Every step checkpointed.<br>Every risky change waits for you.</h2>
+        <p class="lede">What breaks is rolled back. Anything suspicious is held until a person decides.</p>
+      </div>
+
+      <div class="run-card">
+        <div class="rc-head">
+          <div>
+            <b>Refund webhook double-charges on retry</b>
+            <small>Example run · acme-labs/payments-api</small>
+          </div>
+          <span class="badge b-warn"><i data-lucide="eye"></i>Awaiting review</span>
+        </div>
+        <div class="rc-tl" style="border-bottom:0">
+          <div class="tl-bar" id="tl" role="img" aria-label="28 steps: 18 passed, 8 rolled back, 1 flag source, held at the gate"></div>
+          <div class="rc-legend">
+            <span><i style="background:var(--series-3)"></i>18 passed</span>
+            <span><i style="background:var(--series-4)"></i>8 rolled back</span>
+            <span><i class="hatch"></i>1 flag source</span>
+            <span><i style="background:var(--series-1)"></i>Held for you</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+  // Same story as run.html: 28 steps, flag source at 4, steps 10-17 rolled back, held at the gate (28)
+  const tl = document.getElementById("tl");
+  for (let s = 1; s <= 28; s++) {
+    const i = document.createElement("i");
+    if (s === 4) i.className = "src";
+    else if (s >= 10 && s <= 17) i.className = "rb";
+    else if (s === 28) i.className = "cur";
+    i.style.animationDelay = (s * 12) + "ms";
+    tl.appendChild(i);
+  }
+</script>
+<script src="theme/app.js"></script>
+</body>
+</html>

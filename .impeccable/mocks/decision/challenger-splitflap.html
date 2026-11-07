@@ -1,0 +1,28 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Antonio:wght@500;600&family=Archivo:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;font:14px/20px Archivo,sans-serif;color:#F2F2F0;background:#0E0F11;display:grid;grid-template-columns:220px 1fr}
+.rail{background:#17191C;padding:20px 16px;display:flex;flex-direction:column;gap:4px;border-right:1px solid #2A2D31}
+.rail b{font:600 16px Antonio;letter-spacing:.04em;margin-bottom:24px}
+.nav{padding:8px 12px;color:#A7AAAF;border-radius:4px}.nav.on{background:#24272B;color:#fff}
+main{padding:28px 32px}
+h1{font:600 30px Antonio;letter-spacing:.03em;text-transform:uppercase}
+.sub{color:#A7AAAF;margin:4px 0 24px}
+table{width:100%;border-collapse:separate;border-spacing:0 6px}
+th{font:500 11px Archivo;letter-spacing:.1em;text-transform:uppercase;color:#7D8187;text-align:left;padding:0 12px}
+td{background:#1A1C20;padding:12px;font:500 18px Antonio;letter-spacing:.06em;text-transform:uppercase}
+td.f span{display:inline-block;background:#24272B;margin-right:2px;padding:0 3px;border-bottom:1px solid #0E0F11}
+.amb{color:#F2A900}.red{color:#C8352E}.grn{color:#6FCF8E}
+.btn{font:600 13px Archivo;padding:8px 14px;border-radius:4px;background:#F2A900;color:#0E0F11;border:0}
+</style></head><body>
+<aside class="rail"><b>RESOLVER</b><div class="nav">Overview</div><div class="nav on">Runs</div><div class="nav">New run</div><div class="nav">Security</div><div class="nav">Audit log</div><div class="nav">Members</div></aside>
+<main><div style="display:flex;justify-content:space-between"><div><h1>Runs · acme-labs</h1><div class="sub">3 running · 1 awaiting review · today</div></div><button class="btn">New run</button></div>
+<table><tr><th>Run</th><th>Repository · issue</th><th>Model</th><th>Step</th><th>Elapsed</th><th>Status</th></tr>
+<tr><td>0142</td><td>payments-api #482</td><td>Sonnet</td><td>37</td><td>06:42</td><td class="f amb"><span>A</span><span>W</span><span>A</span><span>I</span><span>T</span><span>I</span><span>N</span><span>G</span> review</td></tr>
+<tr><td>0141</td><td>web-dashboard #219</td><td>GPT-4o</td><td>58</td><td>11:05</td><td>running</td></tr>
+<tr><td>0140</td><td>auth-service #77</td><td>Sonnet</td><td>22</td><td>03:18</td><td class="amb">rolled back ×2</td></tr>
+<tr><td>0139</td><td>payments-api #475</td><td>Sonnet</td><td>91</td><td>18:40</td><td class="grn">PR opened</td></tr>
+<tr><td>0138</td><td>infra-terraform #12</td><td>GPT-4o</td><td>14</td><td>02:51</td><td class="red">rejected</td></tr>
+<tr><td>0137</td><td>docs-site #301</td><td>Sonnet</td><td>33</td><td>05:09</td><td class="grn">PR opened</td></tr>
+</table></main></body></html>

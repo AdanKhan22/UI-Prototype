@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loading states · Resolver</title>
+<script>try{var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("resolver-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="theme/tokens.css">
+<link rel="stylesheet" href="theme/components.css">
+<link rel="stylesheet" href="theme/loader.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+  .sec { margin-bottom: var(--space-12); }
+  .sec h2 { margin: 0; font-size: var(--text-xl); line-height: var(--lh-xl); font-weight: 600; letter-spacing: var(--tracking-snug); }
+  .sec > p { margin: var(--space-1) 0 var(--space-5); font-size: var(--text-sm); color: var(--text-2); max-width: 70ch; }
+  .stage { position: relative; }
+  .stage .replay { position: absolute; right: var(--space-4); top: var(--space-4); z-index: 2; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-5); }
+  .card-h { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); min-height: 52px; padding: var(--space-3) var(--space-5); border-bottom: 1px solid var(--border); }
+  .card-h h3 { margin: 0; font-size: var(--text-md); font-weight: 600; }
+  .cap { font-size: var(--text-xs); color: var(--text-3); }
+
+  .sk-table { width: 100%; border-collapse: collapse; }
+  .sk-table th { height: 40px; padding: 0 var(--space-5); background: var(--surface-2); border-bottom: 1px solid var(--border); text-align: left; font-weight: 500; font-size: var(--text-sm); color: var(--text-3); }
+  .sk-table td { height: 60px; padding: 0 var(--space-5); border-bottom: 1px solid var(--divider); }
+  .sk-table tr:last-child td { border-bottom: 0; }
+  .stack { display: grid; gap: 6px; }
+
+  .stats { display: grid; grid-template-columns: 1fr 1fr; }
+  .stats > div { padding: var(--space-4) var(--space-5); display: grid; gap: var(--space-2); }
+  .stats > div:nth-child(odd) { border-right: 1px solid var(--divider); }
+  .stats > div:nth-child(-n+2) { border-bottom: 1px solid var(--divider); }
+
+  /* Graph skeleton: the rail draws, checkpoints wait their turn */
+  .g-sk { position: relative; height: 120px; margin: var(--space-5); }
+  .g-sk .rail { position: absolute; left: 0; right: 0; top: 60px; border-top: 2px dashed var(--border); }
+  .g-sk .n { position: absolute; top: 49px; width: 22px; height: 22px; margin-left: -11px; border-radius: 50%; border: 1.5px dashed var(--border-strong); background: var(--surface); animation: wait 2.4s var(--ease) infinite; }
+  @keyframes wait { 0%, 100% { border-color: var(--border-strong); } 20% { border-color: var(--accent-text); border-style: solid; background: var(--accent-subtle); } 40% { border-color: var(--border-strong); background: var(--surface); } }
+
+  .inline-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-6); padding: var(--space-5); }
+  .longwait { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-4); align-items: center; padding: var(--space-5); }
+  .longwait .t { display: grid; gap: 2px; }
+  .longwait b { font-weight: 600; }
+  .longwait span { font-size: var(--text-sm); color: var(--text-2); }
+  .term-sk { margin: 0; padding: var(--space-4) var(--space-5); background: var(--surface-2); font: var(--text-sm) / 1.7 var(--font-mono); color: var(--text-3); min-height: 150px; border-radius: 0 0 var(--radius-md) var(--radius-md); }
+  .term-sk .cmd { color: var(--text); }
+  .term-sk .cmd::before { content: "$ "; color: var(--accent-text); }
+  .term-sk .caret { display: inline-block; width: 8px; height: 1.1em; vertical-align: -2px; background: var(--text-2); animation: blink 1s steps(1) infinite; }
+  @media (max-width: 1100px) { .grid2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<script src="theme/loader.js"></script>
+<header class="topbar">
+  <a class="mark" href="runs.html" aria-label="Resolver home"><i data-lucide="git-pull-request-arrow"></i></a>
+  <span class="slash">/</span>
+  <span class="org"><span class="av"></span>acme-labs <small>Owner</small><i data-lucide="chevrons-up-down"></i></span>
+  <nav class="tabs" aria-label="Main">
+    <a class="tab" href="runs.html">Runs</a>
+    <a class="tab" href="review.html">Findings</a>
+    <a class="tab" href="audit.html">Audit log</a>
+    <a class="tab" href="members.html">Members</a>
+    <a class="tab" href="usage.html">Usage</a>
+    <a class="tab" href="settings.html">Settings</a>
+  </nav>
+  <span class="grow"></span>
+  <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme"></button>
+  <span class="me" aria-label="Adan Javed">AJ</span>
+</header>
+
+<main class="page">
+  <div class="page-head"><div><h1>Loading states</h1><p>Every wait in Resolver tells the product's story: checkpoints, a rollback, the gate.</p></div></div>
+
+  <section class="sec">
+    <h2>Page load</h2>
+    <p>Plays in full on the first page of a visit, then as a 0.6-second glimpse between pages. Checkpoints appear, step 4 fails and rewinds to CP-3, the run recovers, and the gate says yes as the page opens.</p>
+    <div class="stage card">
+      <button class="btn btn-secondary btn-sm replay" id="replay" type="button"><i data-lucide="rotate-ccw"></i>Replay</button>
+      <div class="boot inline" id="demoBoot"></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Components</h2>
+    <p>Placeholders keep the exact shape of what is coming. A playhead sweeps across them with a violet leading edge, and run rows fill in their mini timeline while they wait.</p>
+    <div class="card" style="margin-bottom:var(--space-5)">
+      <table class="sk-table" aria-label="Runs loading">
+        <thead><tr><th>Run</th><th>Issue</th><th>Status</th><th>Timeline</th><th>Started</th></tr></thead>
+        <tbody id="skRows"></tbody>
+      </table>
+    </div>
+    <div class="grid2">
+      <section class="card" aria-label="Run graph loading">
+        <div class="card-h"><h3>Run graph</h3><span class="cpl"><span class="sq"><i></i><i></i><i></i><i></i><i></i></span>Loading checkpoints</span></div>
+        <div class="g-sk" id="gSk"><span class="rail"></span></div>
+      </section>
+      <section class="card" aria-label="Numbers loading">
+        <div class="stats">
+          <div><span class="sk line sm" style="width:52px"></span><span class="sk line" style="width:96px;height:22px"></span></div>
+          <div><span class="sk line sm" style="width:40px"></span><span class="sk line" style="width:56px;height:22px"></span></div>
+          <div><span class="sk line sm" style="width:48px"></span><span class="sk line" style="width:110px;height:22px"></span></div>
+          <div><span class="sk line sm" style="width:36px"></span><span class="sk line" style="width:72px;height:22px"></span></div>
+        </div>
+        <div style="padding:var(--space-4) var(--space-5) var(--space-5);border-top:1px solid var(--border)"><span class="sk line sm" style="width:100px;display:block;margin-bottom:var(--space-3)"></span><div style="display:flex;align-items:flex-end;gap:2px;height:56px" id="skCols"></div></div>
+      </section>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Small waits</h2>
+    <p>For buttons and panels: five checkpoints light up in turn, and the third one fails, rolls back and recovers on every loop.</p>
+    <div class="card inline-row">
+      <span class="cpl"><span class="sq"><i></i><i></i><i></i><i></i><i></i></span>Loading steps</span>
+      <span class="cpl"><span class="sq"><i></i><i></i><i></i><i></i><i></i></span>Fetching open issues</span>
+      <button class="btn btn-primary" type="button" disabled style="background:var(--accent);color:#ffffff;opacity:.85"><i data-lucide="loader-circle" class="spin"></i>Starting run</button>
+      <span class="badge b-run"><span class="dot"></span>Cloning repository</span>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>Long waits</h2>
+    <p>When something takes longer than eight seconds, say why and offer something to do.</p>
+    <div class="grid2">
+      <section class="card" aria-label="Terminal waiting">
+        <div class="card-h"><h3>Terminal</h3><span class="cap">Waiting for output · 0:12</span></div>
+        <pre class="term-sk"><span class="cmd">git clone --depth 1 acme-labs/payments-api</span>
+Cloning into 'payments-api'...
+Receiving objects:  64% (2,931/4,580), 38.2 MiB
+<span class="caret"></span></pre>
+      </section>
+      <section class="card longwait" aria-label="Still going">
+        <span class="cpl"><span class="sq"><i></i><i></i><i></i><i></i><i></i></span></span>
+        <div class="t"><b>Still going</b><span>Big repositories take longer to clone into a sealed sandbox. We'll keep checkpointing while you wait.</span></div>
+        <a class="btn btn-secondary btn-sm" href="run.html?game=1"><i data-lucide="gamepad-2"></i>Play while you wait</a>
+      </section>
+    </div>
+  </section>
+</main>
+
+<script src="theme/app.js"></script>
+<script>
+(function () {
+  const v = Loader.build(document.getElementById("demoBoot"));
+  const p = Loader.play(v, { loop: true });
+  document.getElementById("replay").addEventListener("click", () => p.replay());
+
+  // Skeleton rows, each with a mini timeline that fills in step by step
+  const widths = [[220, 120], [260, 140], [190, 100], [240, 130], [210, 110]];
+  document.getElementById("skRows").innerHTML = widths.map(([a, b], r) =>
+    `<tr class="sk-group"><td><span class="sk chip"></span></td><td><div class="stack sk-group"><span class="sk line" style="width:${a}px"></span><span class="sk line sm" style="width:${b}px"></span></div></td>
+     <td><span class="sk pill" style="width:${[96, 84, 120, 96, 84][r]}px;display:block"></span></td>
+     <td><div class="sk-tl">${Array.from({ length: 30 }, (_, i) => `<i style="animation-delay:${(i * 0.05 + r * 0.12).toFixed(2)}s"></i>`).join("")}</div></td>
+     <td><span class="sk line sm" style="width:64px;display:block;margin-left:auto"></span></td></tr>`).join("");
+
+  // Graph skeleton nodes wait their turn, left to right
+  const g = document.getElementById("gSk");
+  for (let i = 0; i < 12; i++) { const n = document.createElement("span"); n.className = "n"; n.style.left = (4 + i * 8.4) + "%"; n.style.animationDelay = (i * 0.12) + "s"; g.appendChild(n); }
+  document.getElementById("skCols").innerHTML = Array.from({ length: 28 }, (_, i) => `<span class="sk" style="flex:1;height:${12 + ((i * 37) % 40)}px;border-radius:var(--radius-xs) var(--radius-xs) 0 0"></span>`).join("");
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create account · Resolver</title>
+<script>try{var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("resolver-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="theme/tokens.css">
+<link rel="stylesheet" href="theme/components.css">
+<link rel="stylesheet" href="theme/loader.css">
+<link rel="stylesheet" href="theme/auth.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<script src="theme/loader.js"></script>
+<div class="auth">
+  <div class="auth-main">
+    <div class="auth-top">
+      <a class="brand" href="login.html"><span class="mark"><i data-lucide="git-pull-request-arrow"></i></span>Resolver</a>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme"></button>
+    </div>
+
+    <main class="auth-body">
+      <div class="auth-form">
+        <div>
+          <h1>Create your account</h1>
+          <p class="sub">Hand off your next GitHub issue to an agent you can trust.</p>
+        </div>
+
+        <div class="stack">
+          <a class="btn btn-secondary btn-lg btn-block" href="onboarding.html?step=2"><i data-lucide="github"></i>Sign up with GitHub</a>
+        </div>
+
+        <div class="or">or sign up with email</div>
+
+        <form data-next="onboarding.html" novalidate>
+          <div class="field">
+            <label for="name">Full name</label>
+            <input class="input" id="name" type="text" autocomplete="name" placeholder="Ada Lovelace" value="Adan Javed">
+          </div>
+          <div class="field">
+            <label for="email">Work email</label>
+            <input class="input" id="email" type="email" autocomplete="email" placeholder="you@company.com" value="adan@acme-labs.dev" data-state-class="error:err">
+            <span class="hint e" data-state="error" hidden><i data-lucide="circle-alert"></i>An account with this email already exists. <a href="login.html">Sign in instead</a></span>
+          </div>
+          <div class="field">
+            <label for="pw">Password</label>
+            <div class="input-wrap">
+              <input class="input" id="pw" type="password" autocomplete="new-password" value="harbour-lantern-42" aria-describedby="pwhint">
+              <button class="reveal" type="button" aria-label="Show password"><i data-lucide="eye"></i></button>
+            </div>
+            <div class="meter" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><span><i data-lucide="check"></i>Strong</span></div>
+            <span class="hint" id="pwhint">At least 12 characters. Strength: strong.</span>
+          </div>
+          <label class="check"><input type="checkbox" checked><span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</span></label>
+          <button class="btn btn-primary btn-lg btn-block" type="submit">Create account</button>
+        </form>
+
+        <p class="swap">Already have an account? <a href="login.html">Sign in</a></p>
+      </div>
+    </main>
+
+    <div class="auth-foot"><span>Autonomous GitHub Resolver</span><span><a href="#">Terms</a> · <a href="#">Privacy</a></span></div>
+  </div>
+
+  <aside class="auth-aside" aria-label="What happens next">
+    <div class="aside-inner">
+      <div>
+        <h2>From sign-up to your first pull request.</h2>
+        <p class="lede">Three steps, and you stay in control of every change that reaches your repository.</p>
+      </div>
+
+      <div class="run-card">
+        <div class="pad" style="padding:var(--space-6) var(--space-6) var(--space-6)">
+          <ol class="next">
+            <li><div><b>Connect GitHub</b><p>Resolver lists your repositories and their open issues. It only ever proposes changes as a pull request.</p></div></li>
+            <li><div><b>Create your organization</b><p>You become its Owner. Invite teammates by GitHub username and give them Member or Admin access.</p></div></li>
+            <li><div><b>Start your first run</b><p>Pick a repository, an open issue and a model, then watch every step live.</p>
+              <div class="extra"><div class="tl-bar" style="height:20px" aria-hidden="true"><i></i><i></i><i></i><i></i><i class="rb"></i><i></i><i></i><i></i><i></i><i class="cur"></i><i class="e"></i><i class="e"></i><i class="e"></i><i class="e"></i><i class="e"></i><i class="e"></i></div></div>
+            </div></li>
+          </ol>
+        </div>
+        <div class="guard" style="border-top:1px solid var(--border)">
+          <i data-lucide="shield-check"></i>
+          <div><b>Sealed by default.</b> Every run happens in a read-only, non-root container with <code>--network none</code>. No internet, no access to your machine.</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+<script src="theme/app.js"></script>
+</body>
+</html>

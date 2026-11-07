@@ -1,0 +1,458 @@
+{
+  "hook": {
+    "enabled": true,
+    "limits": {
+      "maxFindings": 5,
+      "maxChars": 8000
+    }
+  },
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [
+      ".impeccable/mocks/**"
+    ],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "theme.html"
+        ],
+        "createdAt": "2026-11-07T16:52:01.592Z",
+        "reason": "Agent: token, type-scale and run-step cards put padding on their rows rather than the card, and diff lines are edge-to-edge bands like any code diff"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "theme.html"
+        ],
+        "createdAt": "2026-11-07T17:14:09.521Z",
+        "reason": "Agent: the hatched segment marks the flag-source step so it reads without relying on colour; functional, not decoration"
+      },
+      {
+        "rule": "em-dash-overuse",
+        "value": "*",
+        "files": [
+          "theme.html"
+        ],
+        "createdAt": "2026-11-07T17:14:10.238Z",
+        "reason": "Agent: counts come from CSS custom-property names (--bg, --series-1) shown as token documentation, not prose dashes"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "runs.html"
+        ],
+        "createdAt": "2026-11-07T19:49:33.544Z",
+        "reason": "Agent: hatched flag-source timeline segment from shared components.css; a non-colour state cue documented in DESIGN.md, not decoration"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(49, 120, 198)",
+        "files": [
+          "new-run.html"
+        ],
+        "createdAt": "2026-11-07T19:54:33.524Z",
+        "reason": "Agent: GitHub linguist language colours (TypeScript, Go, Python) on repository language dots; domain convention, not palette drift"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(0, 173, 216)",
+        "files": [
+          "new-run.html"
+        ],
+        "createdAt": "2026-11-07T19:54:34.316Z",
+        "reason": "Agent: GitHub linguist language colours (TypeScript, Go, Python) on repository language dots; domain convention, not palette drift"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(53, 114, 165)",
+        "files": [
+          "new-run.html"
+        ],
+        "createdAt": "2026-11-07T19:54:35.065Z",
+        "reason": "Agent: GitHub linguist language colours (TypeScript, Go, Python) on repository language dots; domain convention, not palette drift"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "new-run.html"
+        ],
+        "createdAt": "2026-11-07T19:54:41.090Z",
+        "reason": "Agent: hatched flag-source timeline segment from shared components.css; a non-colour state cue documented in DESIGN.md, not decoration"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "run.html"
+        ],
+        "createdAt": "2026-11-07T19:59:38.672Z",
+        "reason": "Agent: hatched flag-source timeline segment; a non-colour state cue documented in DESIGN.md, not decoration"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "3px",
+        "files": [
+          "run.html"
+        ],
+        "createdAt": "2026-11-07T20:10:15.292Z",
+        "reason": "Agent: run timeline segment (3px) and playhead (1px) corners, both specified in DESIGN.md's Run Timeline section"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "1px",
+        "files": [
+          "run.html"
+        ],
+        "createdAt": "2026-11-07T20:10:16.205Z",
+        "reason": "Agent: run timeline segment (3px) and playhead (1px) corners, both specified in DESIGN.md's Run Timeline section"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "review.html"
+        ],
+        "createdAt": "2026-11-07T21:15:27.044Z",
+        "reason": "Agent: hatched flag-source marker (step 4) in the provenance trace; a non-colour state cue documented in DESIGN.md"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "review.html"
+        ],
+        "createdAt": "2026-11-07T21:16:08.909Z",
+        "reason": "Agent: log and diff listing rows are edge-to-edge bands like any code diff; the listing card provides the inset"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "audit.html"
+        ],
+        "createdAt": "2026-11-07T21:21:25.988Z",
+        "reason": "Agent: hatched flag-source timeline style from shared components.css; a non-colour state cue documented in DESIGN.md"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "members.html"
+        ],
+        "createdAt": "2026-11-07T21:24:57.394Z",
+        "reason": "Agent: stat and role-table cards pad their cells, not the card, the same pattern as the run tables"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "members.html"
+        ],
+        "createdAt": "2026-11-07T21:24:57.818Z",
+        "reason": "Agent: hatched flag-source style from shared components.css; a non-colour state cue documented in DESIGN.md"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "usage.html"
+        ],
+        "createdAt": "2026-11-07T21:30:02.313Z",
+        "reason": "Agent: hatched flag-source style from shared components.css; a non-colour state cue documented in DESIGN.md"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "settings.html"
+        ],
+        "createdAt": "2026-11-07T21:33:56.581Z",
+        "reason": "Agent: hatched flag-source style from shared components.css; a non-colour state cue documented in DESIGN.md"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "login.html"
+        ],
+        "createdAt": "2026-11-07T21:33:56.976Z",
+        "reason": "Agent: hatched flag-source style from shared components.css; a non-colour state cue documented in DESIGN.md"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "signup.html"
+        ],
+        "createdAt": "2026-11-07T21:38:43.208Z",
+        "reason": "Agent: hatched flag-source style from shared components.css; a non-colour state cue documented in DESIGN.md"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "forgot-password.html"
+        ],
+        "createdAt": "2026-11-07T21:38:43.703Z",
+        "reason": "Agent: hatched flag-source style from shared components.css; a non-colour state cue documented in DESIGN.md"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "1px",
+        "files": [
+          "theme.html"
+        ],
+        "createdAt": "2026-11-07T21:38:44.096Z",
+        "reason": "Agent: style-guide specimens of the timeline segment, mini timeline and swatch corners documented in DESIGN.md"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "2px",
+        "files": [
+          "theme.html"
+        ],
+        "createdAt": "2026-11-07T21:38:44.532Z",
+        "reason": "Agent: style-guide specimens of the timeline segment, mini timeline and swatch corners documented in DESIGN.md"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "3px",
+        "files": [
+          "theme.html"
+        ],
+        "createdAt": "2026-11-07T21:38:44.946Z",
+        "reason": "Agent: style-guide specimens of the timeline segment, mini timeline and swatch corners documented in DESIGN.md"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "56px",
+        "files": [
+          "theme.html"
+        ],
+        "createdAt": "2026-11-07T21:38:45.345Z",
+        "reason": "Agent: type-family specimens on the style guide; DESIGN.md marks them as specimens, not scale steps"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "44px",
+        "files": [
+          "theme.html"
+        ],
+        "createdAt": "2026-11-07T21:38:45.733Z",
+        "reason": "Agent: type-family specimens on the style guide; DESIGN.md marks them as specimens, not scale steps"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "40px",
+        "files": [
+          "theme.html"
+        ],
+        "createdAt": "2026-11-07T21:38:46.184Z",
+        "reason": "Agent: type-family specimens on the style guide; DESIGN.md marks them as specimens, not scale steps"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#6c5cf5",
+        "files": [
+          "theme.html"
+        ],
+        "createdAt": "2026-11-07T21:38:46.657Z",
+        "reason": "Agent: light-theme brand-gradient stops from tokens.css, printed as reference values in the colour table"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#14b8c8",
+        "files": [
+          "theme.html"
+        ],
+        "createdAt": "2026-11-07T21:38:47.178Z",
+        "reason": "Agent: light-theme brand-gradient stops from tokens.css, printed as reference values in the colour table"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "loading.html"
+        ],
+        "createdAt": "2026-11-07T21:44:36.699Z",
+        "reason": "Agent: stat and table skeleton cards pad their cells, and the load-screen demo fills its stage by design"
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "2px",
+        "files": [
+          "loading.html"
+        ],
+        "createdAt": "2026-11-07T21:44:37.422Z",
+        "reason": "Agent: 7px checkpoint squares in the inline loader; 2px keeps them square at that size, matching the mini timeline"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "loading.html"
+        ],
+        "createdAt": "2026-11-07T21:44:38.211Z",
+        "reason": "Agent: hatched flag-source style from shared components.css; a non-colour state cue documented in DESIGN.md"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "loading.html"
+        ],
+        "createdAt": "2026-11-07T21:44:46.180Z",
+        "reason": "Agent: skeleton loading sweep; looping is the loading signal, and it stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "runs.html"
+        ],
+        "createdAt": "2026-11-07T21:44:47.051Z",
+        "reason": "Agent: skeleton loading sweep shown while runs load; stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "new-run.html"
+        ],
+        "createdAt": "2026-11-07T21:45:32.347Z",
+        "reason": "Agent: skeleton loading sweep from shared loader.css; looping is the loading signal and it stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "run.html"
+        ],
+        "createdAt": "2026-11-07T21:45:33.981Z",
+        "reason": "Agent: skeleton loading sweep from shared loader.css; looping is the loading signal and it stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "review.html"
+        ],
+        "createdAt": "2026-11-07T21:45:36.024Z",
+        "reason": "Agent: skeleton loading sweep from shared loader.css; looping is the loading signal and it stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "audit.html"
+        ],
+        "createdAt": "2026-11-07T21:45:38.418Z",
+        "reason": "Agent: skeleton loading sweep from shared loader.css; looping is the loading signal and it stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "members.html"
+        ],
+        "createdAt": "2026-11-07T21:45:39.976Z",
+        "reason": "Agent: skeleton loading sweep from shared loader.css; looping is the loading signal and it stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "usage.html"
+        ],
+        "createdAt": "2026-11-07T21:45:41.479Z",
+        "reason": "Agent: skeleton loading sweep from shared loader.css; looping is the loading signal and it stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "settings.html"
+        ],
+        "createdAt": "2026-11-07T21:45:42.907Z",
+        "reason": "Agent: skeleton loading sweep from shared loader.css; looping is the loading signal and it stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "login.html"
+        ],
+        "createdAt": "2026-11-07T21:45:44.287Z",
+        "reason": "Agent: skeleton loading sweep from shared loader.css; looping is the loading signal and it stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "signup.html"
+        ],
+        "createdAt": "2026-11-07T21:45:45.711Z",
+        "reason": "Agent: skeleton loading sweep from shared loader.css; looping is the loading signal and it stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "forgot-password.html"
+        ],
+        "createdAt": "2026-11-07T21:45:47.133Z",
+        "reason": "Agent: skeleton loading sweep from shared loader.css; looping is the loading signal and it stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "onboarding.html"
+        ],
+        "createdAt": "2026-11-07T21:54:37.718Z",
+        "reason": "Agent: skeleton loading sweep from shared loader.css; stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "onboarding.html"
+        ],
+        "createdAt": "2026-11-07T21:54:38.282Z",
+        "reason": "Agent: hatched flag-source style from shared components.css; a non-colour state cue documented in DESIGN.md"
+      },
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "reset-password.html"
+        ],
+        "createdAt": "2026-11-07T21:54:39.662Z",
+        "reason": "Agent: skeleton loading sweep from shared loader.css; stops under prefers-reduced-motion"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "reset-password.html"
+        ],
+        "createdAt": "2026-11-07T21:54:40.192Z",
+        "reason": "Agent: hatched flag-source style from shared components.css; a non-colour state cue documented in DESIGN.md"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#dea584",
+        "files": [
+          "new-run.html"
+        ],
+        "createdAt": "2026-11-07T22:05:14.686Z",
+        "reason": "Agent: GitHub linguist colour for Rust on a repository language dot; domain convention, like the other language dots"
+      }
+    ]
+  }
+}

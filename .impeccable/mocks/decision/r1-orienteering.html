@@ -1,0 +1,57 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=Martian+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;font:14px/20px "Public Sans",sans-serif;color:#111;background:#F7F7F2;display:grid;grid-template-columns:216px 1fr}
+.rail{background:#2B1A2B;color:#EADFEA;padding:20px 14px;display:flex;flex-direction:column;gap:4px}
+.rail b{font:700 18px "Barlow Semi Condensed";margin-bottom:22px;letter-spacing:.02em}
+.nav{padding:8px 10px;border-radius:6px;color:#C6B5C6}.nav.on{background:#A626A4;color:#fff}
+main{display:grid;grid-template-rows:auto 470px 1fr;min-width:0}
+.head{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;background:#fff;border-bottom:1px solid #DDD8CC}
+h1{font:700 24px "Barlow Semi Condensed"}.sub{color:#5A5A52;font-size:13px}
+.btn{padding:8px 14px;border-radius:6px;font:600 13px "Public Sans";border:1px solid #111;background:#fff}.btn.p{background:#A626A4;color:#fff;border-color:#A626A4}
+.map{position:relative;background:#fff;overflow:hidden;border-bottom:1px solid #DDD8CC}
+.map svg{position:absolute;inset:0}
+.key{position:absolute;right:20px;top:16px;background:#fff;border:1px solid #DDD8CC;border-radius:8px;padding:10px 12px;font-size:12px;display:grid;gap:4px}
+.key span{display:flex;gap:8px;align-items:center}.key i{width:18px;height:3px;background:#A626A4}
+.low{display:grid;grid-template-columns:1fr 1fr;gap:0}
+table{width:100%;border-collapse:collapse;font-size:13px;background:#fff}
+th{font:600 12px "Barlow Semi Condensed";letter-spacing:.06em;text-transform:uppercase;color:#5A5A52;text-align:left;padding:8px 14px;border-bottom:1px solid #DDD8CC}
+td{padding:8px 14px;border-bottom:1px solid #EEEAE0}
+.cn{font:700 15px "Barlow Semi Condensed";color:#A626A4}
+.mono{font:12px "Martian Mono"}
+.x{text-decoration:line-through;color:#8A8A80;text-decoration-color:#D93A3A}
+pre{font:12px/20px "Martian Mono";padding:12px 16px;background:#24211F;color:#E9E4D8;height:100%}
+.y{color:#F5D94A}.g{color:#9FD07A}.r{color:#FF8A80}.d{color:#8F8A80}
+</style></head><body>
+<aside class="rail"><b>Resolver</b><div class="nav">Overview</div><div class="nav on">Runs</div><div class="nav">New run</div><div class="nav">Findings</div><div class="nav">Audit log</div><div class="nav">Members</div></aside>
+<main><div class="head"><div><h1>RUN-0142 · Refund webhook double-charges on retry</h1><div class="sub">payments-api #482 · Sonnet · 06:42 · 37 steps · 36 controls</div></div><div style="display:flex;gap:8px"><span class="btn">Cancel run</span><span class="btn p">Review FLAG-3</span></div></div>
+<section class="map"><svg viewBox="0 0 1224 470" width="1224" height="470">
+<g fill="none" stroke="#C08A4A" stroke-width="1" opacity=".55">
+<path d="M-20 80 C200 40 380 120 600 70 S1000 30 1250 90"/><path d="M-20 140 C220 100 400 180 620 130 S1000 100 1250 150"/><path d="M-20 210 C240 170 420 250 640 200 S1020 170 1250 220"/><path d="M-20 290 C260 250 440 330 660 280 S1040 250 1250 300"/><path d="M-20 370 C280 330 460 410 680 360 S1060 330 1250 380"/><path d="M-20 440 C300 400 480 480 700 430 S1080 400 1250 450"/></g>
+<path d="M520 160 C560 120 640 130 660 180 C680 230 600 260 560 240 C520 220 500 190 520 160Z" fill="#B9D17A" opacity=".55"/>
+<path d="M880 300 C930 270 1010 290 1000 340 C990 380 920 390 890 360Z" fill="#F5D94A" opacity=".55"/>
+<path d="M260 330 C300 310 350 330 340 370 C330 400 270 400 260 370Z" fill="#9CC3E6" opacity=".7"/>
+<g stroke="#A626A4" stroke-width="3" fill="none">
+<path d="M80 380 L210 290 L330 220 L470 260"/><path d="M470 260 L560 330" stroke-dasharray="8 6" opacity=".55"/><path d="M560 330 L470 260" stroke-dasharray="2 6" stroke="#D93A3A"/>
+<path d="M470 260 L620 150 L720 210" /><path d="M720 210 L800 120" stroke-dasharray="8 6" opacity=".55"/><path d="M800 120 L720 210" stroke-dasharray="2 6" stroke="#D93A3A"/><path d="M720 210 L880 240 L1010 170 L1120 230"/></g>
+<g fill="#fff" stroke="#A626A4" stroke-width="3"><circle cx="80" cy="380" r="14"/><circle cx="210" cy="290" r="14"/><circle cx="330" cy="220" r="14"/><circle cx="470" cy="260" r="14"/><circle cx="620" cy="150" r="14"/><circle cx="720" cy="210" r="14"/><circle cx="880" cy="240" r="14"/><circle cx="1010" cy="170" r="14"/></g>
+<g fill="#fff" stroke="#D93A3A" stroke-width="2" stroke-dasharray="3 3"><circle cx="560" cy="330" r="11"/><circle cx="800" cy="120" r="11"/></g>
+<polygon points="1120,208 1142,246 1098,246" fill="#F5D94A" stroke="#111" stroke-width="2"/>
+<g font-family="Barlow Semi Condensed" font-weight="700" font-size="17" fill="#A626A4"><text x="62" y="355">CP-1</text><text x="194" y="265">CP-4</text><text x="312" y="196">CP-8</text><text x="450" y="292">CP-10</text><text x="604" y="128">CP-12</text><text x="704" y="242">CP-14</text><text x="862" y="272">CP-26</text><text x="994" y="148">CP-36</text></g>
+<g font-family="Public Sans" font-size="12" fill="#D93A3A"><text x="574" y="350">11 struck → back to CP-10</text><text x="814" y="112">13 root cause → back to CP-12</text></g>
+<text x="1080" y="276" font-family="Public Sans" font-size="13" font-weight="600">37 · held at FLAG-3</text>
+</svg>
+<div class="key"><span><i></i>Agent's course</span><span><i style="background:repeating-linear-gradient(90deg,#D93A3A 0 3px,transparent 3px 7px)"></i>Rolled back leg</span><span><i style="background:#F5D94A;height:10px;width:10px"></i>Review gate</span></div></section>
+<section class="low"><table><tr><th>Control</th><th>Step</th><th>Command</th><th>Result</th></tr>
+<tr><td class="cn">CP-10</td><td>10</td><td class="mono">sed -i 's/retry=3/retry=0/'</td><td>passed</td></tr>
+<tr><td class="cn">—</td><td>11</td><td class="mono x">pip install requests==2.19.0</td><td style="color:#D93A3A">rolled back</td></tr>
+<tr><td class="cn">CP-12</td><td>12</td><td class="mono">git diff app/refunds.py</td><td>passed</td></tr>
+<tr><td class="cn">—</td><td>13</td><td class="mono x">rm -rf migrations/0042_*</td><td style="color:#D93A3A">root cause</td></tr>
+<tr><td class="cn">CP-36</td><td>37</td><td class="mono">gh pr create --draft</td><td style="color:#8A6A00;font-weight:600">held</td></tr></table>
+<pre><span class="d">$ provenance_scan --base main</span>
+app/refunds.py      <span class="g">+42</span> <span class="r">−11</span>
+<span class="g">✓ no new dependencies</span>
+<span class="y">▲ FLAG-3 new URL https://hooks.pay-relay.io/v2/ack</span>
+<span class="d">  first seen step 4 · logs/stripe-replay.log</span>
+gate: awaiting_review</pre></section></main></body></html>

@@ -1,0 +1,59 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Red+Hat+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;background:#0D0F12;color:#E8EAED;font:14px/20px Archivo,sans-serif;display:grid;grid-template-columns:184px 1fr 540px}
+.rail{background:#090A0C;padding:20px 14px;display:flex;flex-direction:column;gap:4px;border-right:1px solid #1C2128}
+.brand{font:800 15px Archivo;font-stretch:125%;letter-spacing:.02em;margin-bottom:24px}
+.nav{padding:8px 10px;border-radius:6px;color:#9AA3AF}.nav.on{background:#1C2128;color:#fff}
+.board{padding:24px 24px 0}
+h1{font:800 34px/40px Archivo;font-stretch:62%;letter-spacing:.02em;text-transform:uppercase}
+.sub{color:#9AA3AF;margin:4px 0 18px}
+.row,.hd{display:grid;grid-template-columns:56px 1fr 70px 40px 120px;align-items:center;gap:10px;padding:0 14px}
+.hd{font:600 11px Archivo;letter-spacing:.12em;text-transform:uppercase;color:#6B7480;height:30px}
+.row{height:52px;border-top:1px solid #1C2128;font:600 17px Archivo;font-stretch:68%;white-space:nowrap;letter-spacing:.02em;text-transform:uppercase}
+.row .m{font:500 14px "Red Hat Mono";color:#9AA3AF;text-transform:none}
+.lit{background:#2A1408;box-shadow:inset 3px 0 0 #FF5A1F}.lit .s{color:#FF5A1F}
+.sel{background:#1C2128}
+.g{color:#7BD88F}.d{color:#9AA3AF}.r{color:#FF6B6B}
+.passwrap{padding:24px;background:#13161B;border-left:1px solid #1C2128;display:flex;flex-direction:column;gap:16px}
+.pass{background:#fff;color:#111;border-radius:14px;display:grid;grid-template-columns:1fr 150px;overflow:hidden;box-shadow:0 20px 40px -12px rgba(0,0,0,.6)}
+.main{padding:20px 22px;border-right:2px dashed #C9CDD3}
+.al{display:flex;justify-content:space-between;font:700 12px Archivo;letter-spacing:.14em;text-transform:uppercase;color:#6B7280}
+.route{display:grid;grid-template-columns:1fr 40px 1fr;align-items:end;margin:14px 0 16px}
+.route b{display:block;font:800 30px/32px Archivo;font-stretch:62%;text-transform:uppercase}
+.route small{font:600 11px Archivo;letter-spacing:.12em;color:#6B7280;text-transform:uppercase}
+.route .arr{font-size:22px;color:#FF5A1F;text-align:center;padding-bottom:4px}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #E5E7EB;padding-top:12px;gap:8px}
+.seg small{display:block;font:600 10.5px Archivo;letter-spacing:.12em;color:#6B7280;text-transform:uppercase}
+.seg b{font:700 17px Archivo;font-stretch:75%}
+.stub{padding:20px 16px;display:flex;flex-direction:column;justify-content:space-between}
+.stub b{font:800 26px Archivo;font-stretch:62%}
+.code{display:grid;grid-template-columns:repeat(12,1fr);gap:2px}.code i{height:9px;background:#111}.code i:nth-child(3n){background:#fff}.code i:nth-child(5n){background:#111;opacity:.4}
+.hash{font:500 11px "Red Hat Mono";color:#6B7280;word-break:break-all}
+.hold{background:#FF5A1F;color:#140600;border-radius:12px;padding:16px 18px}
+.hold b{display:block;font:800 22px Archivo;font-stretch:62%;text-transform:uppercase;letter-spacing:.03em}
+.hold p{font-size:13px;margin-top:4px}
+.btns{display:flex;gap:8px;margin-top:12px}.btn{padding:9px 14px;border-radius:8px;font:700 13px Archivo;background:#140600;color:#fff}.btn.o{background:transparent;border:1.5px solid #140600;color:#140600}
+.legs{font:13px/22px "Red Hat Mono";color:#C2C7CE;background:#0D0F12;border:1px solid #1C2128;border-radius:10px;padding:12px 14px}
+.legs s{color:#FF6B6B}
+</style></head><body>
+<aside class="rail"><div class="brand">RESOLVER</div><div class="nav">Overview</div><div class="nav on">Runs board</div><div class="nav">New run</div><div class="nav">Findings</div><div class="nav">Audit log</div><div class="nav">Members</div></aside>
+<section class="board"><h1>Runs · acme-labs</h1><div class="sub">3 live · 1 held at the gate · reranks as runs change</div>
+<div class="hd"><span>Run</span><span>Repository · issue</span><span>Model</span><span>Step</span><span>Status</span></div>
+<div class="row lit sel"><span>0142</span><span>payments-api <span class="m">#482</span></span><span class="m">sonnet</span><span>37</span><span class="s">Gate hold</span></div>
+<div class="row"><span>0141</span><span>web-dashboard <span class="m">#219</span></span><span class="m">gpt-4o</span><span>58</span><span>Running</span></div>
+<div class="row"><span>0143</span><span>auth-service <span class="m">#77</span></span><span class="m">sonnet</span><span>22</span><span>Recovering</span></div>
+<div class="row"><span>0144</span><span>docs-site <span class="m">#301</span></span><span class="m">sonnet</span><span>—</span><span class="d">Queued</span></div>
+<div class="row"><span>0139</span><span>payments-api <span class="m">#475</span></span><span class="m">sonnet</span><span>91</span><span class="g">PR opened</span></div>
+<div class="row"><span>0138</span><span>infra-terraform <span class="m">#12</span></span><span class="m">gpt-4o</span><span>14</span><span class="r">Rejected</span></div>
+<div class="row"><span>0137</span><span>mobile-app <span class="m">#88</span></span><span class="m">sonnet</span><span>40</span><span class="g">PR opened</span></div>
+</section>
+<section class="passwrap">
+<div class="pass"><div class="main"><div class="al"><span>Run pass</span><span>SEQ RUN-0142</span></div>
+<div class="route"><div><small>From issue</small><b>payments-api #482</b></div><div class="arr">→</div><div><small>To</small><b>Pull request</b></div></div>
+<div class="seg"><div><small>Model</small><b>Sonnet</b></div><div><small>Step</small><b>37</b></div><div><small>Checkpoints</small><b>36</b></div><div><small>Elapsed</small><b>06:42</b></div></div></div>
+<div class="stub"><div><div class="al"><span>Gate</span></div><b>HOLD</b></div><div class="code"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="hash">sha256 9f2c41e0 b7a34be0</div></div></div>
+<div class="hold"><b>Held at the gate · FLAG-3</b><p>New URL https://hooks.pay-relay.io/v2/ack appeared in app/refunds.py. It came from step 4, when the agent read logs/stripe-replay.log.</p><div class="btns"><span class="btn">Review change</span><span class="btn o">Cancel run</span></div></div>
+<div class="legs">09 pytest tests/webhooks -x        passed<br><s>11 pip install requests==2.19.0</s>  ↶ CP-10<br><s>13 rm -rf migrations/0042_*</s>      ↶ CP-12<br>37 gh pr create --draft          held</div>
+</section></body></html>

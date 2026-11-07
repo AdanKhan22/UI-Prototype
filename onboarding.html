@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set up · Resolver</title>
+<script>try{var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("resolver-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="theme/tokens.css">
+<link rel="stylesheet" href="theme/components.css">
+<link rel="stylesheet" href="theme/loader.css">
+<link rel="stylesheet" href="theme/auth.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+  .solo .auth-body .card { max-width: 520px; }
+  .stepper { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); margin-bottom: var(--space-2); }
+  .stepper div { display: grid; gap: 6px; font-size: var(--text-xs); color: var(--text-3); }
+  .stepper i { display: block; height: 4px; border-radius: var(--radius-xs); background: var(--border); transition: background var(--dur-slow) var(--ease); }
+  .stepper .done i { background: var(--success); } .stepper .on i { background: var(--accent-text); }
+  .stepper .on { color: var(--text); font-weight: 500; } .stepper .done { color: var(--text-2); }
+  .scopes { display: grid; gap: var(--space-2); margin: 0; padding: var(--space-4); list-style: none; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-2); font-size: var(--text-sm); color: var(--text-2); }
+  .scopes li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: var(--space-3); align-items: start; }
+  .scopes li svg.lucide { margin-top: 2px; color: var(--success); }
+  .scopes li.no svg.lucide { color: var(--text-3); }
+  .scopes b { color: var(--text); font-weight: 500; }
+  .conn { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid var(--success-border); background: var(--success-subtle); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text); }
+  .conn svg.lucide { color: var(--success); }
+  .conn span { color: var(--text-2); }
+  .url { display: flex; align-items: center; height: 36px; padding: 0 var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-2); font: var(--text-sm) var(--font-mono); color: var(--text-3); }
+  .url b { color: var(--text); font-weight: 500; }
+  .owner { display: flex; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid var(--accent-border); background: var(--accent-subtle); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text); }
+  .owner svg.lucide { color: var(--accent-text); margin-top: 2px; }
+  .ready-list { display: grid; gap: var(--space-2); }
+  .ready-list a { display: grid; grid-template-columns: 36px minmax(0, 1fr) 16px; gap: var(--space-3); align-items: center; padding: var(--space-3) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text); transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+  .ready-list a:hover { background: var(--surface-3); border-color: var(--border-strong); text-decoration: none; }
+  .ready-list a.primary { border-color: var(--accent-border); background: var(--accent-subtle); }
+  .ready-list .ic { width: 36px; height: 36px; border-radius: var(--radius-sm); display: grid; place-items: center; background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2); }
+  .ready-list a.primary .ic { color: var(--accent-text); border-color: var(--accent-border); background: var(--surface); }
+  .ready-list b { display: block; font-size: var(--text-sm); font-weight: 500; }
+  .ready-list span.s { display: block; font-size: var(--text-xs); color: var(--text-3); margin-top: 1px; }
+  .ready-list a > svg.lucide { color: var(--text-3); }
+  .facts { display: flex; gap: var(--space-5); font-size: var(--text-sm); color: var(--text-2); }
+  .facts b { color: var(--text); }
+  .link-btn { all: unset; color: var(--accent-text); cursor: pointer; }
+  .link-btn:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .link-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
+  .gh-later { display: flex; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid var(--border); background: var(--surface-2); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text-2); }
+  .gh-later svg.lucide { color: var(--text-3); margin-top: 2px; }
+  .gh-later b { color: var(--text); font-weight: 500; }
+</style>
+</head>
+<body>
+<script src="theme/loader.js"></script>
+<div class="solo">
+  <div class="auth-top">
+    <a class="brand" href="login.html"><span class="mark"><i data-lucide="git-pull-request-arrow"></i></span>Resolver</a>
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme"></button>
+  </div>
+
+  <main class="auth-body">
+    <div class="card">
+      <div class="auth-form">
+        <div class="stepper" aria-label="Setup progress">
+          <div id="st1"><i></i>Connect GitHub</div><div id="st2"><i></i>Create organization</div><div id="st3"><i></i>Ready</div>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="auth-form" id="s1">
+          <div><h1>Link your GitHub account</h1><p class="sub">Resolver needs your repositories and issues to work on. Here is exactly what it can do.</p></div>
+          <ul class="scopes">
+            <li><i data-lucide="check"></i><span><b>Read</b> your repositories and their open issues</span></li>
+            <li><i data-lucide="check"></i><span><b>Open pull requests</b>, only after a person approves anything risky</span></li>
+            <li class="no"><i data-lucide="x"></i><span>Never push to your default branch or change settings</span></li>
+          </ul>
+          <div class="conn" id="connected" hidden><i data-lucide="circle-check"></i><div>Connected as <b>@adan-javed</b> <span>· 9 repositories found</span></div></div>
+          <span class="cpl" id="waiting" hidden><span class="sq"><i></i><i></i><i></i><i></i><i></i></span>Waiting for GitHub to confirm…</span>
+          <button class="btn btn-secondary btn-lg btn-block" id="ghBtn" type="button"><i data-lucide="github"></i>Authorize on GitHub</button>
+          <button class="btn btn-primary btn-lg btn-block" id="next1" type="button" hidden>Continue</button>
+          <p class="fine" id="skipRow">Only working on public repositories? <button class="link-btn" id="skip" type="button">Skip for now</button><br>We'll ask when a pull request is ready to open.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <form class="auth-form" id="s2" hidden novalidate>
+          <div><h1>Create your organization</h1><p class="sub">Your team's runs, findings and audit log live here, kept apart from every other organization.</p></div>
+          <div class="field">
+            <label for="orgName">Organization name</label>
+            <input class="input" id="orgName" value="acme-labs" autocomplete="organization">
+            <div class="url">resolver.app/<b id="slug">acme-labs</b></div>
+            <span class="hint e" id="orgErr" hidden><i data-lucide="circle-alert"></i>Use 3 to 32 letters, numbers or dashes</span>
+          </div>
+          <div class="owner"><i data-lucide="crown"></i><div>You'll be the <b>Owner</b>. Next you can invite teammates by GitHub username as Members or Admins.</div></div>
+          <button class="btn btn-primary btn-lg btn-block" id="createBtn" type="submit">Create organization</button>
+          <p class="fine">Joining a team instead? Ask its Owner or an Admin to invite <b style="color:var(--text-2)">@adan-javed</b>.</p>
+        </form>
+
+        <!-- Step 3 -->
+        <div class="auth-form" id="s3" hidden>
+          <div><h1><span id="orgDone">acme-labs</span> is ready</h1><p class="sub">Every run will happen in a sealed sandbox, and anything risky will wait for a person.</p></div>
+          <div class="facts"><span id="repoFact"><b>9</b> repositories</span><span><b>1</b> member, you</span><span><b>Owner</b> role</span></div>
+          <div class="gh-later" id="ghLater" hidden><i data-lucide="github"></i><div><b>GitHub not connected yet.</b> You can run on any public repository now. Connect when a pull request is ready, or from Settings.</div></div>
+          <div class="ready-list">
+            <a class="primary" href="new-run.html"><span class="ic"><i data-lucide="play"></i></span><span><b>Start your first run</b><span class="s">Pick a repository, an open issue and a model</span></span><i data-lucide="arrow-right"></i></a>
+            <a href="members.html"><span class="ic"><i data-lucide="user-plus"></i></span><span><b>Invite teammates</b><span class="s">By GitHub username, as Members or Admins</span></span><i data-lucide="arrow-right"></i></a>
+            <a href="runs.html?state=empty"><span class="ic"><i data-lucide="layout-list"></i></span><span><b>Go to your runs</b><span class="s">Nothing here yet</span></span><i data-lucide="arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="auth-foot"><span>Autonomous GitHub Resolver</span><span>Signed in as adan@acme-labs.dev</span></div>
+</div>
+<script src="theme/app.js"></script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  function go(n) {
+    [1, 2, 3].forEach((i) => {
+      $("s" + i).hidden = i !== n;
+      $("st" + i).className = i < n ? "done" : i === n ? "on" : "";
+    });
+    const f = $("s" + n).querySelector("input, button:not([hidden]), a");
+    if (f && n > 1) f.focus();
+  }
+  $("ghBtn").addEventListener("click", () => {
+    $("ghBtn").hidden = true; $("waiting").hidden = false;
+    setTimeout(() => { $("waiting").hidden = true; $("connected").hidden = false; $("next1").hidden = false; $("skipRow").hidden = true; $("next1").focus(); }, 1600);
+  });
+  $("next1").addEventListener("click", () => go(2));
+  // Public repositories can be cloned without GitHub; the connection waits until a pull request opens.
+  const setGh = (v) => { try { sessionStorage.setItem("resolver-gh", v); } catch (e) {} };
+  $("skip").addEventListener("click", () => {
+    setGh("none");
+    $("ghLater").hidden = false;
+    $("repoFact").innerHTML = "<b>Public</b> repositories";
+    go(2);
+  });
+  $("ghBtn").addEventListener("click", () => setGh("connected"));
+  const slugOf = (v) => v.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
+  $("orgName").addEventListener("input", (e) => { $("slug").textContent = slugOf(e.target.value) || "…"; $("orgErr").hidden = true; e.target.classList.remove("err"); });
+  $("s2").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const s = slugOf($("orgName").value);
+    if (s.length < 3 || s.length > 32) { $("orgErr").hidden = false; $("orgName").classList.add("err"); $("orgName").focus(); return; }
+    $("createBtn").disabled = true;
+    $("createBtn").innerHTML = '<i data-lucide="loader-circle" class="spin"></i>Creating ' + s;
+    lucide.createIcons();
+    setTimeout(() => { $("orgDone").textContent = s; go(3); }, 900);
+  });
+  const step = +new URLSearchParams(location.search).get("step") || 1;
+  if (step >= 2) { $("ghBtn").hidden = true; $("connected").hidden = false; $("skipRow").hidden = true; }
+  if (new URLSearchParams(location.search).get("gh") === "none") { $("connected").hidden = true; $("ghLater").hidden = false; $("repoFact").innerHTML = "<b>Public</b> repositories"; }
+  go(step);
+})();
+</script>
+</body>
+</html>

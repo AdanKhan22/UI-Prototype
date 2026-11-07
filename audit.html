@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audit log · Resolver</title>
+<script>try{var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("resolver-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="theme/tokens.css">
+<link rel="stylesheet" href="theme/components.css">
+<link rel="stylesheet" href="theme/loader.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+  .head-actions { display: flex; gap: var(--space-2); }
+  .menu-wrap { position: relative; }
+  .menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; display: grid; min-width: 200px; padding: var(--space-1); background: var(--overlay); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+  .menu button { all: unset; display: flex; align-items: center; gap: var(--space-2); height: 34px; padding: 0 var(--space-3); border-radius: var(--radius-sm); font-size: var(--text-sm); cursor: pointer; }
+  .menu button:hover, .menu button:focus-visible { background: var(--surface-3); }
+  .menu button svg.lucide { color: var(--text-3); }
+
+  /* Chain status */
+  .summary { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr); margin-bottom: var(--space-6); }
+  .summary > div { padding: var(--space-5); border-left: 1px solid var(--border); min-width: 0; }
+  .summary > div:first-child { border-left: 0; }
+  .summary small { display: block; font-size: var(--text-xs); color: var(--text-3); }
+  .chain { display: flex; gap: var(--space-4); align-items: flex-start; }
+  .chain .ic { width: 40px; height: 40px; flex: none; border-radius: 50%; display: grid; place-items: center; border: 1px solid; }
+  .chain.ok .ic { color: var(--success); background: var(--success-subtle); border-color: var(--success-border); }
+  .chain.bad .ic { color: var(--danger); background: var(--danger-subtle); border-color: var(--danger-border); }
+  .chain.warn .ic { color: var(--warning); background: var(--warning-subtle); border-color: var(--warning-border); }
+  .chain.run .ic { color: var(--accent-text); background: var(--accent-subtle); border-color: var(--accent-border); }
+  .chain.run .ic svg.lucide { animation: spin 1.2s linear infinite; }
+  .chain h2 { margin: 0; font-size: var(--text-lg); line-height: var(--lh-lg); font-weight: 600; }
+  .chain p { margin: 2px 0 0; font-size: var(--text-sm); color: var(--text-2); }
+  .chain .acts { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-3); }
+  .big { display: block; margin-top: 4px; font-size: var(--text-xl); line-height: var(--lh-xl); font-weight: 600; letter-spacing: var(--tracking-snug); }
+  .headhash { display: block; margin-top: 6px; font: var(--text-sm) / 1.4 var(--font-mono); color: var(--text); word-break: break-all; }
+  .note { display: block; margin-top: 6px; font-size: var(--text-sm); color: var(--text-2); line-height: 1.4rem; }
+
+  .toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-4); }
+  .filter { display: flex; align-items: center; gap: var(--space-2); height: 32px; width: 280px; padding: 0 var(--space-3); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text-3); font-size: var(--text-sm); }
+  .filter input { all: unset; flex: 1; color: var(--text); }
+  .filter input::placeholder { color: var(--text-3); }
+  .filter:focus-within { border-color: var(--accent-text); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 35%, transparent); }
+
+  /* Log table */
+  .log { overflow-x: auto; }
+  .log table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+  .log th { text-align: left; font-weight: 500; color: var(--text-3); height: 40px; padding: 0 var(--space-4); background: var(--surface-2); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .log th:first-child, .log td:first-child { padding-left: var(--space-5); }
+  .log td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--divider); vertical-align: middle; }
+  .log tr.entry { cursor: pointer; transition: background var(--dur-fast) var(--ease); }
+  .log tr.entry:hover { background: var(--surface-3); }
+  .log tr.entry.open { background: var(--surface-2); }
+  .log .time { font: var(--text-xs) var(--font-mono); color: var(--text-3); white-space: nowrap; }
+  .ev { display: flex; align-items: center; gap: var(--space-3); min-width: 340px; }
+  .ev .k { width: 28px; height: 28px; flex: none; border-radius: var(--radius-sm); display: grid; place-items: center; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2); }
+  .ev .k svg.lucide { width: 14px; height: 14px; }
+  .ev.decision .k { color: var(--accent-text); background: var(--accent-subtle); border-color: var(--accent-border); }
+  .ev.security .k { color: var(--danger); background: var(--danger-subtle); border-color: var(--danger-border); }
+  .ev.rollback .k { color: var(--warning); background: var(--warning-subtle); border-color: var(--warning-border); }
+  .ev.pr .k { color: var(--success); background: var(--success-subtle); border-color: var(--success-border); }
+  .ev b { font-weight: 500; color: var(--text); }
+  .ev span.s { display: block; margin-top: 1px; font-size: var(--text-xs); color: var(--text-3); }
+  .who { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--text-2); white-space: nowrap; }
+  .who i { width: 22px; height: 22px; border-radius: var(--radius-full); display: grid; place-items: center; font: 600 11px var(--font-sans); font-style: normal; color: var(--text-2); background: var(--surface-2); border: 1px solid var(--border); }
+  .who i.agent { color: var(--accent-text); background: var(--accent-subtle); border-color: var(--accent-border); }
+  .who i svg.lucide { width: 12px; height: 12px; }
+  .hash { display: inline-flex; align-items: center; gap: var(--space-2); font: var(--text-xs) var(--font-mono); color: var(--text-2); white-space: nowrap; }
+  .hash .st { width: 16px; display: inline-grid; place-items: center; }
+  .hash .st svg.lucide { width: 14px; height: 14px; }
+  .hash.ok .st { color: var(--success); }
+  .hash.bad { color: var(--danger); } .hash.bad .st { color: var(--danger); }
+  .hash.unv { color: var(--text-3); } .hash.unv .st { color: var(--warning); }
+  tr.tampered td { background: var(--danger-subtle); }
+  tr.tampered .ev b { color: var(--danger); }
+  tr.after td { background: color-mix(in srgb, var(--warning-subtle) 60%, transparent); }
+
+  .detail td { padding: 0; background: var(--surface-2); }
+  .detail .in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-5); padding: var(--space-4) var(--space-5) var(--space-5); border-bottom: 1px solid var(--border); }
+  .detail pre { margin: 0; padding: var(--space-3) var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); font: var(--text-xs) / 1.6 var(--font-mono); color: var(--text-2); white-space: pre-wrap; word-break: break-all; }
+  .detail h3 { margin: 0 0 var(--space-2); font-size: var(--text-xs); font-weight: 500; color: var(--text-3); }
+  .detail .hrow { display: grid; gap: 2px; margin-bottom: var(--space-3); font: var(--text-xs) / 1.5 var(--font-mono); color: var(--text); word-break: break-all; }
+  .detail .hrow span { font-family: var(--font-sans); color: var(--text-3); }
+  .foot { display: flex; justify-content: space-between; padding: var(--space-3) var(--space-5); background: var(--surface-2); font-size: var(--text-sm); color: var(--text-3); border-radius: 0 0 var(--radius-md) var(--radius-md); }
+
+  .toasts { position: fixed; right: var(--space-6); bottom: var(--space-6); display: grid; gap: var(--space-3); z-index: 40; width: 380px; }
+  .toast { display: flex; gap: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--overlay); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--text-2); }
+  .toast b { display: block; color: var(--text); font-weight: 600; }
+  .toast svg.lucide { margin-top: 2px; color: var(--success); }
+
+  @media (max-width: 1100px) { .summary { grid-template-columns: 1fr; } .summary > div { border-left: 0; border-top: 1px solid var(--border); } .summary > div:first-child { border-top: 0; } .toolbar { flex-wrap: wrap; } }
+</style>
+</head>
+<body>
+<script src="theme/loader.js"></script>
+<header class="topbar">
+  <a class="mark" href="runs.html" aria-label="Resolver home"><i data-lucide="git-pull-request-arrow"></i></a>
+  <span class="slash">/</span>
+  <span class="org"><span class="av"></span>acme-labs <small>Owner</small><i data-lucide="chevrons-up-down"></i></span>
+  <nav class="tabs" aria-label="Main">
+    <a class="tab" href="runs.html">Runs</a>
+    <a class="tab" href="review.html">Findings</a>
+    <a class="tab" href="audit.html" aria-current="page">Audit log</a>
+    <a class="tab" href="members.html">Members</a>
+    <a class="tab" href="usage.html">Usage</a>
+    <a class="tab" href="settings.html">Settings</a>
+  </nav>
+  <span class="grow"></span>
+  <div class="search"><i data-lucide="search"></i>Search runs<kbd>⌘K</kbd></div>
+  <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme"></button>
+  <span class="me" aria-label="Adan Javed">AJ</span>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Audit log</h1>
+      <p>Every agent step, rollback, security flag and human decision in acme-labs. Entries can't be edited or deleted.</p>
+    </div>
+    <div class="head-actions">
+      <div class="menu-wrap">
+        <button class="btn btn-secondary" id="exportBtn" type="button" aria-haspopup="menu" aria-expanded="false"><i data-lucide="download"></i>Export<i data-lucide="chevron-down"></i></button>
+        <div class="menu" id="exportMenu" role="menu" hidden>
+          <button role="menuitem" type="button" data-export="json"><i data-lucide="file-json"></i>Export as JSON</button>
+          <button role="menuitem" type="button" data-export="csv"><i data-lucide="file-spreadsheet"></i>Export as CSV</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="card summary" aria-label="Chain status">
+    <div>
+      <div class="chain ok" id="chain">
+        <span class="ic" id="chainIc"><i data-lucide="shield-check"></i></span>
+        <div>
+          <h2 id="chainTitle">Chain intact</h2>
+          <p id="chainText">Every entry's SHA-256 matches its contents and the entry before it.</p>
+          <div class="acts">
+            <button class="btn btn-primary btn-sm" id="verifyBtn" type="button"><i data-lucide="refresh-cw"></i>Verify chain</button>
+            <button class="btn btn-ghost btn-sm" id="tamperBtn" type="button"><i data-lucide="pencil-off"></i>Simulate tampering</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div><small>Entries</small><b class="big" id="count">0</b><span class="note">Append-only, kept for the life of the organization</span></div>
+    <div><small>Latest hash</small><span class="headhash" id="headHash">…</span></div>
+  </section>
+
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Filter by type" id="types">
+      <button aria-pressed="true" data-type="all">All</button>
+      <button aria-pressed="false" data-type="decision">Decisions</button>
+      <button aria-pressed="false" data-type="security">Security</button>
+      <button aria-pressed="false" data-type="rollback">Rollbacks</button>
+      <button aria-pressed="false" data-type="run">Runs</button>
+      <button aria-pressed="false" data-type="admin">Members</button>
+    </div>
+    <label class="filter"><i data-lucide="list-filter"></i><input type="search" id="q" placeholder="Filter by run, person or text"></label>
+  </div>
+
+  <section class="card log" aria-label="Entries">
+    <table>
+      <thead><tr><th>Time</th><th>Event</th><th>Actor</th><th>Run</th><th>Hash</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="foot"><span id="shown"></span><span>Newest first · times in UTC</span></div>
+  </section>
+</main>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="theme/app.js"></script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  // Oldest first. type: run | rollback | security | decision | pr | admin. Example data.
+  const E = [
+    ["2026-11-06 16:02:11", "admin", "Owner promoted S. Mehta to Admin", "Role change", "AJ", "Adan J.", ""],
+    ["2026-11-07 09:41:03", "run", "Started RUN-0138 on web-dashboard #210", "GPT-4o · Upgrade lodash to patch prototype pollution", "RO", "R. Okafor", "RUN-0138"],
+    ["2026-11-07 09:46:30", "security", "Secret masked in output", "AWS_SECRET_ACCESS_KEY hidden in step 7 logs", "sys", "Resolver", "RUN-0138"],
+    ["2026-11-07 09:52:18", "security", "Gate held RUN-0138: new dependency lodash-utils-pro", "FLAG-2 · package.json gained a package with no history in the repo", "sys", "Resolver", "RUN-0138"],
+    ["2026-11-07 10:05:44", "decision", "Rejected FLAG-2 and stopped RUN-0138", "Note: “Unknown publisher, two weeks old. No.”", "RO", "R. Okafor", "RUN-0138"],
+    ["2026-11-07 10:31:09", "run", "Started RUN-0139 on payments-api #475", "Claude Sonnet · Flaky test in auth token refresh", "AJ", "Adan J.", "RUN-0139"],
+    ["2026-11-07 10:39:52", "rollback", "Step 11 failed, rolled back to CP-11", "Test timeout · memory trimmed by 2 messages", "agent", "Agent", "RUN-0139"],
+    ["2026-11-07 10:48:20", "pr", "Opened pull request #1287", "Gate passed: no new URLs, dependencies or CI changes", "sys", "Resolver", "RUN-0139"],
+    ["2026-11-07 13:58:02", "admin", "Invited m-tanaka as Member", "By GitHub username", "SM", "S. Mehta", ""],
+    ["2026-11-07 14:15:40", "run", "Started RUN-0141 on web-dashboard #219", "GPT-4o · Chart tooltip clips on narrow screens", "RO", "R. Okafor", "RUN-0141"],
+    ["2026-11-07 14:19:05", "run", "Started RUN-0142 on payments-api #482", "Claude Sonnet · Refund webhook double-charges on retry", "AJ", "Adan J.", "RUN-0142"],
+    ["2026-11-07 14:20:12", "security", "Untrusted input read at step 4", "logs/webhook-errors.log, attached to the issue by an outside reporter", "agent", "Agent", "RUN-0142"],
+    ["2026-11-07 14:23:51", "rollback", "Steps 13–17 failed, each rolled back", "Files restored to its checkpoint, failed turns trimmed", "agent", "Agent", "RUN-0142"],
+    ["2026-11-07 14:24:30", "rollback", "Failure attribution: root cause step 10", "Rolled back to CP-10 · steps 10–12 undone", "sys", "Resolver", "RUN-0142"],
+    ["2026-11-07 14:27:48", "security", "Gate held RUN-0142: new URL hooks.attacker.dev", "FLAG-3 · first seen at step 4 in an untrusted log file", "sys", "Resolver", "RUN-0142"],
+    ["2026-11-07 14:32:10", "decision", "Approved FLAG-3 on RUN-0142", "Approved after review of the flagged line", "AJ", "Adan J.", "RUN-0142"],
+    ["2026-11-07 14:32:12", "pr", "Opened pull request #1291", "resolver/run-0142 into main · +13 −1", "sys", "Resolver", "RUN-0142"],
+  ].map(([time, type, title, sub, ini, actor, run], i) => ({ id: i + 1, time, type, title, sub, ini, actor, run }));
+  const icon = { run: "play", rollback: "undo-2", security: "shield-alert", decision: "gavel", pr: "git-pull-request", admin: "users" };
+  const original = E.map((e) => ({ ...e }));
+  const stored = [];          // hashes written at the time of each entry
+  const state = [];           // "ok" | "bad" | "unv" | "" per entry after verification
+  const now = [];             // hashes recomputed during the last verification
+  let filter = "all", q = "", open = -1, tampered = false;
+
+  const body = (e) => JSON.stringify({ id: e.id, time: e.time, type: e.type, actor: e.actor, run: e.run, event: e.title, detail: e.sub });
+  async function sha(text) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+  const prevOf = (i) => (i === 0 ? "0".repeat(64) : stored[i - 1]);
+
+  function actor(e) {
+    if (e.ini === "agent") return `<span class="who"><i class="agent"><svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M12 8V4H8"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></i>Agent</span>`;
+    if (e.ini === "sys") return `<span class="who"><i>R</i>Resolver</span>`;
+    return `<span class="who"><i>${e.ini}</i>${esc(e.actor)}</span>`;
+  }
+  function render() {
+    const rows = [];
+    let shown = 0;
+    for (let i = E.length - 1; i >= 0; i--) {
+      const e = E[i];
+      const type = e.type === "pr" ? "run" : e.type;
+      if (filter !== "all" && type !== filter && !(filter === "decision" && e.type === "decision")) continue;
+      if (q && !(e.title + e.sub + e.actor + e.run).toLowerCase().includes(q)) continue;
+      shown++;
+      const s = state[i] || "";
+      const h = stored[i] || "";
+      const mark = s === "ok" ? '<i data-lucide="check"></i>' : s === "bad" ? '<i data-lucide="x"></i>' : s === "unv" ? '<i data-lucide="circle-help"></i>' : '<i data-lucide="link-2"></i>';
+      rows.push(`<tr class="entry${open === i ? " open" : ""}${s === "bad" ? " tampered" : ""}${s === "unv" ? " after" : ""}" data-i="${i}" aria-expanded="${open === i}">
+        <td class="time">${e.time.slice(5).replace(" ", " · ")}</td>
+        <td><div class="ev ${e.type}"><span class="k"><i data-lucide="${icon[e.type]}"></i></span><div><b>${esc(e.title)}</b><span class="s">${esc(e.sub)}</span></div></div></td>
+        <td>${actor(e)}</td>
+        <td>${e.run ? `<span class="id">${e.run}</span>` : '<span style="color:var(--text-3)">Org</span>'}</td>
+        <td><span class="hash ${s}"><span class="st">${mark}</span>${h ? h.slice(0, 8) + "…" + h.slice(-4) : "…"}</span></td></tr>`);
+      if (open === i) {
+        rows.push(`<tr class="detail"><td colspan="5"><div class="in">
+          <div><h3>Entry</h3><pre>${esc(JSON.stringify(JSON.parse(body(e)), null, 2))}</pre></div>
+          <div><h3>Hash chain</h3>
+            <div class="hrow"><span>Previous entry's hash</span>${prevOf(i)}</div>
+            <div class="hrow"><span>This entry's hash, stored when written</span>${h}</div>
+            ${s === "bad" ? `<div class="hrow" style="color:var(--danger)"><span>Hash of the entry as it reads now: does not match</span>${now[i]}</div>` : ""}
+            <div class="hrow"><span>Rule</span>sha256(previous hash + entry)</div>
+          </div></div></td></tr>`);
+      }
+    }
+    $("rows").innerHTML = rows.join("") || `<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--text-3)">No entries match.</td></tr>`;
+    $("shown").textContent = `${shown} of ${E.length} entries`;
+    $("count").textContent = E.length;
+    $("headHash").textContent = stored[E.length - 1] || "…";
+    lucide.createIcons();
+  }
+  function setChain(kind, title, text) {
+    $("chain").className = "chain " + kind;
+    $("chainIc").innerHTML = `<i data-lucide="${{ ok: "shield-check", bad: "shield-x", warn: "shield-question", run: "loader-circle" }[kind]}"></i>`;
+    $("chainTitle").textContent = title;
+    $("chainText").textContent = text;
+    lucide.createIcons();
+  }
+
+  // Verify: recompute every hash from the entry's current contents.
+  let verifying = false;
+  async function verify() {
+    if (verifying) return;
+    verifying = true;
+    $("verifyBtn").disabled = true;
+    state.length = 0;
+    setChain("run", "Verifying…", "Recomputing each entry's SHA-256 from its contents.");
+    let broken = -1;
+    for (let i = 0; i < E.length; i++) {
+      const h = await sha(prevOf(i) + body(E[i]));
+      now[i] = h;
+      if (broken >= 0) state[i] = "unv";
+      else if (h === stored[i]) state[i] = "ok";
+      else { state[i] = "bad"; broken = i; }
+      render();
+      await new Promise((r) => setTimeout(r, 70));
+    }
+    if (broken < 0) setChain("ok", "Chain intact", `All ${E.length} entries verified just now. Nothing has been changed.`);
+    else {
+      setChain("bad", "Chain broken at entry " + E[broken].id, `“${E[broken].title}” no longer matches its stored hash, so it was changed after it was written. ${E.length - broken - 1} later entries can't be trusted until it's investigated.`);
+      open = broken; render();
+    }
+    $("verifyBtn").disabled = false;
+    verifying = false;
+  }
+  $("verifyBtn").addEventListener("click", verify);
+
+  // Tampering: quietly rewrite an old decision without updating its hash.
+  $("tamperBtn").addEventListener("click", () => {
+    const i = E.findIndex((e) => e.id === 5);
+    if (!tampered) {
+      E[i].title = "Approved FLAG-2 on RUN-0138";
+      E[i].sub = "Note: “Fine, ship it.”";
+      tampered = true;
+      $("tamperBtn").innerHTML = '<i data-lucide="undo-2"></i>Restore original';
+      state.length = 0;
+      setChain("warn", "Not verified since a change", "Someone edited entry 5 in the database: a rejection now reads as an approval. Verify the chain to catch it.");
+    } else {
+      Object.assign(E[i], original[i]);
+      tampered = false;
+      $("tamperBtn").innerHTML = '<i data-lucide="pencil-off"></i>Simulate tampering';
+      state.length = 0; open = -1;
+      setChain("ok", "Chain intact", "Entry 5 restored. Every entry's SHA-256 matches its contents and the entry before it.");
+    }
+    render();
+  });
+
+  $("rows").addEventListener("click", (e) => {
+    const r = e.target.closest("tr.entry");
+    if (!r) return;
+    open = open === +r.dataset.i ? -1 : +r.dataset.i;
+    render();
+  });
+  document.querySelectorAll("#types button").forEach((b) => b.addEventListener("click", () => {
+    filter = b.dataset.type;
+    document.querySelectorAll("#types button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    render();
+  }));
+  $("q").addEventListener("input", (e) => { q = e.target.value.trim().toLowerCase(); render(); });
+
+  // Export
+  const menu = $("exportMenu"), eb = $("exportBtn");
+  eb.addEventListener("click", (e) => { e.stopPropagation(); menu.hidden = !menu.hidden; eb.setAttribute("aria-expanded", String(!menu.hidden)); });
+  document.addEventListener("click", (e) => { if (!e.target.closest(".menu-wrap")) { menu.hidden = true; eb.setAttribute("aria-expanded", "false"); } });
+  menu.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-export]"); if (!b) return;
+    menu.hidden = true;
+    const rows = E.map((x, i) => ({ id: x.id, time_utc: x.time, type: x.type, actor: x.actor, run: x.run, event: x.title, detail: x.sub, prev_sha256: prevOf(i), sha256: stored[i] }));
+    let text, type, name;
+    if (b.dataset.export === "json") { text = JSON.stringify({ organization: "acme-labs", chain: "sha256(prev_sha256 + entry)", entries: rows }, null, 2); type = "application/json"; name = "acme-labs-audit.json"; }
+    else { const k = Object.keys(rows[0]); text = [k.join(",")].concat(rows.map((r) => k.map((c) => `"${String(r[c]).replace(/"/g, '""')}"`).join(","))).join("\n"); type = "text/csv"; name = "acme-labs-audit.csv"; }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    const t = document.createElement("div");
+    t.className = "toast"; t.innerHTML = `<i data-lucide="download"></i><div><b>Export ready</b>${name} with every hash in the chain.</div>`;
+    $("toasts").appendChild(t); lucide.createIcons(); setTimeout(() => t.remove(), 3500);
+  });
+
+  // Hashes as written: each one covers the previous hash and the entry.
+  (async function () {
+    for (let i = 0; i < E.length; i++) stored[i] = await sha(prevOf(i) + body(E[i]));
+    render();
+    const st = new URLSearchParams(location.search).get("state");
+    if (st === "verified") verify();
+    if (st === "broken") { $("tamperBtn").click(); verify(); }
+    if (st === "open") { open = E.length - 2; render(); }
+  })();
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings · Resolver</title>
+<script>try{var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("resolver-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="theme/tokens.css">
+<link rel="stylesheet" href="theme/components.css">
+<link rel="stylesheet" href="theme/loader.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+  .layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: var(--space-10); align-items: start; }
+  .side { position: sticky; top: calc(var(--topbar) + var(--space-8)); display: grid; gap: 2px; }
+  .side a { display: flex; align-items: center; gap: var(--space-2); padding: 7px var(--space-3); border-radius: var(--radius-sm); font-size: var(--text-sm); color: var(--text-2); }
+  .side a:hover { background: var(--surface-3); color: var(--text); text-decoration: none; }
+  .side a.on { background: var(--surface-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--border); }
+  .side a.danger { color: var(--danger); }
+  .side svg.lucide { width: 15px; height: 15px; }
+  .sections { display: grid; gap: var(--space-8); max-width: 820px; }
+  section { scroll-margin-top: calc(var(--topbar) + var(--space-6)); }
+  .sec-h { margin-bottom: var(--space-4); }
+  .sec-h h2 { margin: 0; font-size: var(--text-xl); line-height: var(--lh-xl); font-weight: 600; letter-spacing: var(--tracking-snug); }
+  .sec-h p { margin: var(--space-1) 0 0; font-size: var(--text-sm); color: var(--text-2); }
+  .body { padding: var(--space-6); display: grid; gap: var(--space-5); }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); }
+  .foot { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding: var(--space-4) var(--space-6); border-top: 1px solid var(--border); background: var(--surface-2); border-radius: 0 0 var(--radius-md) var(--radius-md); font-size: var(--text-sm); color: var(--text-3); }
+
+  .avatar-row { display: flex; align-items: center; gap: var(--space-5); }
+  .avatar { width: 64px; height: 64px; border-radius: var(--radius-full); display: grid; place-items: center; font: 600 var(--text-xl) var(--font-sans); color: var(--accent-text); background: var(--accent-subtle); border: 1px solid var(--accent-border); overflow: hidden; flex: none; }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar-row .acts { display: flex; gap: var(--space-2); }
+  .avatar-row p { margin: var(--space-2) 0 0; font-size: var(--text-xs); color: var(--text-3); }
+
+  .conn { display: flex; align-items: center; gap: var(--space-4); }
+  .conn .gh { width: 44px; height: 44px; border-radius: var(--radius-md); display: grid; place-items: center; background: var(--surface-2); border: 1px solid var(--border); flex: none; }
+  .conn .grow { flex: 1; min-width: 0; }
+  .conn b { font-weight: 500; }
+  .conn span.s { display: block; font-size: var(--text-sm); color: var(--text-3); margin-top: 2px; }
+  .scopes { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .scopes code { font-size: var(--text-xs); color: var(--text-2); background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 2px 6px; }
+
+  .rule { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-5); align-items: center; padding: var(--space-4) 0; border-bottom: 1px solid var(--divider); }
+
+  .rule:last-child { border-bottom: 0; }
+  .rule b { display: block; font-size: var(--text-sm); font-weight: 500; }
+  .rule span { display: block; margin-top: 2px; font-size: var(--text-sm); color: var(--text-3); }
+  .switch { all: unset; box-sizing: border-box; cursor: pointer; position: relative; width: 34px; height: 20px; border-radius: var(--radius-full); background: var(--accent); flex: none; transition: background var(--dur-fast) var(--ease); }
+  .switch::after { content: ""; position: absolute; top: 2px; left: 16px; width: 16px; height: 16px; border-radius: 50%; background: #ffffff; box-shadow: var(--shadow-sm); transition: left var(--dur-fast) var(--ease); }
+  .switch[aria-checked="false"] { background: var(--border-strong); }
+  .switch[aria-checked="false"]::after { left: 2px; }
+  .switch:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .switch[aria-disabled="true"] { opacity: .6; cursor: not-allowed; }
+  select.input { appearance: none; padding-right: 36px; background-image: linear-gradient(45deg, transparent 50%, var(--text-3) 50%), linear-gradient(135deg, var(--text-3) 50%, transparent 50%); background-position: calc(100% - 17px) 15px, calc(100% - 12px) 15px; background-size: 5px 5px; background-repeat: no-repeat; }
+
+  .danger-card { border-color: var(--danger-border); }
+  .danger-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-5); align-items: center; padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--divider); }
+  .danger-row:last-child { border-bottom: 0; }
+  .danger-row b { display: block; font-size: var(--text-sm); font-weight: 600; }
+  .danger-row span { display: block; margin-top: 2px; font-size: var(--text-sm); color: var(--text-2); }
+  .btn-danger-outline { background: transparent; color: var(--danger); border-color: var(--danger-border); }
+  .btn-danger-outline:hover { background: var(--danger-subtle); }
+
+  .banner { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-6); border: 1px solid var(--warning-border); background: var(--warning-subtle); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text); }
+  .banner svg.lucide { color: var(--warning); }
+  .banner .grow { flex: 1; }
+
+  dialog.dlg { width: min(500px, calc(100vw - 32px)); padding: 0; border: 0; border-radius: var(--radius-lg); background: var(--overlay); color: var(--text); box-shadow: var(--shadow-lg); }
+  dialog.dlg::backdrop { background: var(--scrim); }
+  .dlg .d-body { padding: var(--space-6) var(--space-6) var(--space-5); display: grid; gap: var(--space-4); }
+  .dlg h2 { margin: 0; font-size: var(--text-lg); line-height: var(--lh-lg); font-weight: 600; }
+  .dlg p { margin: 0; font-size: var(--text-sm); color: var(--text-2); line-height: 1.4rem; }
+  .dlg ul { margin: 0; padding: var(--space-3) var(--space-4) var(--space-3) var(--space-8); border: 1px solid var(--danger-border); background: var(--danger-subtle); border-radius: var(--radius-md); display: grid; gap: 4px; font-size: var(--text-sm); color: var(--text); }
+  .dlg .sandboxes { display: grid; gap: 6px; }
+  .dlg .sb { display: flex; align-items: center; gap: var(--space-3); font-size: var(--text-sm); color: var(--text-2); }
+  .dlg .sb code { font-size: var(--text-xs); color: var(--text); }
+  .dlg .sb .badge { margin-left: auto; }
+  .dlg .d-foot { display: flex; justify-content: flex-end; gap: var(--space-3); padding: var(--space-4) var(--space-6); border-top: 1px solid var(--border); background: var(--surface-2); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+  .toasts { position: fixed; right: var(--space-6); bottom: var(--space-6); display: grid; gap: var(--space-3); z-index: 40; width: 380px; }
+  .toast { display: flex; gap: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--overlay); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--text-2); }
+  .toast b { display: block; color: var(--text); font-weight: 600; }
+  .toast svg.lucide { margin-top: 2px; color: var(--success); }
+  .toast.bad svg.lucide { color: var(--danger); }
+
+  @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } .side { position: static; grid-auto-flow: column; overflow-x: auto; } .row2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<script src="theme/loader.js"></script>
+<header class="topbar">
+  <a class="mark" href="runs.html" aria-label="Resolver home"><i data-lucide="git-pull-request-arrow"></i></a>
+  <span class="slash">/</span>
+  <span class="org"><span class="av"></span>acme-labs <small>Owner</small><i data-lucide="chevrons-up-down"></i></span>
+  <nav class="tabs" aria-label="Main">
+    <a class="tab" href="runs.html">Runs</a>
+    <a class="tab" href="review.html">Findings</a>
+    <a class="tab" href="audit.html">Audit log</a>
+    <a class="tab" href="members.html">Members</a>
+    <a class="tab" href="usage.html">Usage</a>
+    <a class="tab" href="settings.html" aria-current="page">Settings</a>
+  </nav>
+  <span class="grow"></span>
+  <div class="search"><i data-lucide="search"></i>Search runs<kbd>⌘K</kbd></div>
+  <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme"></button>
+  <span class="me" id="meTop" aria-label="Adan Javed">AJ</span>
+</header>
+
+<main class="page">
+  <div class="page-head"><div><h1>Settings</h1><p>Your account, your GitHub connection, and how acme-labs runs the agent.</p></div></div>
+
+  <div class="banner" id="suspended" hidden><i data-lucide="pause-circle"></i><span class="grow"><b>acme-labs is suspended.</b> No one can start runs, and every sandbox was stopped.</span><button class="btn btn-secondary btn-sm" id="resumeBtn" type="button">Resume organization</button></div>
+
+  <div class="layout">
+    <nav class="side" aria-label="Settings sections">
+      <a href="#profile" class="on"><i data-lucide="user"></i>Profile</a>
+      <a href="#github"><i data-lucide="github"></i>GitHub</a>
+      <a href="#org"><i data-lucide="building-2"></i>Organization</a>
+      <a href="#gate"><i data-lucide="shield"></i>Provenance gate</a>
+      <a href="#danger" class="danger"><i data-lucide="triangle-alert"></i>Danger zone</a>
+    </nav>
+
+    <div class="sections">
+      <section id="profile" aria-labelledby="hProfile">
+        <div class="sec-h"><h2 id="hProfile">Profile</h2><p>How you appear to your team and in the audit log.</p></div>
+        <form class="card" id="profileForm" novalidate>
+          <div class="body">
+            <div class="avatar-row">
+              <span class="avatar" id="avatar">AJ</span>
+              <div>
+                <div class="acts"><label class="btn btn-secondary btn-sm" style="cursor:pointer"><i data-lucide="upload"></i>Upload picture<input type="file" id="pic" accept="image/*" hidden></label><button class="btn btn-ghost btn-sm" id="removePic" type="button">Remove</button></div>
+                <p>PNG or JPG, at least 128 by 128 pixels.</p>
+              </div>
+            </div>
+            <div class="row2">
+              <div class="field"><label for="pName">Full name</label><input class="input" id="pName" value="Adan Javed" autocomplete="name"></div>
+              <div class="field"><label for="pEmail">Email</label><input class="input" id="pEmail" type="email" value="adan@acme-labs.dev" autocomplete="email"><span class="hint e" id="emailErr" hidden><i data-lucide="circle-alert"></i>Enter an email like name@company.com</span></div>
+            </div>
+            <div class="field"><label>Password</label><div style="display:flex;gap:var(--space-3);align-items:center"><span style="font-size:var(--text-sm);color:var(--text-2)">Last changed 3 months ago</span><a class="btn btn-secondary btn-sm" href="forgot-password.html">Send a reset link</a></div></div>
+          </div>
+          <div class="foot"><span id="profState">Saved</span><button class="btn btn-primary" id="saveProfile" type="submit" disabled>Save changes</button></div>
+        </form>
+      </section>
+
+      <section id="github" aria-labelledby="hGithub">
+        <div class="sec-h"><h2 id="hGithub">GitHub</h2><p>Resolver needs this to list your repositories and issues and to open pull requests.</p></div>
+        <div class="card"><div class="body">
+          <div class="conn"><span class="gh"><i data-lucide="github"></i></span><div class="grow"><b>Connected as @adan-javed</b><span class="s">Since 12 Sep 2026 · 9 repositories available</span></div><span class="badge b-ok"><i data-lucide="check"></i>Connected</span></div>
+          <div class="field"><label>Access granted</label><div class="scopes"><code>repo: read</code><code>issues: read</code><code>pull_requests: write</code><code>metadata: read</code></div><span class="hint">Resolver never pushes to your default branch. Every change arrives as a pull request.</span></div>
+        </div>
+        <div class="foot"><span>Revoking access stops new runs until you reconnect.</span><button class="btn btn-secondary" id="ghDisconnect" type="button">Disconnect</button></div></div>
+      </section>
+
+      <section id="org" aria-labelledby="hOrg">
+        <div class="sec-h"><h2 id="hOrg">Organization</h2><p>Settings for everyone in acme-labs. Only Admins and the Owner can change them.</p></div>
+        <form class="card" id="orgForm" novalidate>
+          <div class="body">
+            <div class="row2">
+              <div class="field"><label for="oName">Name</label><input class="input" id="oName" value="acme-labs"></div>
+              <div class="field"><label for="oModel">Default model for new runs</label><select class="input" id="oModel"><option>Claude Sonnet</option><option>GPT-4o</option></select></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label for="oBudget">Monthly budget</label><input class="input" id="oBudget" value="$250"><span class="hint">Admins get an email at 80%. Runs pause at 100%.</span></div>
+              <div class="field"><label for="oConc">Runs at the same time</label><select class="input" id="oConc"><option>3</option><option>2</option><option>1</option></select><span class="hint">Each run gets its own sealed sandbox.</span></div>
+            </div>
+          </div>
+          <div class="foot"><span id="orgState">Saved</span><button class="btn btn-primary" id="saveOrg" type="submit" disabled>Save changes</button></div>
+        </form>
+      </section>
+
+      <section id="gate" aria-labelledby="hGate">
+        <div class="sec-h"><h2 id="hGate">Provenance gate</h2><p>What stops a run for human review before a pull request opens.</p></div>
+        <div class="card"><div class="body" style="gap:0;padding:var(--space-1) var(--space-6)">
+          <div class="rule"><div><b>New URLs and domains</b><span>Any address in the change that isn't already in the repository.</span></div><button class="switch" role="switch" aria-checked="true" aria-label="Hold for new URLs"></button></div>
+          <div class="rule"><div><b>New dependencies</b><span>Packages added to package.json, requirements.txt, go.mod and other manifests.</span></div><button class="switch" role="switch" aria-checked="true" aria-label="Hold for new dependencies"></button></div>
+          <div class="rule"><div><b>CI/CD and deploy files</b><span>Changes under .github/, Dockerfiles, and deploy scripts.</span></div><button class="switch" role="switch" aria-checked="true" aria-label="Hold for CI/CD changes"></button></div>
+          <div class="rule"><div><b>Prompt injection in inputs</b><span>Instructions hidden in issues, logs or files the agent reads.</span></div><button class="switch" role="switch" aria-checked="true" aria-label="Scan for prompt injection"></button></div>
+          <div class="rule"><div><b>The agent approves its own change</b><span>Never allowed. A person always decides.</span></div><button class="switch" role="switch" aria-checked="false" aria-disabled="true" aria-label="Agent self-approval, always off" title="Always off"></button></div>
+        </div></div>
+      </section>
+
+      <section id="danger" aria-labelledby="hDanger">
+        <div class="sec-h"><h2 id="hDanger">Danger zone</h2><p>Only the Owner can do these.</p></div>
+        <div class="card danger-card">
+          <div class="danger-row"><div><b>Suspend organization</b><span>Stops every active sandbox now and blocks new runs. You can resume later; nothing is deleted.</span></div><button class="btn btn-danger-outline" id="suspendBtn" type="button"><i data-lucide="pause"></i>Suspend</button></div>
+          <div class="danger-row"><div><b>Delete organization</b><span>Permanently removes acme-labs, its runs, findings and audit logs, and terminates all sandboxes.</span></div><button class="btn btn-danger" id="deleteBtn" type="button"><i data-lucide="trash-2"></i>Delete acme-labs</button></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<dialog class="dlg" id="delDlg" aria-labelledby="dTitle">
+  <div class="d-body">
+    <div><h2 id="dTitle">Delete acme-labs?</h2><p>This can't be undone. Export your audit log first if you need to keep it.</p></div>
+    <ul><li>3 active sandboxes are terminated immediately</li><li>211 runs, 7 findings and the audit log are deleted</li><li>5 people lose access, and pending invites are revoked</li></ul>
+    <div class="sandboxes">
+      <div class="sb"><i data-lucide="box"></i><code>RUN-0142</code>payments-api<span class="badge b-warn"><i data-lucide="eye"></i>Awaiting review</span></div>
+      <div class="sb"><i data-lucide="box"></i><code>RUN-0141</code>web-dashboard<span class="badge b-run"><span class="dot"></span>Running</span></div>
+      <div class="sb"><i data-lucide="box"></i><code>RUN-0140</code>api-gateway<span class="badge b-run"><span class="dot"></span>Running</span></div>
+    </div>
+    <div class="field"><label for="dConfirm">Type <b style="font-family:var(--font-mono);font-weight:500">acme-labs</b> to confirm</label><input class="input" id="dConfirm" autocomplete="off" placeholder="acme-labs"></div>
+  </div>
+  <div class="d-foot"><button class="btn btn-secondary" id="dCancel" type="button">Cancel</button><button class="btn btn-danger" id="dGo" type="button" disabled>Delete organization</button></div>
+</dialog>
+
+<dialog class="dlg" id="susDlg" aria-labelledby="sTitle">
+  <div class="d-body">
+    <div><h2 id="sTitle">Suspend acme-labs?</h2><p>3 active sandboxes stop now: 2 running and 1 waiting for review. Their runs are cancelled. No one can start a run until you resume. Nothing is deleted.</p></div>
+  </div>
+  <div class="d-foot"><button class="btn btn-secondary" id="sCancel" type="button">Cancel</button><button class="btn btn-danger" id="sGo" type="button">Suspend and stop 3 sandboxes</button></div>
+</dialog>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="theme/app.js"></script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  function toast(title, body, bad) {
+    const t = document.createElement("div");
+    t.className = "toast" + (bad ? " bad" : ""); t.setAttribute("role", "status");
+    t.innerHTML = `<i data-lucide="${bad ? "octagon-x" : "circle-check"}"></i><div><b>${title}</b>${body}</div>`;
+    $("toasts").appendChild(t); lucide.createIcons(); setTimeout(() => t.remove(), 4200);
+  }
+
+  // Save buttons light up only when something changed.
+  function track(formId, stateId, btnId) {
+    const f = $(formId), start = new Map([...f.querySelectorAll("input:not([type=file]), select")].map((i) => [i, i.value]));
+    const dirty = () => [...start].some(([i, v]) => i.value !== v);
+    const upd = () => { $(btnId).disabled = !dirty(); $(stateId).textContent = dirty() ? "Unsaved changes" : "Saved"; };
+    f.addEventListener("input", upd); f.addEventListener("change", upd);
+    return { reset: () => { start.forEach((_, i) => start.set(i, i.value)); upd(); } };
+  }
+  const prof = track("profileForm", "profState", "saveProfile");
+  const org = track("orgForm", "orgState", "saveOrg");
+  $("profileForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const ok = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($("pEmail").value);
+    $("emailErr").hidden = ok; $("pEmail").classList.toggle("err", !ok);
+    if (!ok) { $("pEmail").focus(); return; }
+    const ini = $("pName").value.trim().split(/\s+/).map((s) => s[0]).join("").slice(0, 2).toUpperCase();
+    if (!$("avatar").querySelector("img")) $("avatar").textContent = ini;
+    $("meTop").textContent = ini;
+    prof.reset(); toast("Profile saved", "Your team sees the new details right away.");
+  });
+  $("orgForm").addEventListener("submit", (e) => { e.preventDefault(); org.reset(); toast("Organization updated", "Changes apply to new runs."); });
+  $("pic").addEventListener("change", (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    const img = document.createElement("img"); img.alt = ""; img.src = URL.createObjectURL(f);
+    $("avatar").innerHTML = ""; $("avatar").appendChild(img);
+    $("saveProfile").disabled = false; $("profState").textContent = "Unsaved changes";
+  });
+  $("removePic").addEventListener("click", () => { $("avatar").textContent = "AJ"; $("saveProfile").disabled = false; $("profState").textContent = "Unsaved changes"; });
+
+  // Gate switches
+  document.querySelectorAll(".switch").forEach((s) => s.addEventListener("click", () => {
+    if (s.getAttribute("aria-disabled") === "true") { toast("Always off", "A person must approve every held change. This can't be turned on.", true); return; }
+    const on = s.getAttribute("aria-checked") !== "true";
+    s.setAttribute("aria-checked", on);
+    toast(on ? "Rule turned on" : "Rule turned off", `${s.getAttribute("aria-label")} is now ${on ? "on" : "off"}. The change is in the audit log.`, !on);
+  }));
+  $("ghDisconnect").addEventListener("click", () => toast("Not disconnected", "In the real app this asks you to confirm first; the prototype keeps you connected.", true));
+
+  // Suspend and delete
+  $("suspendBtn").addEventListener("click", () => $("susDlg").showModal());
+  $("sCancel").addEventListener("click", () => $("susDlg").close());
+  $("sGo").addEventListener("click", () => { $("susDlg").close(); $("suspended").hidden = false; $("suspendBtn").disabled = true; window.scrollTo({ top: 0, behavior: "smooth" }); toast("Organization suspended", "3 sandboxes stopped. New runs are blocked.", true); });
+  $("resumeBtn").addEventListener("click", () => { $("suspended").hidden = true; $("suspendBtn").disabled = false; toast("Organization resumed", "Your team can start runs again."); });
+  $("deleteBtn").addEventListener("click", () => { $("dConfirm").value = ""; $("dGo").disabled = true; $("delDlg").showModal(); });
+  $("dConfirm").addEventListener("input", (e) => ($("dGo").disabled = e.target.value.trim() !== "acme-labs"));
+  $("dCancel").addEventListener("click", () => $("delDlg").close());
+  $("dGo").addEventListener("click", () => { location.href = "login.html?state=deleted"; });
+
+  // Side menu follows the section in view.
+  const links = [...document.querySelectorAll(".side a")];
+  const obs = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) links.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id)); }), { rootMargin: "-30% 0px -60% 0px" });
+  document.querySelectorAll(".sections section").forEach((s) => obs.observe(s));
+
+  const st = new URLSearchParams(location.search).get("state");
+  if (st === "delete") { $("deleteBtn").click(); $("dConfirm").value = "acme-labs"; $("dGo").disabled = false; }
+  if (st === "suspended") { $("suspended").hidden = false; $("suspendBtn").disabled = true; }
+  if (st === "dirty") { $("pName").value = "Adan J. Khan"; $("pName").dispatchEvent(new Event("input", { bubbles: true })); }
+  lucide.createIcons();
+})();
+</script>
+</body>
+</html>

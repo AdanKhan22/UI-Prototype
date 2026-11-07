@@ -1,0 +1,189 @@
+/* Autonomous GitHub Resolver: design tokens.
+   Standard: crisp and developer-native like Vercel/GitHub, with the accent
+   colour and data visuals of Stripe/Supabase. Dark is the default theme;
+   set data-theme="light" on <html> for the light theme. */
+
+@import url("https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+/* ───────────── Dark (default) ───────────── */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces: canvas → raised */
+  --bg: #09090b;               /* page canvas */
+  --surface: #111113;          /* cards, panels, inputs */
+  --surface-2: #18181b;        /* nested panels, table header, code wells */
+  --surface-3: #1f1f23;        /* hover on rows and ghost buttons */
+  --overlay: #141416;          /* menus, popovers, modals */
+
+  /* Lines */
+  --border: #27272a;           /* hairlines, card edges */
+  --border-strong: #66666f;    /* input borders, 3.3:1 */
+  --divider: #1c1c1f;          /* rows inside a card */
+
+  /* Text */
+  --text: #fafafa;             /* primary, 19:1 */
+  --text-2: #a1a1aa;           /* secondary, 7.4:1 */
+  --text-3: #8b8b94;           /* muted, captions, 5.9:1 */
+  --text-disabled: #52525b;
+
+  /* Brand violet */
+  --accent: #6550f0;           /* primary buttons (white text 5.3:1) */
+  --accent-hover: #5a45e6;     /* darker on hover keeps white text at 6.1:1 */
+  --accent-pressed: #4f3bd6;
+  --accent-text: #9b8cff;      /* links, active tab, selected (6.8:1) */
+  --accent-subtle: #1e1a33;    /* selected rows, accent badges */
+  --accent-border: #3d3470;
+  --focus: #9b8cff;
+
+  /* State */
+  --success: #3dd68c;  --success-subtle: #0f2a1d;  --success-border: #1d4d35;
+  --warning: #f5b544;  --warning-subtle: #2b2010;  --warning-border: #5a4213;
+  --danger:  #ff6369;  --danger-subtle:  #2d1214;  --danger-border:  #5e2226;
+  --danger-solid: #d13d43;     /* destructive buttons (white text 4.7:1) */
+  --info:    #52a8ff;  --info-subtle:    #0d2036;  --info-border:    #1d3f66;
+
+  /* Diff */
+  --diff-add-bg: #0f2a1d;  --diff-add-text: #7ee2b0;
+  --diff-del-bg: #2d1214;  --diff-del-text: #ff9a9e;
+
+  /* Data series (charts, timelines) */
+  --series-1: #8b7cff;  /* violet: brand / total */
+  --series-2: #3bc9db;  /* cyan */
+  --series-3: #3dd68c;  /* green: passed */
+  --series-4: #f5b544;  /* amber: rolled back */
+  --series-5: #ff6369;  /* red: flagged / failed */
+
+  /* Brand gradient: product mark and empty-state illustration only. Never on text. */
+  --brand-gradient: linear-gradient(135deg, #8b7cff 0%, #5b8cff 55%, #3bc9db 100%);
+
+  /* Depth */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px -6px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--border);
+  --shadow-lg: 0 24px 64px -16px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--border);
+  --scrim: rgba(0, 0, 0, 0.6);
+  --selection: rgba(139, 124, 255, 0.32);
+}
+
+/* ───────────── Light ───────────── */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #fafafa;
+  --surface-3: #f4f4f5;
+  --overlay: #ffffff;
+
+  --border: #e4e4e7;
+  --border-strong: #8e8e96;    /* 3.3:1 */
+  --divider: #f0f0f2;
+
+  --text: #09090b;             /* 19.9:1 */
+  --text-2: #52525b;           /* 7.7:1 */
+  --text-3: #67676f;           /* 5.4:1 on white, 4.8:1 on accent-subtle */
+  --text-disabled: #a1a1aa;
+
+  --accent: #5b47e0;           /* white text 6.1:1 */
+  --accent-hover: #4c3bc9;
+  --accent-pressed: #4131b0;
+  --accent-text: #5b47e0;
+  --accent-subtle: #efecff;
+  --accent-border: #cfc8ff;
+  --focus: #5b47e0;
+
+  --success: #15803d;  --success-subtle: #ecfdf3;  --success-border: #b7ebc9;
+  --warning: #b45309;  --warning-subtle: #fff7e8;  --warning-border: #f7d9a4;
+  --danger:  #c81e1e;  --danger-subtle:  #fef2f2;  --danger-border:  #fbcaca;
+  --danger-solid: #dc2626;
+  --info:    #2563eb;  --info-subtle:    #eff5ff;  --info-border:    #c3d6fd;
+
+  --diff-add-bg: #ecfdf3;  --diff-add-text: #166534;
+  --diff-del-bg: #fef2f2;  --diff-del-text: #b91c1c;
+
+  --series-1: #5b47e0;
+  --series-2: #0e9fb5;
+  --series-3: #16a34a;
+  --series-4: #d97706;
+  --series-5: #dc2626;
+
+  --brand-gradient: linear-gradient(135deg, #6c5cf5 0%, #4f7cff 55%, #14b8c8 100%);
+
+  --shadow-sm: 0 1px 2px rgba(9, 9, 11, 0.06);
+  --shadow-md: 0 8px 24px -6px rgba(9, 9, 11, 0.12), 0 0 0 1px var(--border);
+  --shadow-lg: 0 24px 64px -16px rgba(9, 9, 11, 0.22), 0 0 0 1px var(--border);
+  --scrim: rgba(9, 9, 11, 0.4);
+  --selection: rgba(91, 71, 224, 0.18);
+}
+
+/* ───────────── Theme-independent ───────────── */
+:root {
+  /* Type */
+  --font-sans: "Host Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  /* Fixed rem scale (product UI, not fluid) */
+  --text-xs: 0.75rem;     /* 12/16  captions, badge text, timestamps */
+  --text-sm: 0.8125rem;   /* 13/20  table cells, meta, logs, secondary */
+  --text-md: 0.875rem;    /* 14/20  body, buttons, inputs, nav */
+  --text-lg: 1rem;        /* 16/24  card titles, section titles */
+  --text-xl: 1.25rem;     /* 20/28  panel and dialog titles */
+  --text-2xl: 1.75rem;    /* 28/36  page titles */
+  --text-3xl: 2.25rem;    /* 36/40  headline figures */
+
+  --lh-xs: 1rem; --lh-sm: 1.25rem; --lh-md: 1.25rem; --lh-lg: 1.5rem;
+  --lh-xl: 1.75rem; --lh-2xl: 2.25rem; --lh-3xl: 2.5rem;
+
+  --tracking-tight: -0.02em;   /* 2xl and 3xl */
+  --tracking-snug: -0.01em;    /* xl */
+
+  /* Space: 4px module */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --space-12: 48px; --space-16: 64px; --space-20: 80px;
+
+  --row: 44px;          /* table and list rows */
+  --control: 36px;      /* buttons, inputs, selects */
+  --control-sm: 30px;
+  --topbar: 56px;
+  --content-max: 1280px;
+
+  /* Shape */
+  --radius-xs: 4px;     /* badges, kbd, inline code */
+  --radius-sm: 6px;     /* buttons, inputs */
+  --radius-md: 8px;     /* cards, panels */
+  --radius-lg: 12px;    /* dialogs, popovers */
+  --radius-full: 999px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;    /* hover, press */
+  --dur: 180ms;         /* menus, tabs, toasts */
+  --dur-slow: 320ms;    /* timeline segments growing in */
+}
+
+/* ───────────── Base: browser surfaces carry the design too ───────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 var(--text-md) / var(--lh-md) var(--font-sans);
+  font-feature-settings: "tnum" 1;
+  caret-color: var(--accent-text);
+  accent-color: var(--accent);
+}
+::selection { background: var(--selection); color: var(--text); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+a { color: var(--accent-text); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+code, kbd, samp, pre { font-family: var(--font-mono); font-feature-settings: "calt" 0; }
+* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; border: 3px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); background-clip: padding-box; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; animation-delay: 0ms !important; }
+}

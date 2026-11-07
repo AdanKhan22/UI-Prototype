@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Members · Resolver</title>
+<script>try{var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("resolver-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="theme/tokens.css">
+<link rel="stylesheet" href="theme/components.css">
+<link rel="stylesheet" href="theme/loader.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: var(--space-6); align-items: start; }
+  .main { display: grid; gap: var(--space-6); min-width: 0; }
+  .card-h { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 52px; padding: var(--space-3) var(--space-5); border-bottom: 1px solid var(--border); }
+  .card-h h2 { margin: 0; font-size: var(--text-md); font-weight: 600; }
+  .card-h small { font-size: var(--text-xs); color: var(--text-3); }
+  .filter { display: flex; align-items: center; gap: var(--space-2); height: 32px; width: 240px; padding: 0 var(--space-3); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text-3); font-size: var(--text-sm); }
+  .filter input { all: unset; flex: 1; color: var(--text); }
+  .filter input::placeholder { color: var(--text-3); }
+  .filter:focus-within { border-color: var(--accent-text); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 35%, transparent); }
+
+  .people { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+  .people th { text-align: left; font-weight: 500; color: var(--text-3); height: 40px; padding: 0 var(--space-4); background: var(--surface-2); border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .people th:first-child, .people td:first-child { padding-left: var(--space-5); }
+  .people th:last-child, .people td:last-child { padding-right: var(--space-4); text-align: right; }
+  .people td { height: 64px; padding: 0 var(--space-4); border-bottom: 1px solid var(--divider); }
+  .people tr:last-child td { border-bottom: 0; }
+  .people tbody tr { transition: background var(--dur-fast) var(--ease); }
+  .people tbody tr:hover { background: var(--surface-3); }
+  .people tr.flash td { animation: rowflash 1.2s var(--ease); }
+  @keyframes rowflash { 0%, 30% { background: var(--accent-subtle); } }
+  .t-acc { color: var(--accent-text); background: var(--accent-subtle); border-color: var(--accent-border); }
+  .t-ok { color: var(--success); background: var(--success-subtle); border-color: var(--success-border); }
+  .t-warn { color: var(--warning); background: var(--warning-subtle); border-color: var(--warning-border); }
+  .t-bad { color: var(--danger); background: var(--danger-subtle); border-color: var(--danger-border); }
+  .t-info { color: var(--info); background: var(--info-subtle); border-color: var(--info-border); }
+  .person { display: flex; align-items: center; gap: var(--space-3); }
+  .av { width: 32px; height: 32px; flex: none; border-radius: var(--radius-full); display: grid; place-items: center; font: 600 var(--text-xs) var(--font-sans); color: var(--text); border: 1px solid var(--border); }
+  .person b { display: block; font-weight: 500; }
+  .person span.h { display: block; font: var(--text-xs) var(--font-mono); color: var(--text-3); margin-top: 1px; }
+  .you { font-size: var(--text-xs); color: var(--text-3); font-weight: 400; margin-left: 4px; }
+  .role { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 var(--space-2); border-radius: var(--radius-full); border: 1px solid var(--border); font-size: var(--text-xs); font-weight: 500; color: var(--text-2); background: var(--surface-2); white-space: nowrap; }
+  .role svg.lucide { width: 13px; height: 13px; stroke-width: 2; }
+  .role.owner { color: var(--accent-text); background: var(--accent-subtle); border-color: var(--accent-border); }
+  .role.admin { color: var(--text); border-color: var(--border-strong); }
+  .num { font-variant-numeric: tabular-nums; color: var(--text-2); }
+  .muted { color: var(--text-3); }
+
+  .menu-wrap { position: relative; display: inline-block; }
+  .menu { position: absolute; right: 0; top: calc(100% + 4px); z-index: 30; display: grid; min-width: 230px; padding: var(--space-1); background: var(--overlay); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); text-align: left; }
+  .menu button { all: unset; display: flex; align-items: center; gap: var(--space-2); height: 34px; padding: 0 var(--space-3); border-radius: var(--radius-sm); font-size: var(--text-sm); color: var(--text); cursor: pointer; }
+  .menu button:hover, .menu button:focus-visible { background: var(--surface-3); }
+  .menu button svg.lucide { color: var(--text-3); }
+  .menu button.danger, .menu button.danger svg.lucide { color: var(--danger); }
+  .menu hr { border: 0; border-top: 1px solid var(--border); margin: var(--space-1) 0; }
+  .menu small { padding: var(--space-2) var(--space-3) var(--space-1); font-size: var(--text-xs); color: var(--text-3); }
+
+  .invite-row { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--divider); font-size: var(--text-sm); }
+  .invite-row:last-child { border-bottom: 0; }
+  .invite-row .av { border-style: dashed; color: var(--text-3); background: transparent; }
+  .invite-row .grow { flex: 1; min-width: 0; }
+  .invite-row b { font-weight: 500; }
+  .invite-row span.s { display: block; font-size: var(--text-xs); color: var(--text-3); margin-top: 1px; }
+
+  /* Roles comparison */
+  .roles-tbl { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+  .roles-tbl th { font-weight: 500; font-size: var(--text-xs); color: var(--text-3); padding: var(--space-3) var(--space-2); text-align: center; border-bottom: 1px solid var(--border); }
+  .roles-tbl th:first-child { text-align: left; padding-left: var(--space-5); }
+  .roles-tbl td { padding: 9px var(--space-2); border-bottom: 1px solid var(--divider); text-align: center; color: var(--text-3); }
+  .roles-tbl td:first-child { text-align: left; padding-left: var(--space-5); color: var(--text-2); }
+  .roles-tbl tr:last-child td { border-bottom: 0; }
+  .roles-tbl svg.lucide { width: 15px; height: 15px; }
+  .roles-tbl .y svg.lucide { color: var(--success); }
+  .roles-tbl .group td { font-size: var(--text-xs); font-weight: 500; color: var(--text-3); background: var(--surface-2); padding-top: 6px; padding-bottom: 6px; }
+  .rail { display: grid; gap: var(--space-6); position: sticky; top: calc(var(--topbar) + var(--space-6)); }
+  .counts { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .counts div { padding: var(--space-4) var(--space-5); border-left: 1px solid var(--divider); }
+  .counts div:first-child { border-left: 0; }
+  .counts small { display: block; font-size: var(--text-xs); color: var(--text-3); }
+  .counts b { display: block; margin-top: 2px; font-size: var(--text-xl); line-height: var(--lh-xl); font-weight: 600; }
+
+  /* Dialogs */
+  dialog.dlg { width: min(480px, calc(100vw - 32px)); padding: 0; border: 0; border-radius: var(--radius-lg); background: var(--overlay); color: var(--text); box-shadow: var(--shadow-lg); }
+  dialog.dlg::backdrop { background: var(--scrim); }
+  .dlg .d-body { padding: var(--space-6) var(--space-6) var(--space-5); display: grid; gap: var(--space-4); }
+  .dlg h2 { margin: 0; font-size: var(--text-lg); line-height: var(--lh-lg); font-weight: 600; }
+  .dlg p { margin: 0; font-size: var(--text-sm); color: var(--text-2); line-height: 1.4rem; }
+  .dlg .d-foot { display: flex; justify-content: flex-end; gap: var(--space-3); padding: var(--space-4) var(--space-6); border-top: 1px solid var(--border); background: var(--surface-2); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+  .gh-in { position: relative; }
+  .gh-in svg.lucide { position: absolute; left: 12px; top: 10px; color: var(--text-3); }
+  .gh-in .input { padding-left: 36px; }
+  .found { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-2); font-size: var(--text-sm); }
+  .found b { font-weight: 500; display: block; }
+  .found div span { font-size: var(--text-xs); color: var(--text-3); }
+  .found > svg.lucide { margin-left: auto; color: var(--success); }
+  .opts { display: grid; gap: 6px; }
+  .opt { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: var(--space-3); align-items: start; padding: var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--text-sm); }
+  .opt input { appearance: none; width: 16px; height: 16px; margin: 2px 0 0; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface); cursor: pointer; }
+  .opt input:checked { border: 5px solid var(--accent); background: #ffffff; }
+  .opt input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .opt:has(input:checked) { background: var(--accent-subtle); border-color: var(--accent-border); }
+  .opt b { display: block; font-weight: 500; }
+  .opt span { font-size: var(--text-xs); color: var(--text-3); }
+  .warnbox { display: flex; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: 1px solid var(--warning-border); background: var(--warning-subtle); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--text); }
+  .warnbox svg.lucide { color: var(--warning); margin-top: 2px; flex: none; }
+  .toasts { position: fixed; right: var(--space-6); bottom: var(--space-6); display: grid; gap: var(--space-3); z-index: 40; width: 380px; }
+  .toast { display: flex; gap: var(--space-3); padding: var(--space-3) var(--space-4); background: var(--overlay); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: var(--text-sm); line-height: var(--lh-sm); color: var(--text-2); }
+  .toast b { display: block; color: var(--text); font-weight: 600; }
+  .toast svg.lucide { margin-top: 2px; color: var(--success); }
+
+  @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } .rail { position: static; } }
+</style>
+</head>
+<body>
+<script src="theme/loader.js"></script>
+<header class="topbar">
+  <a class="mark" href="runs.html" aria-label="Resolver home"><i data-lucide="git-pull-request-arrow"></i></a>
+  <span class="slash">/</span>
+  <span class="org"><span class="av" style="width:20px;height:20px;border:0;background:linear-gradient(135deg,#f5b544,#ff6369)"></span>acme-labs <small id="myRoleTop">Owner</small><i data-lucide="chevrons-up-down"></i></span>
+  <nav class="tabs" aria-label="Main">
+    <a class="tab" href="runs.html">Runs</a>
+    <a class="tab" href="review.html">Findings</a>
+    <a class="tab" href="audit.html">Audit log</a>
+    <a class="tab" href="members.html" aria-current="page">Members</a>
+    <a class="tab" href="usage.html">Usage</a>
+    <a class="tab" href="settings.html">Settings</a>
+  </nav>
+  <span class="grow"></span>
+  <div class="search"><i data-lucide="search"></i>Search runs<kbd>⌘K</kbd></div>
+  <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme"></button>
+  <span class="me" aria-label="Adan Javed">AJ</span>
+</header>
+
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Members</h1>
+      <p>People in acme-labs and what they can do. Everyone signs in with their own account and only sees this organization's runs.</p>
+    </div>
+    <button class="btn btn-primary" id="inviteBtn" type="button"><i data-lucide="user-plus"></i>Invite member</button>
+  </div>
+
+  <div class="layout">
+    <div class="main">
+      <section class="card" aria-label="People">
+        <div class="card-h"><h2>People</h2><label class="filter"><i data-lucide="search"></i><input type="search" id="q" placeholder="Find by name or username"></label></div>
+        <table class="people">
+          <thead><tr><th>Name</th><th>Role</th><th>Runs, 30 days</th><th>Last active</th><th><span class="muted" style="font-weight:400">Actions</span></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </section>
+
+      <section class="card" aria-label="Pending invites">
+        <div class="card-h"><h2>Pending invites</h2><small id="pendN"></small></div>
+        <div id="pending"></div>
+      </section>
+    </div>
+
+    <aside class="rail">
+      <section class="card" aria-label="Role counts">
+        <div class="counts"><div><small>Owner</small><b id="cOwner">1</b></div><div><small>Admins</small><b id="cAdmin">0</b></div><div><small>Members</small><b id="cMember">0</b></div></div>
+      </section>
+      <section class="card" aria-label="What each role can do">
+        <div class="card-h"><h2>What each role can do</h2></div>
+        <table class="roles-tbl">
+          <thead><tr><th></th><th>Member</th><th>Admin</th><th>Owner</th></tr></thead>
+          <tbody>
+            <tr class="group"><td colspan="4">Runs</td></tr>
+            <tr><td>Start runs and watch them live</td><td class="y"><i data-lucide="check"></i></td><td class="y"><i data-lucide="check"></i></td><td class="y"><i data-lucide="check"></i></td></tr>
+            <tr><td>Review flags on own runs</td><td class="y"><i data-lucide="check"></i></td><td class="y"><i data-lucide="check"></i></td><td class="y"><i data-lucide="check"></i></td></tr>
+            <tr><td>Review flags on any run</td><td><i data-lucide="minus"></i></td><td class="y"><i data-lucide="check"></i></td><td class="y"><i data-lucide="check"></i></td></tr>
+            <tr><td>See all runs, usage and costs</td><td><i data-lucide="minus"></i></td><td class="y"><i data-lucide="check"></i></td><td class="y"><i data-lucide="check"></i></td></tr>
+            <tr><td>Export audit logs</td><td>Own runs</td><td class="y"><i data-lucide="check"></i></td><td class="y"><i data-lucide="check"></i></td></tr>
+            <tr class="group"><td colspan="4">People</td></tr>
+            <tr><td>Invite and remove Members</td><td><i data-lucide="minus"></i></td><td class="y"><i data-lucide="check"></i></td><td class="y"><i data-lucide="check"></i></td></tr>
+            <tr><td>Add, promote and demote Admins</td><td><i data-lucide="minus"></i></td><td><i data-lucide="minus"></i></td><td class="y"><i data-lucide="check"></i></td></tr>
+            <tr><td>Transfer ownership</td><td><i data-lucide="minus"></i></td><td><i data-lucide="minus"></i></td><td class="y"><i data-lucide="check"></i></td></tr>
+            <tr><td>Suspend or delete the organization</td><td><i data-lucide="minus"></i></td><td><i data-lucide="minus"></i></td><td class="y"><i data-lucide="check"></i></td></tr>
+          </tbody>
+        </table>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<dialog class="dlg" id="inviteDlg" aria-labelledby="iTitle">
+  <form method="dialog" id="inviteForm">
+    <div class="d-body">
+      <div><h2 id="iTitle">Invite to acme-labs</h2><p>They'll get an email and a GitHub notification, and join when they accept.</p></div>
+      <div class="field">
+        <label for="ghUser">GitHub username</label>
+        <div class="gh-in"><i data-lucide="github"></i><input class="input" id="ghUser" autocomplete="off" placeholder="octocat" value="lbrooks-dev"></div>
+      </div>
+      <div class="found" id="found"><span class="av t-info">LB</span><div><b>Leo Brooks</b><span>@lbrooks-dev · 41 public repos</span></div><i data-lucide="circle-check"></i></div>
+      <div class="field">
+        <label>Role</label>
+        <div class="opts" role="radiogroup" aria-label="Role">
+          <label class="opt"><input type="radio" name="role" value="Member" checked><div><b>Member</b><span>Starts runs and reviews flags on their own runs.</span></div></label>
+          <label class="opt"><input type="radio" name="role" value="Admin"><div><b>Admin</b><span>Also sees every run, usage and costs, and manages Members.</span></div></label>
+        </div>
+      </div>
+    </div>
+    <div class="d-foot"><button class="btn btn-secondary" value="cancel" type="submit" formnovalidate>Cancel</button><button class="btn btn-primary" id="sendInvite" value="send" type="submit"><i data-lucide="send"></i>Send invite</button></div>
+  </form>
+</dialog>
+
+<dialog class="dlg" id="transferDlg" aria-labelledby="tTitle">
+  <div class="d-body">
+    <div><h2 id="tTitle">Transfer ownership</h2><p>The new Owner can delete the organization and manage Admins. You'll stay on as an Admin.</p></div>
+    <div class="field">
+      <label>New Owner</label>
+      <div class="opts" id="tOpts" role="radiogroup" aria-label="New Owner"></div>
+      <span class="hint">Only Admins can become the Owner.</span>
+    </div>
+    <div class="warnbox"><i data-lucide="triangle-alert"></i><div>You can't undo this yourself. Only the new Owner can give ownership back.</div></div>
+    <div class="field">
+      <label for="tConfirm">Type <b style="font-family:var(--font-mono);font-weight:500">acme-labs</b> to confirm</label>
+      <input class="input" id="tConfirm" autocomplete="off" placeholder="acme-labs">
+    </div>
+  </div>
+  <div class="d-foot"><button class="btn btn-secondary" id="tCancel" type="button">Cancel</button><button class="btn btn-danger" id="tGo" type="button" disabled>Transfer ownership</button></div>
+</dialog>
+
+<dialog class="dlg" id="removeDlg" aria-labelledby="rTitle">
+  <div class="d-body"><div><h2 id="rTitle"></h2><p id="rText"></p></div></div>
+  <div class="d-foot"><button class="btn btn-secondary" id="rCancel" type="button">Cancel</button><button class="btn btn-danger" id="rGo" type="button">Remove</button></div>
+</dialog>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="theme/app.js"></script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  // Example people. You are Adan Javed, the Owner.
+  let people = [
+    { id: 1, name: "Adan Javed", gh: "adan-javed", ini: "AJ", bg: "t-acc", role: "Owner", runs: 57, last: "Now", you: true },
+    { id: 2, name: "Sana Mehta", gh: "s-mehta", ini: "SM", bg: "t-ok", role: "Admin", runs: 40, last: "12 min ago" },
+    { id: 3, name: "João Ferreira", gh: "j-ferreira", ini: "JF", bg: "t-warn", role: "Admin", runs: 36, last: "Yesterday" },
+    { id: 4, name: "Rita Okafor", gh: "rokafor", ini: "RO", bg: "t-bad", role: "Member", runs: 51, last: "6 min ago" },
+    { id: 5, name: "Hamza Qureshi", gh: "hqureshi", ini: "HQ", bg: "t-info", role: "Member", runs: 27, last: "3 days ago" },
+  ];
+  let pending = [{ gh: "m-tanaka", name: "Mei Tanaka", role: "Member", by: "Sana Mehta", when: "2 hours ago" }];
+  let q = "", openMenu = -1, flashId = -1;
+  const me = () => people.find((p) => p.you);
+  const roleChip = (r) => r === "Owner" ? '<span class="role owner"><i data-lucide="crown"></i>Owner</span>'
+    : r === "Admin" ? '<span class="role admin"><i data-lucide="shield"></i>Admin</span>' : '<span class="role"><i data-lucide="user"></i>Member</span>';
+
+  function menuFor(p) {
+    const iOwn = me().role === "Owner", iAdmin = me().role === "Admin";
+    const items = [];
+    if (p.you) return "";
+    if (iOwn && p.role === "Member") items.push(`<button data-act="promote" data-id="${p.id}"><i data-lucide="arrow-up"></i>Make Admin</button>`);
+    if (iOwn && p.role === "Admin") items.push(`<button data-act="demote" data-id="${p.id}"><i data-lucide="arrow-down"></i>Make Member</button>`);
+    if (iOwn && p.role === "Admin") items.push(`<button data-act="transfer" data-id="${p.id}"><i data-lucide="crown"></i>Transfer ownership…</button>`);
+    if ((iOwn && p.role !== "Owner") || (iAdmin && p.role === "Member")) items.push(`<hr><button class="danger" data-act="remove" data-id="${p.id}"><i data-lucide="user-minus"></i>Remove from acme-labs</button>`);
+    if (!items.length) return `<span class="muted" style="font-size:var(--text-xs)">No access</span>`;
+    return `<div class="menu-wrap"><button class="icon-btn" data-menu="${p.id}" type="button" aria-label="Actions for ${esc(p.name)}" aria-haspopup="menu" aria-expanded="${openMenu === p.id}"><i data-lucide="ellipsis"></i></button>` +
+      (openMenu === p.id ? `<div class="menu" role="menu">${items.join("")}</div>` : "") + "</div>";
+  }
+  function render() {
+    const order = { Owner: 0, Admin: 1, Member: 2 };
+    const list = people.filter((p) => !q || (p.name + p.gh).toLowerCase().includes(q)).sort((a, b) => order[a.role] - order[b.role] || a.name.localeCompare(b.name));
+    $("rows").innerHTML = list.map((p) => `<tr class="${p.id === flashId ? "flash" : ""}">
+      <td><div class="person"><span class="av ${p.bg}">${p.ini}</span><div><b>${esc(p.name)}${p.you ? '<span class="you">you</span>' : ""}</b><span class="h">@${esc(p.gh)}</span></div></div></td>
+      <td>${roleChip(p.role)}</td><td class="num">${p.runs}</td><td class="muted">${p.last}</td><td>${menuFor(p)}</td></tr>`).join("") ||
+      `<tr><td colspan="5" style="text-align:center;color:var(--text-3)">No one matches “${esc(q)}”.</td></tr>`;
+    $("pending").innerHTML = pending.length ? pending.map((v, i) => `<div class="invite-row"><span class="av">${v.name.split(" ").map((s) => s[0]).join("")}</span>
+      <div class="grow"><b>${esc(v.name)}</b> <span style="font:var(--text-xs) var(--font-mono);color:var(--text-3)">@${esc(v.gh)}</span><span class="s">Invited as ${v.role} by ${esc(v.by)} · ${v.when}</span></div>
+      <button class="btn btn-ghost btn-sm" data-resend="${i}" type="button"><i data-lucide="mail"></i>Resend</button>
+      <button class="btn btn-ghost btn-sm" data-revoke="${i}" type="button" style="color:var(--danger)">Revoke</button></div>`).join("")
+      : `<div class="invite-row"><span class="s" style="color:var(--text-3)">No pending invites.</span></div>`;
+    $("pendN").textContent = pending.length ? `${pending.length} waiting` : "";
+    $("cAdmin").textContent = people.filter((p) => p.role === "Admin").length;
+    $("cMember").textContent = people.filter((p) => p.role === "Member").length;
+    $("myRoleTop").textContent = me().role;
+    $("inviteBtn").hidden = me().role === "Member";
+    lucide.createIcons();
+  }
+  function toast(title, body) {
+    const t = document.createElement("div");
+    t.className = "toast"; t.setAttribute("role", "status");
+    t.innerHTML = `<i data-lucide="circle-check"></i><div><b>${title}</b>${body}</div>`;
+    $("toasts").appendChild(t); lucide.createIcons();
+    setTimeout(() => t.remove(), 4200);
+  }
+  const flash = (id) => { flashId = id; render(); setTimeout(() => { flashId = -1; }, 1300); };
+
+  // Row menus and actions
+  let removing = null;
+  document.addEventListener("click", (e) => {
+    const m = e.target.closest("[data-menu]");
+    if (m) { openMenu = openMenu === +m.dataset.menu ? -1 : +m.dataset.menu; render(); return; }
+    const a = e.target.closest("[data-act]");
+    if (a) {
+      const p = people.find((x) => x.id === +a.dataset.id);
+      openMenu = -1;
+      if (a.dataset.act === "promote") { p.role = "Admin"; flash(p.id); toast("Role changed", `${esc(p.name)} is now an Admin.`); }
+      if (a.dataset.act === "demote") { p.role = "Member"; flash(p.id); toast("Role changed", `${esc(p.name)} is now a Member.`); }
+      if (a.dataset.act === "transfer") { openTransfer(p.id); render(); }
+      if (a.dataset.act === "remove") {
+        removing = p;
+        $("rTitle").textContent = `Remove ${p.name}?`;
+        $("rText").textContent = `${p.name} loses access to acme-labs right away. Their past runs and audit entries stay.`;
+        $("removeDlg").showModal(); render();
+      }
+      return;
+    }
+    if (openMenu !== -1 && !e.target.closest(".menu")) { openMenu = -1; render(); }
+    const rs = e.target.closest("[data-resend]");
+    if (rs) toast("Invite sent again", `@${esc(pending[+rs.dataset.resend].gh)} will get a new email.`);
+    const rv = e.target.closest("[data-revoke]");
+    if (rv) { const v = pending.splice(+rv.dataset.revoke, 1)[0]; render(); toast("Invite revoked", `@${esc(v.gh)} can no longer join with that link.`); }
+  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && openMenu !== -1) { openMenu = -1; render(); } });
+  $("rCancel").addEventListener("click", () => $("removeDlg").close());
+  $("rGo").addEventListener("click", () => {
+    people = people.filter((p) => p !== removing);
+    $("removeDlg").close(); render();
+    toast("Member removed", `${esc(removing.name)} no longer has access.`);
+  });
+
+  // Invite
+  $("inviteBtn").addEventListener("click", () => { $("inviteDlg").showModal(); $("ghUser").select(); });
+  $("ghUser").addEventListener("input", (e) => { $("found").hidden = e.target.value.trim().length < 3; $("sendInvite").disabled = $("found").hidden; });
+  $("inviteDlg").addEventListener("close", () => {
+    if ($("inviteDlg").returnValue !== "send") return;
+    const role = document.querySelector('#inviteForm input[name="role"]:checked').value;
+    pending.unshift({ gh: $("ghUser").value.trim(), name: "Leo Brooks", role, by: me().name, when: "just now" });
+    render();
+    toast("Invite sent", `@${esc($("ghUser").value.trim())} is invited as ${role}.`);
+  });
+
+  // Transfer ownership
+  function openTransfer(selectId) {
+    const admins = people.filter((p) => p.role === "Admin");
+    $("tOpts").innerHTML = admins.map((p) => `<label class="opt"><input type="radio" name="newOwner" value="${p.id}" ${p.id === selectId ? "checked" : ""}><div><b>${esc(p.name)}</b><span>@${esc(p.gh)} · Admin</span></div></label>`).join("");
+    $("tConfirm").value = "";
+    $("tGo").disabled = true;
+    $("transferDlg").showModal();
+  }
+  const canTransfer = () => $("tConfirm").value.trim() === "acme-labs" && document.querySelector('input[name="newOwner"]:checked');
+  $("transferDlg").addEventListener("input", () => ($("tGo").disabled = !canTransfer()));
+  $("transferDlg").addEventListener("change", () => ($("tGo").disabled = !canTransfer()));
+  $("tCancel").addEventListener("click", () => $("transferDlg").close());
+  $("tGo").addEventListener("click", () => {
+    const target = people.find((p) => p.id === +document.querySelector('input[name="newOwner"]:checked').value);
+    target.role = "Owner"; me().role = "Admin";
+    $("transferDlg").close(); flash(target.id);
+    toast("Ownership transferred", `${esc(target.name)} is now the Owner. You're an Admin.`);
+  });
+
+  render();
+  const st = new URLSearchParams(location.search).get("state");
+  if (st === "invite") $("inviteBtn").click();
+  if (st === "transfer") { openTransfer(2); $("tConfirm").value = "acme-labs"; $("tGo").disabled = false; }
+  if (st === "menu") { openMenu = 2; render(); }
+})();
+</script>
+</body>
+</html>

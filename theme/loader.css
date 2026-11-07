@@ -1,0 +1,71 @@
+/* Loading states. Load after tokens.css and components.css. */
+
+/* ---------- Page-load screen ---------- */
+.boot { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--bg); transition: opacity 360ms var(--ease), visibility 360ms; }
+.boot.done { opacity: 0; visibility: hidden; }
+.boot.inline { position: relative; inset: auto; z-index: auto; min-height: 320px; background: transparent; }
+.boot-in { display: grid; justify-items: center; gap: var(--space-6); }
+.boot-mark { width: 44px; height: 44px; border-radius: 12px; background: var(--brand-gradient); display: grid; place-items: center; color: #ffffff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18); animation: breathe 2.2s var(--ease) infinite; }
+.boot-mark svg { width: 24px; height: 24px; }
+@keyframes breathe { 50% { transform: scale(.94); } }
+
+/* The story track: checkpoints along a line, ending at the gate. */
+.track { position: relative; width: 300px; height: 56px; }
+.track .rail { position: absolute; left: 0; right: 0; top: 34px; height: 2px; border-radius: 1px; background: var(--border); }
+.track .fill { position: absolute; left: 0; top: 34px; height: 2px; width: 0; border-radius: 1px; background: var(--border-strong); transition: width 160ms var(--ease); }
+.track .n { position: absolute; top: 28px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; border: 1.5px solid var(--success); background: var(--success-subtle); transform: scale(0); opacity: 0; transition: transform 260ms cubic-bezier(.3, 1.6, .5, 1), opacity 160ms, top 280ms var(--ease), background 200ms, border-color 200ms; }
+.track .n.on { transform: scale(1); opacity: 1; }
+.track .n.run { border-color: var(--accent-text); background: var(--accent-subtle); }
+.track .n.fail { border-color: var(--warning); background: var(--surface); border-style: dashed; top: 8px; }
+.track .n.ghost { opacity: .45; }
+.track .stem { position: absolute; top: 20px; width: 0; height: 14px; border-left: 1.5px dashed var(--warning); opacity: 0; transition: opacity 200ms; }
+.track .stem.on { opacity: 1; }
+.track .dot { position: absolute; top: 31px; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: var(--warning); opacity: 0; transition: left 320ms var(--ease), opacity 120ms; }
+.track .dot.on { opacity: 1; }
+.track .gate { position: absolute; top: 27px; right: -8px; width: 16px; height: 16px; border-radius: 3px; transform: rotate(45deg); border: 1.5px dashed var(--border-strong); background: var(--bg); transition: background 220ms, border-color 220ms, transform 300ms cubic-bezier(.3, 1.6, .5, 1); }
+.track .gate.wait { border-style: solid; border-color: var(--accent-text); background: var(--accent-subtle); animation: knock 600ms var(--ease) infinite; }
+.track .gate.ok { border-style: solid; border-color: var(--success); background: var(--success); transform: rotate(45deg) scale(1.15); }
+.track .gate svg { position: absolute; inset: 0; margin: auto; width: 10px; height: 10px; transform: rotate(-45deg); color: var(--bg); opacity: 0; transition: opacity 200ms; }
+.track .gate.ok svg { opacity: 1; }
+@keyframes knock { 50% { transform: rotate(45deg) scale(.88); } }
+
+.boot-line { display: flex; align-items: center; gap: 6px; min-height: 20px; font: var(--text-sm) var(--font-mono); color: var(--text-2); }
+.boot-line .cmd::before { content: "$ "; color: var(--accent-text); }
+.boot-line .caret { width: 7px; height: 14px; background: var(--text-3); animation: blink 1s steps(1) infinite; }
+.boot-line.warn { color: var(--warning); }
+.boot-line.ok { color: var(--success); }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---------- Skeletons: a playhead scans across the placeholder ---------- */
+.sk { position: relative; display: inline-block; vertical-align: middle; overflow: hidden; background: var(--surface-2); border-radius: var(--radius-xs); }
+.sk::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent 0%, var(--surface-3) 70%, color-mix(in srgb, var(--accent-text) 30%, transparent) 99.5%, transparent 100%); animation: scan 1.6s cubic-bezier(.4, 0, .2, 1) infinite; }
+@keyframes scan { to { transform: translateX(100%); } }
+.sk.line { height: 12px; }
+.sk.line.sm { height: 10px; }
+.sk.pill { height: 22px; border-radius: var(--radius-full); }
+.sk.chip { height: 20px; width: 72px; }
+.sk.circle { border-radius: 50%; }
+.sk-group > .sk:nth-child(2)::after { animation-delay: .08s; }
+.sk-group > .sk:nth-child(3)::after { animation-delay: .16s; }
+.sk-group > .sk:nth-child(4)::after { animation-delay: .24s; }
+
+/* Mini timeline that fills in while a row loads */
+.sk-tl { display: flex; gap: 1px; height: 16px; }
+.sk-tl i { width: 3px; border-radius: 1px; background: var(--surface-3); animation: tl-fill 2.4s steps(1) infinite; }
+@keyframes tl-fill { 0% { background: var(--surface-3); } 50%, 92% { background: color-mix(in srgb, var(--series-3) 70%, var(--surface-3)); } }
+
+/* ---------- Inline loader: checkpoints that occasionally roll back ---------- */
+.cpl { display: inline-flex; align-items: center; gap: var(--space-3); font-size: var(--text-sm); color: var(--text-2); }
+.cpl .sq { display: inline-flex; gap: 3px; }
+.cpl .sq i { width: 7px; height: 7px; border-radius: 2px; background: var(--surface-3); box-shadow: inset 0 0 0 1px var(--border); animation: cp 2.6s var(--ease) infinite; }
+.cpl .sq i:nth-child(2) { animation-delay: .18s; }
+.cpl .sq i:nth-child(3) { animation-name: cp-fail; animation-delay: .36s; }
+.cpl .sq i:nth-child(4) { animation-delay: .9s; }
+.cpl .sq i:nth-child(5) { animation-delay: 1.08s; }
+@keyframes cp { 0%, 8% { background: var(--surface-3); } 14%, 80% { background: var(--success); box-shadow: none; } 100% { background: var(--surface-3); } }
+@keyframes cp-fail { 0%, 8% { background: var(--surface-3); } 14%, 26% { background: var(--warning); box-shadow: none; transform: translateY(-3px); } 34%, 40% { background: var(--surface-3); transform: none; } 46%, 80% { background: var(--success); box-shadow: none; } 100% { background: var(--surface-3); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sk::after, .sk-tl i, .cpl .sq i, .boot-mark, .track .gate.wait { animation: none !important; }
+  .sk-tl i { background: var(--surface-3); }
+}

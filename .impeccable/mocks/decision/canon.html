@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;font:14px/20px Inter,sans-serif;color:#E6E8EB;background:#0B0D10;display:grid;grid-template-columns:220px 1fr}
+.rail{background:#0F1115;border-right:1px solid #1F242B;padding:20px 14px;display:flex;flex-direction:column;gap:2px}
+.rail b{margin-bottom:20px}.nav{padding:7px 10px;border-radius:6px;color:#9AA3AE}.nav.on{background:#16191E;color:#fff}
+main{padding:24px 28px;display:grid;grid-template-rows:auto 1fr;gap:20px}
+h1{font-size:20px;font-weight:600}.sub{color:#8B95A1;margin-top:4px}
+.grid{display:grid;grid-template-columns:440px 1fr;gap:16px}
+.panel{background:#16191E;border:1px solid #232830;border-radius:8px;padding:14px}
+.s{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1F242B;font:12px "JetBrains Mono"}
+.x{text-decoration:line-through;color:#6B7480}
+pre{font:12px/19px "JetBrains Mono";color:#C9D1D9}
+.btn{font:500 13px Inter;padding:8px 14px;border-radius:6px;border:1px solid #2B313A;background:#16191E;color:#E6E8EB}.pri{background:#5B8CFF;border-color:#5B8CFF;color:#0B0D10}
+.w{color:#F0A443}.r{color:#F2555A}
+</style></head><body>
+<aside class="rail"><b>Resolver</b><div class="nav">Overview</div><div class="nav on">Runs</div><div class="nav">New run</div><div class="nav">Security</div><div class="nav">Audit log</div><div class="nav">Members</div></aside>
+<main><div style="display:flex;justify-content:space-between"><div><h1>Refund webhook double-charges on retry</h1><div class="sub">RUN-0142 · payments-api #482 · Claude Sonnet · 06:42 · 182,430 tokens</div></div><div style="display:flex;gap:8px"><button class="btn">Cancel</button><button class="btn pri">Review change</button></div></div>
+<div class="grid"><div class="panel"><div class="s"><span>09 pytest tests/webhooks</span><span>passed</span></div><div class="s"><span class="x">11 pip install requests==2.19.0</span><span class="w">rolled back</span></div><div class="s"><span>13 idempotency --check</span><span>passed</span></div><div class="s"><span class="x">14 rm -rf migrations/0042_*</span><span class="w">rolled back</span></div><div class="s"><span>37 gh pr create</span><span class="r">held</span></div></div>
+<div class="panel"><pre>$ provenance_scan --base main
+app/refunds.py      +42 −11
+<span class="r">FLAG-3 new URL https://hooks.pay-relay.io/v2/ack</span>
+first seen step 4 · logs/stripe-replay.log
+gate: awaiting_review</pre></div></div></main></body></html>

@@ -1,0 +1,6 @@
+# Verification screenshots taken while building (regenerable, large)
+.impeccable/review/
+.DS_Store
+Thumbs.db
+.impeccable/config.local.json
+.impeccable/hook.cache.json

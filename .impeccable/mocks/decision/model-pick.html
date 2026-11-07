@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;font:14px/20px "Atkinson Hyperlegible",sans-serif;color:#15171A;background:#EEF2F6;display:grid;grid-template-columns:220px 1fr}
+.rail{background:#15171A;color:#C9CED6;padding:20px 16px;display:flex;flex-direction:column;gap:4px}
+.brand{font-weight:700;color:#fff;margin-bottom:24px}
+.nav{padding:8px 12px;border-radius:6px}.nav.on{background:#262A31;color:#fff}
+main{padding:24px 32px;display:grid;grid-template-rows:auto 1fr;gap:20px}
+.top{display:flex;justify-content:space-between;align-items:end}
+.pg{font:500 12px "JetBrains Mono";color:#1E3A8A}
+h1{font-size:24px;line-height:30px;font-weight:700}
+.meta{font-size:13px;color:#4B5563;margin-top:6px}
+.sheet{background:#F8FAFC;border:1px solid #C7D3E2;border-radius:6px;display:grid;grid-template-columns:1fr 420px;overflow:hidden}
+.lines{background:repeating-linear-gradient(#F8FAFC 0 39px,#D5E1EF 39px 40px);padding:8px 0 0}
+.row{display:grid;grid-template-columns:64px 1fr 140px;height:40px;align-items:center;padding-right:20px;border-left:2px solid #E4A3A6;margin-left:48px}
+.row .n{font:500 12px "JetBrains Mono";color:#1E3A8A;padding-left:12px}
+.row code{font:400 12px "JetBrains Mono";color:#1E3A8A}
+.struck code{text-decoration:line-through;text-decoration-color:#C2272D;color:#6B7280}
+.init{font-size:12px;color:#C2272D}
+.okk{font-size:12px;color:#166534}
+.side{border-left:1px solid #C7D3E2;padding:20px;display:flex;flex-direction:column;gap:16px;background:#fff}
+.box{border:1px solid #C7D3E2;border-radius:6px;padding:14px}
+.box h3{font-size:15px}.box p{font-size:13px;color:#4B5563;margin-top:4px}
+.sig{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.sig div{border-bottom:1px solid #15171A;height:36px;font-size:11px;color:#6B7280}
+.btn{font:700 13px "Atkinson Hyperlegible";padding:9px 14px;border-radius:6px;border:1px solid #15171A;background:#fff}
+.pri{background:#1E3A8A;color:#fff;border-color:#1E3A8A}
+pre{font:400 12px/19px "JetBrains Mono";color:#1F2937}
+.r{color:#C2272D}
+</style></head><body>
+<aside class="rail"><div class="brand">Autonomous GitHub Resolver</div><div class="nav">Overview</div><div class="nav on">Runs</div><div class="nav">New run</div><div class="nav">Security findings</div><div class="nav">Audit log</div><div class="nav">Members</div></aside>
+<main><div class="top"><div><div class="pg">RUN-0142 · page 37 of record</div><h1>Refund webhook double-charges on retry</h1><div class="meta">acme-labs/payments-api #482 · Claude Sonnet · 06:42 elapsed · 182,430 tokens</div></div><button class="btn">Cancel run</button></div>
+<section class="sheet"><div class="lines">
+<div class="row"><span class="n">09</span><code>pytest tests/webhooks -x</code><span class="okk">passed</span></div>
+<div class="row"><span class="n">10</span><code>sed -i 's/retry=3/retry=0/' app/refunds.py</code><span class="okk">done</span></div>
+<div class="row struck"><span class="n">11</span><code>pip install requests==2.19.0</code><span class="init">struck · reverted to CP-10</span></div>
+<div class="row"><span class="n">12</span><code>git diff app/refunds.py</code><span class="okk">done</span></div>
+<div class="row"><span class="n">13</span><code>python -m app.idempotency --check</code><span class="okk">passed</span></div>
+<div class="row struck"><span class="n">14</span><code>rm -rf migrations/0042_*</code><span class="init">struck · reverted to CP-13</span></div>
+<div class="row"><span class="n">15</span><code>pytest tests -q</code><span class="okk">passed</span></div>
+<div class="row"><span class="n">37</span><code>gh pr create --draft</code><span class="init">held for witness</span></div>
+</div>
+<div class="side"><div class="box"><h3>Witness required · FLAG-3</h3><p>New URL https://hooks.pay-relay.io/v2/ack, first read at step 4 from logs/stripe-replay.log.</p>
+<div class="sig"><div>Recorded by: agent</div><div>Witnessed by: —</div></div>
+<div style="display:flex;gap:8px;margin-top:14px"><button class="btn pri">Review and sign</button><button class="btn">Reject</button></div></div>
+<div class="box"><pre>$ provenance_scan --base main
+app/refunds.py      +42 −11
+app/idempotency.py  +88 −0
+<span class="r">FLAG-3 new URL hooks.pay-relay.io</span>
+gate: awaiting_review</pre></div></div></section></main></body></html>

@@ -1,0 +1,61 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Martian+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;color:#E8E3D8;font:14px/20px "Hanken Grotesk",sans-serif;background:#16171A;display:grid;grid-template-rows:52px 250px 1fr}
+.top{display:flex;align-items:center;gap:28px;padding:0 28px;border-bottom:1px solid #2A2C31}
+.top b{font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:13px}
+.top a{color:#9C978C;font-size:13px}.top a.on{color:#E8E3D8;border-bottom:1px solid #E8E3D8;padding-bottom:2px}
+.sp{flex:1}.meta{font:12px "Martian Mono";color:#9C978C}
+.spec{position:relative;background:repeating-linear-gradient(90deg,#1B1C20 0 3px,#1E1F23 3px 7px,#1A1B1F 7px 12px);border-bottom:1px solid #2A2C31;padding:24px 28px}
+.spec h1{font-size:20px;font-weight:600;letter-spacing:.01em}.spec .s{font:12px "Martian Mono";color:#9C978C;margin-top:4px}
+.rail{position:absolute;left:28px;right:28px;top:96px;height:110px;border-bottom:1px solid #4A4C52}
+.rail i{position:absolute;bottom:0;width:2px;height:100%}
+.rail i.dash{background:repeating-linear-gradient(#7CC6FE 0 6px,transparent 6px 10px)!important}
+.rail i.half{height:50%}
+.rail i.struck{height:100%;opacity:.9}
+.rail i.struck::after{content:"";position:absolute;left:-7px;right:-7px;top:46%;height:2px;background:#FF6B6B;transform:rotate(-28deg)}
+.rail i.dbl{width:2px;box-shadow:5px 0 0 #FFD54A;background:#FFD54A;height:120%}
+.ticks{position:absolute;left:28px;right:28px;top:214px;display:flex;justify-content:space-between;font:11px "Martian Mono";color:#7D786E}
+.lbl{position:absolute;font:500 12px "Hanken Grotesk";color:#FFD54A;white-space:nowrap}
+.legend{position:absolute;right:28px;top:24px;display:flex;gap:18px;font-size:12px;color:#9C978C}
+.legend span{display:flex;align-items:center;gap:6px}.legend em{display:inline-block;width:2px;height:14px;background:#E8E3D8}
+.grid{display:grid;grid-template-columns:460px 1fr 400px;gap:16px;padding:16px 28px}
+.plate{background:#202226;border:1px solid #2E3035;border-radius:4px;overflow:hidden}
+.ph{padding:12px 16px;border-bottom:1px solid #2E3035;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#9C978C;display:flex;justify-content:space-between}
+.st{display:grid;grid-template-columns:40px 1fr auto;height:36px;align-items:center;padding:0 16px;font:12.5px "Martian Mono";border-bottom:1px solid #26282C}
+.st .n{color:#7D786E}.ok{color:#9BE38B;font-family:"Hanken Grotesk";font-size:12px}
+.x .c{text-decoration:line-through;text-decoration-color:#FF6B6B;text-decoration-thickness:2px;color:#9C978C}.x .t{color:#FF6B6B;font:12px "Hanken Grotesk"}
+.cur{background:#2A2A22;box-shadow:inset 2px 0 0 #FFD54A}.cur .t{color:#FFD54A;font:12px "Hanken Grotesk"}
+pre{font:12.5px/21px "Martian Mono";padding:12px 16px;color:#D9D4C9}.d{color:#7D786E}.r{color:#FF6B6B}.g{color:#9BE38B}.y{color:#FFD54A}
+.flag{padding:16px}.flag b{display:block;font-size:16px;color:#FFD54A}.flag p{font-size:13px;color:#B9B3A7;margin:4px 0 12px}
+.dl{font:12px/22px "Martian Mono";padding:0 10px}.dl.m{background:#3A2224;color:#FFB3B3}.dl.p{background:#1E3324;color:#B9F0AE}
+.act{display:flex;gap:8px;margin-top:14px}.btn{flex:1;text-align:center;padding:9px;border-radius:4px;font:600 13px "Hanken Grotesk";border:1px solid #4A4C52}.btn.y{background:#FFD54A;color:#16171A;border-color:#FFD54A}
+</style></head><body>
+<header class="top"><b>Resolver</b><a>Overview</a><a class="on">Runs</a><a>Findings</a><a>Audit log</a><a>Members</a><span class="sp"></span><span class="meta">RUN-0142 · 06:42 · 182,430 tok</span><span style="border:1px solid #6B3B3B;color:#FF8A8A;padding:6px 12px;border-radius:4px;font-size:13px;margin-left:32px">Cancel run</span></header>
+<section class="spec"><h1>Refund webhook double-charges on retry</h1><div class="s">acme-labs/payments-api #482 · claude-sonnet · 37 steps · 2 struck · 1 flag</div>
+<div class="legend"><span><em></em>passed</span><span><em style="background:repeating-linear-gradient(#7CC6FE 0 4px,transparent 4px 7px)"></em>running</span><span><em style="background:#FF6B6B"></em>struck</span><span><em style="background:#FFD54A;box-shadow:3px 0 0 #FFD54A"></em>flagged</span></div>
+<div class="rail"><i class="" style="left:0.00%;background:#6C9BFF"></i><i class="" style="left:2.78%;background:#4FC3F7"></i><i class="" style="left:5.56%;background:#9BE38B"></i><i class="half" style="left:8.33%;background:#FFD54A"></i><i class="" style="left:11.11%;background:#C9C3B6"></i><i class="" style="left:13.89%;background:#8C7CFF"></i><i class="half" style="left:16.67%;background:#6C9BFF"></i><i class="" style="left:19.44%;background:#4FC3F7"></i><i class="" style="left:22.22%;background:#9BE38B"></i><i class="" style="left:25.00%;background:#FF9A4D"></i><i class="struck" style="left:27.78%;background:#C9C3B6;background:#FF6B6B"></i><i class="" style="left:30.56%;background:#8C7CFF"></i><i class="struck" style="left:33.33%;background:#6C9BFF;background:#FF6B6B"></i><i class="half" style="left:36.11%;background:#4FC3F7"></i><i class="" style="left:38.89%;background:#9BE38B"></i><i class="" style="left:41.67%;background:#FF9A4D"></i><i class="" style="left:44.44%;background:#C9C3B6"></i><i class="" style="left:47.22%;background:#8C7CFF"></i><i class="" style="left:50.00%;background:#6C9BFF"></i><i class="" style="left:52.78%;background:#4FC3F7"></i><i class="half" style="left:55.56%;background:#9BE38B"></i><i class="" style="left:58.33%;background:#FF9A4D"></i><i class="" style="left:61.11%;background:#C9C3B6"></i><i class="" style="left:63.89%;background:#8C7CFF"></i><i class="" style="left:66.67%;background:#6C9BFF"></i><i class="" style="left:69.44%;background:#4FC3F7"></i><i class="" style="left:72.22%;background:#9BE38B"></i><i class="half" style="left:75.00%;background:#FF9A4D"></i><i class="" style="left:77.78%;background:#C9C3B6"></i><i class="" style="left:80.56%;background:#8C7CFF"></i><i class="" style="left:83.33%;background:#6C9BFF"></i><i class="" style="left:86.11%;background:#4FC3F7"></i><i class="" style="left:88.89%;background:#9BE38B"></i><i class="" style="left:91.67%;background:#FF9A4D"></i><i class="half" style="left:94.44%;background:#C9C3B6"></i><i class="" style="left:97.22%;background:#8C7CFF"></i><i class="dbl" style="left:100.00%;background:#6C9BFF"></i></div>
+<div class="lbl" style="left:160px;top:76px;color:#FF6B6B">11 ↶ CP-10</div><div class="lbl" style="left:345px;top:76px;color:#FF6B6B">13 ↶ CP-12 root cause</div><div class="lbl" style="left:118px;top:226px;color:#FFD54A">4 read stripe-replay.log</div><div class="lbl" style="left:1290px;top:76px">37 FLAG-3 held</div>
+<div class="ticks"><span>1</span><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>37</span></div></section>
+<section class="grid">
+<div class="plate"><div class="ph"><span>Steps</span><span>36 checkpoints</span></div>
+<div class="st"><span class="n">09</span><span>pytest tests/webhooks -x</span><span class="ok">passed</span></div>
+<div class="st x"><span class="n">11</span><span class="c">pip install requests==2.19.0</span><span class="t">struck · CP-10</span></div>
+<div class="st"><span class="n">12</span><span>git diff app/refunds.py</span><span class="ok">CP-12</span></div>
+<div class="st x"><span class="n">13</span><span class="c">rm -rf migrations/0042_*</span><span class="t">root cause</span></div>
+<div class="st"><span class="n">14</span><span>pytest tests -q</span><span class="ok">passed</span></div>
+<div class="st cur"><span class="n">37</span><span>gh pr create --draft</span><span class="t">held</span></div></div>
+<div class="plate"><div class="ph"><span>Live log</span><span>network none</span></div><pre><span class="d">$ provenance_scan --base main</span>
+app/refunds.py        <span class="g">+42</span> <span class="r">−11</span>
+app/idempotency.py    <span class="g">+88</span>
+<span class="g">✓ no new dependencies</span>
+<span class="y">◆ FLAG-3 new URL https://hooks.pay-relay.io/v2/ack</span>
+<span class="d">  first seen step 4 · logs/stripe-replay.log</span>
+<span class="d">  STRIPE_KEY=████████ masked</span>
+gate: awaiting_review</pre></div>
+<div class="plate flag"><b>FLAG-3 · new URL from an untrusted log</b><p>Introduced at step 37, traced to step 4.</p>
+<div class="dl m">119 − url = settings.STRIPE_ACK_URL</div><div class="dl p">119 + url = "https://hooks.pay-relay.io/v2/ack"</div>
+<div class="act"><span class="btn y">Reject</span><span class="btn">Approve &amp; open PR</span></div></div>
+</section>
+</body></html>

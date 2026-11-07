@@ -1,0 +1,117 @@
+{
+  "title": "Bolder hand: choose the visual world",
+  "question": "You asked for bolder: six foreign forms, nothing safe. The first one dealt leads. Each sketch is the live run screen. Pick one, steer it, or re-roll.",
+  "options": [
+    {
+      "id": "lead-graphite",
+      "kind": "challenger",
+      "catalogId": "digital-design-canon-dark-first-developer-console",
+      "kicker": "THE ROLL",
+      "label": "Graphite Seams",
+      "verdict": "competitive",
+      "lineage": "dark-first developer consoles, GitHub's own type family",
+      "thesis": "A graphite workbench of persistent tiled panels where every step is coloured like syntax: verbs, paths and numbers read the way code does.",
+      "palette": ["#111318", "#16191F", "#B48EF0", "#8BD49C", "#F0B45C", "#F2707A", "#6CB6FF"],
+      "materials": ["graphite ground", "1px seams instead of shadows", "syntax-colour state", "Mona Sans + Martian Mono"],
+      "viewport": "Thin top bar with the run's lifecycle strip; three tiled panels (step tree, live log, provenance) divided by hairline seams; Cancel run isolated alone at the far right.",
+      "risk": "Dark dev consoles are a familiar genre; the syntax-coloured steps and lifecycle strip must carry the distinction.",
+      "raised": [
+        {"from": "decl-feed", "raise": "Review takes over: one flag owns the whole work area at a time, and the next flag is one keypress away."},
+        {"from": "decl-folio", "raise": "Every run carries the same fixed-scale lifecycle strip (Queued, Running, Recovering, Review, PR) so runs compare at a glance."}
+      ],
+      "html": ".impeccable/mocks/decision/r1-lead-graphite.html"
+    },
+    {
+      "id": "ch-boarding",
+      "kind": "challenger",
+      "catalogId": "vernacular-ephemera-boarding-pass-and-gate-board",
+      "label": "Boarding Pass",
+      "verdict": "competitive",
+      "lineage": "airline boarding passes and live gate boards",
+      "thesis": "Each run is a ticket from issue to pull request; the org board reranks live and a changed run stays lit in signal orange until someone notices.",
+      "palette": ["#0D0F12", "#FFFFFF", "#FF5A1F", "#1C2128", "#9AA3AF"],
+      "materials": ["black gate board", "white perforated pass", "signal orange for changes only", "Archivo wide + Red Hat Mono"],
+      "viewport": "Left: dark live board of org runs in fixed columns. Right: the selected run as a segmented pass (FROM repo, TO pull request, ISSUE, MODEL, SEQ), its hash as the scannable block, status GATE HOLD.",
+      "case": "The strongest demo-screenshot moment in the hand; the pass metaphor is a stretch for audit-log and settings screens.",
+      "risk": "If the ticket grows decorative it becomes a costume; the segments must hold real run data."
+    ,
+      "html": ".impeccable/mocks/decision/r1-boarding.html"
+    },
+    {
+      "id": "ch-emission",
+      "kind": "challenger",
+      "catalogId": "operate-c-emission-line-rail",
+      "label": "Emission Rail",
+      "verdict": "competitive",
+      "lineage": "glass spectrograms on a light box",
+      "thesis": "The whole run is one spectrum: every step a hairline on a charcoal rail; state is line form, so a rollback is a struck line and a security flag is a doubled sodium-yellow line.",
+      "palette": ["#1A1B1E", "#24262A", "#E8E3D8", "#FFD54A", "#7CC6FE", "#9BE38B", "#FF6B6B"],
+      "materials": ["banded charcoal continuum", "bone legends", "needle-thin coloured lines", "Hanken Grotesk + Martian Mono"],
+      "viewport": "A full-width spectrum rail of all 37 steps across the top (struck lines for rollbacks, a doubled yellow line for FLAG-3); below it, ash panels for the selected step, live log and provenance.",
+      "case": "The most original wow moment, and state-by-shape is accessible; the rail is unfamiliar at first sight.",
+      "risk": "Hairline encoding needs a legend early, or first-time viewers will not decode it."
+    ,
+      "html": ".impeccable/mocks/decision/r1-emission.html"
+    },
+    {
+      "id": "ch-orienteering",
+      "kind": "challenger",
+      "catalogId": "notation-diagram-systems-orienteering-map",
+      "label": "Orienteering Course",
+      "verdict": "competitive",
+      "lineage": "ISO orienteering maps",
+      "thesis": "The run is a course: checkpoints are numbered controls, the agent's path rides in purple, and a rollback is a leg drawn back to an earlier control.",
+      "palette": ["#FFFFFF", "#A626A4", "#C08A4A", "#6C8E3A", "#F5D94A", "#3B82C4", "#111111"],
+      "materials": ["contour hairlines", "course purple", "map inks as state colours", "Barlow Semi Condensed + Public Sans"],
+      "viewport": "Top: the run as a course map (React Flow) with numbered checkpoint circles and purple legs, rollback legs dashed back; below: the control description table and live log.",
+      "case": "Checkpoint graph is a great fit for React Flow and very memorable; it is a light page, which you said felt plain.",
+      "risk": "Light ground again; the colour comes from the map inks, not the shell."
+    ,
+      "html": ".impeccable/mocks/decision/r1-orienteering.html"
+    },
+    {
+      "id": "decl-feed",
+      "kind": "challenger",
+      "catalogId": "pop-culture-shelf-vertical-video-feed-surface",
+      "label": "Vertical Feed",
+      "verdict": "declined",
+      "lineage": "full-bleed vertical video feeds",
+      "thesis": "One item owns the screen; the next is one snap away.",
+      "palette": ["#000000", "#FFFFFF", "#FE2C55"],
+      "materials": ["full-bleed media", "right glyph rail"],
+      "viewport": "One run per screen with action glyphs on the right.",
+      "case": "Entertainment register and no media to fill it; loses both axes.",
+      "kept": "Review: one flag owns the work area at a time.",
+      "risk": "Wrong audience scene."
+    },
+    {
+      "id": "decl-folio",
+      "kind": "challenger",
+      "catalogId": "editorial-sequence-montage-botanical-folio-season",
+      "label": "Botanical Folio",
+      "verdict": "declined",
+      "lineage": "botanical life-stage plates",
+      "thesis": "One subject at identical scale through every stage.",
+      "palette": ["#F3ECDD", "#2F5D3A", "#B3261E", "#1B1B1B"],
+      "materials": ["cream plates", "engraved italics"],
+      "viewport": "Five plates of a run's life stages.",
+      "case": "Cream editorial reads as the very slop you want to avoid; loses both axes.",
+      "kept": "A fixed-scale lifecycle strip on every run.",
+      "risk": "Nostalgic, soft."
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "code", "toggle": false},
+  "canon": true,
+  "canonCard": {
+    "kind": "canon",
+    "label": "The category standard",
+    "thesis": "The dark developer dashboard every AI dev tool ships, done impeccably.",
+    "palette": ["#0B0D10", "#16191E", "#E6E8EB", "#5B8CFF"],
+    "materials": ["near-black panels", "hairline borders", "one blue accent"],
+    "viewport": "Dark side nav, run list and live terminal panes, blue primary buttons.",
+    "risk": "Indistinguishable from the competition by design.",
+    "html": ".impeccable/mocks/decision/canon.html"
+  },
+  "steer": true
+}

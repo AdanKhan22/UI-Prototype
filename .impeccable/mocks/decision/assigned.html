@@ -1,0 +1,71 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;font:14px/20px Barlow,sans-serif;color:#22272E;background:#F3F6F9;display:grid;grid-template-columns:232px 1fr}
+.rail{background:#173F66;color:#D6E2EE;padding:20px 16px;display:flex;flex-direction:column;gap:4px}
+.brand{font:600 15px/20px "Barlow Semi Condensed";color:#fff;letter-spacing:.02em;margin-bottom:24px}
+.nav{padding:8px 12px;border-radius:4px;font-weight:500}
+.nav.on{background:#0F2E4C;color:#fff;box-shadow:inset 0 0 0 1px #2C5A86}
+.org{margin-top:auto;font-size:12px;color:#9DB4CB}
+main{display:grid;grid-template-rows:auto 1fr;min-width:0}
+header{display:grid;grid-template-columns:1fr auto;gap:24px;padding:20px 28px;border-bottom:1px solid #C9D4DF;background:#fff}
+.id{font:500 12px/16px "JetBrains Mono";color:#5B6B7B}
+h1{font:600 22px/28px Barlow;margin:4px 0 8px}
+.meta{display:flex;gap:20px;font-size:13px;color:#4A5867}
+.meta b{font:500 13px "JetBrains Mono";color:#22272E}
+.tb{display:grid;grid-template-columns:repeat(3,120px);border:1px solid #22272E;font-size:11px}
+.tb div{padding:6px 8px;border-left:1px solid #22272E}.tb div:first-child{border-left:0}
+.tb span{display:block;font:600 10px "Barlow Semi Condensed";letter-spacing:.08em;text-transform:uppercase;color:#5B6B7B}
+.tb .pend{color:#D22E2A;font-weight:600}
+.btn{font:600 13px Barlow;padding:8px 14px;border-radius:4px;border:1px solid #22272E;background:#fff}
+.work{display:grid;grid-template-columns:520px 1fr;min-height:0}
+.steps{border-right:1px solid #C9D4DF;padding:16px 0;background:linear-gradient(#E3EAF1 1px,transparent 1px) 0 0/100% 40px}
+.sh{font:600 11px "Barlow Semi Condensed";letter-spacing:.08em;text-transform:uppercase;color:#5B6B7B;padding:0 28px 12px}
+.st{display:grid;grid-template-columns:56px 1fr auto;align-items:center;height:40px;padding:0 28px;font-size:13px}
+.st .n{font:500 12px "JetBrains Mono";color:#5B6B7B}
+.st code{font:400 12px "JetBrains Mono"}
+.ok{color:#2F7A4F;font-weight:600;font-size:12px}
+.rb code{text-decoration:line-through;text-decoration-color:#D22E2A;text-decoration-thickness:2px;color:#7A8796}
+.delta{font:600 11px "JetBrains Mono";color:#D22E2A;border:1.5px solid #D22E2A;padding:1px 6px;clip-path:none}
+.cur{background:#E4EDF7;box-shadow:inset 3px 0 0 #173F66}
+.note{margin:4px 28px 4px 84px;padding:8px 12px;border:1.5px dashed #D22E2A;border-radius:12px;color:#8E1F1C;font-size:12px;background:#fff}
+.log{background:#fff;padding:16px 28px;display:flex;flex-direction:column;min-width:0}
+pre{font:400 12px/20px "JetBrains Mono";color:#22272E;background:#F7F9FB;border:1px solid #C9D4DF;padding:12px 16px;flex:1;overflow:hidden}
+.err{color:#B4232A}.dim{color:#7A8796}
+.flag{margin-top:16px;border:2px solid #D22E2A;border-radius:18px;padding:14px 18px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.flag h3{font:600 15px Barlow}.flag p{font-size:13px;color:#4A5867}
+.primary{background:#173F66;color:#fff;border-color:#173F66}
+</style></head><body>
+<aside class="rail"><div class="brand">AUTONOMOUS GITHUB RESOLVER</div>
+<div class="nav">Overview</div><div class="nav on">Runs</div><div class="nav">New run</div><div class="nav">Security findings</div><div class="nav">Audit log</div><div class="nav">Members</div>
+<div class="org">acme-labs · Member</div></aside>
+<main>
+<header><div><div class="id">RUN-0142 · acme-labs/payments-api #482</div>
+<h1>Refund webhook double-charges on retry</h1>
+<div class="meta"><span>Elapsed <b>06:42</b></span><span>Step <b>37</b></span><span>Tokens <b>182,430</b></span><span>Model <b>Claude Sonnet</b></span></div></div>
+<div style="display:flex;gap:12px;align-items:start"><div class="tb"><div><span>Drawn</span>agent</div><div><span>Checked</span>gate: 1 flag</div><div><span>Approved</span><em class="pend">awaiting you</em></div></div><button class="btn">Cancel run</button></div></header>
+<section class="work">
+<div class="steps"><div class="sh">Step history · checkpoints CP-1 to CP-36</div>
+<div class="st"><span class="n">09</span><code>pytest tests/webhooks -x</code><span class="ok">passed</span></div>
+<div class="st"><span class="n">10</span><code>sed -i 's/retry=3/retry=0/' app/refunds.py</code><span class="ok">done</span></div>
+<div class="st rb"><span class="n">11</span><code>pip install requests==2.19.0</code><span class="delta">Δ1 rolled back</span></div>
+<div class="note">Reverted to CP-10: dependency downgrade broke 14 tests. Memory trimmed to step 10.</div>
+<div class="st"><span class="n">12</span><code>git diff app/refunds.py</code><span class="ok">done</span></div>
+<div class="st"><span class="n">13</span><code>python -m app.idempotency --check</code><span class="ok">passed</span></div>
+<div class="st rb"><span class="n">14</span><code>rm -rf migrations/0042_*</code><span class="delta">Δ2 rolled back</span></div>
+<div class="st"><span class="n">15</span><code>pytest tests -q</code><span class="ok">passed</span></div>
+<div class="st cur"><span class="n">37</span><code>gh pr create --draft</code><span class="delta">held by gate</span></div>
+</div>
+<div class="log"><div class="sh" style="padding:0 0 12px">Live log · step 37</div>
+<pre><span class="dim">$ python scripts/provenance_scan.py --base main</span>
+scanning 6 changed files…
+app/refunds.py          +42 −11
+app/idempotency.py      +88 −0
+tests/test_refunds.py   +61 −4
+<span class="err">FLAG-3  new URL  https://hooks.pay-relay.io/v2/ack</span>
+<span class="dim">        first seen: step 4 · read logs/stripe-replay.log</span>
+<span class="dim">        not present in base branch</span>
+gate: run paused · status awaiting_review</pre>
+<div class="flag"><div><h3>FLAG-3 · New URL introduced from an untrusted log</h3><p>Traced to step 4, where the agent read logs/stripe-replay.log. Review the diff before a PR opens.</p></div><button class="btn primary">Review change</button></div>
+</div></section></main></body></html>

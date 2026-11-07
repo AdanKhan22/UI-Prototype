@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resolver Theme</title>
+<script>try{var q=new URLSearchParams(location.search).get("theme");var t=q||localStorage.getItem("resolver-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<link rel="stylesheet" href="theme/tokens.css">
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<style>
+  svg.lucide { width: 16px; height: 16px; stroke-width: 1.75; flex: none; }
+
+  /* ── Top bar ── */
+  .topbar { position: sticky; top: 0; z-index: 20; height: var(--topbar); display: flex; align-items: center; gap: var(--space-4); padding: 0 var(--space-6); background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--border); }
+  .mark { width: 26px; height: 26px; border-radius: var(--radius-sm); background: var(--brand-gradient); display: grid; place-items: center; color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+  .mark svg.lucide { width: 15px; height: 15px; stroke-width: 2.25; }
+  .slash { color: var(--border-strong); font-size: 20px; font-weight: 300; }
+  .org { display: flex; align-items: center; gap: var(--space-2); font-weight: 500; }
+  .org .av { width: 20px; height: 20px; border-radius: var(--radius-full); background: linear-gradient(135deg,#f5b544,#ff6369); }
+  .org small { font-size: var(--text-xs); color: var(--text-3); border: 1px solid var(--border); border-radius: var(--radius-full); padding: 0 var(--space-2); }
+  .tabs { display: flex; gap: 2px; margin-left: var(--space-4); }
+  .tab { position: relative; height: var(--topbar); display: flex; align-items: center; padding: 0 var(--space-3); color: var(--text-2); font-weight: 500; }
+  .tab:hover { color: var(--text); text-decoration: none; }
+  .tab[aria-current="page"] { color: var(--text); }
+  .tab[aria-current="page"]::after { content: ""; position: absolute; left: var(--space-3); right: var(--space-3); bottom: -1px; height: 2px; border-radius: 2px; background: var(--text); }
+  .tab .count { margin-left: 6px; font-size: var(--text-xs); color: var(--warning); background: var(--warning-subtle); border: 1px solid var(--warning-border); border-radius: var(--radius-full); padding: 0 6px; line-height: 16px; }
+  .grow { flex: 1; }
+  .search { display: flex; align-items: center; gap: var(--space-2); height: 32px; width: 220px; padding: 0 var(--space-2) 0 var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text-3); font-size: var(--text-sm); }
+  .search kbd { margin-left: auto; }
+  kbd { font: 500 11px/16px var(--font-mono); color: var(--text-2); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: var(--radius-xs); padding: 0 5px; background: var(--surface-2); }
+  .icon-btn { width: 32px; height: 32px; display: grid; place-items: center; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); color: var(--text-2); cursor: pointer; }
+  .icon-btn:hover { color: var(--text); background: var(--surface-3); }
+  .me { width: 30px; height: 30px; border-radius: var(--radius-full); background: var(--accent-subtle); color: var(--accent-text); display: grid; place-items: center; font-size: var(--text-xs); font-weight: 600; border: 1px solid var(--accent-border); }
+
+  /* ── Layout ── */
+  .wrap { max-width: var(--content-max); margin: 0 auto; padding: var(--space-12) var(--space-8) var(--space-20); display: grid; grid-template-columns: 184px minmax(0, 1fr); gap: var(--space-12); }
+  .toc { position: sticky; top: calc(var(--topbar) + var(--space-8)); align-self: start; display: grid; gap: 2px; }
+  .toc p { margin: 0 0 var(--space-2); font-size: var(--text-xs); color: var(--text-3); }
+  .toc a { color: var(--text-2); font-size: var(--text-sm); padding: 6px var(--space-3); border-radius: var(--radius-sm); }
+  .toc a:hover { background: var(--surface-3); color: var(--text); text-decoration: none; }
+  .toc a.on { background: var(--surface-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--border); }
+
+  .page-head { display: flex; justify-content: space-between; align-items: end; gap: var(--space-8); padding-bottom: var(--space-8); border-bottom: 1px solid var(--border); }
+  h1 { margin: 0; font-size: var(--text-2xl); line-height: var(--lh-2xl); font-weight: 600; letter-spacing: var(--tracking-tight); }
+  .lead { margin: var(--space-2) 0 0; color: var(--text-2); max-width: 64ch; line-height: 1.5rem; }
+  section { padding-top: var(--space-16); scroll-margin-top: calc(var(--topbar) + var(--space-4)); }
+  h2 { margin: 0; font-size: var(--text-xl); line-height: var(--lh-xl); font-weight: 600; letter-spacing: var(--tracking-snug); }
+  .sec-lead { margin: var(--space-2) 0 var(--space-6); color: var(--text-2); max-width: 70ch; line-height: 1.5rem; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--border); }
+  .card-head h3 { margin: 0; font-size: var(--text-md); font-weight: 600; }
+  .card-head p { margin: 2px 0 0; font-size: var(--text-sm); color: var(--text-3); }
+  .pad { padding: var(--space-5); }
+  .muted { color: var(--text-3); }
+  .mono { font-family: var(--font-mono); font-size: var(--text-sm); }
+
+  /* ── Segmented control ── */
+  .seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+  .seg button { all: unset; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 var(--space-3); border-radius: 4px; font-size: var(--text-sm); font-weight: 500; color: var(--text-2); cursor: pointer; }
+  .seg button:hover { color: var(--text); }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm), 0 0 0 1px var(--border); }
+  .seg button:focus-visible { outline: 2px solid var(--focus); }
+
+  /* ── Colour table ── */
+  .tokens { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+  .tokens th { text-align: left; font-weight: 500; color: var(--text-3); padding: var(--space-3) var(--space-5); background: var(--surface-2); border-bottom: 1px solid var(--border); }
+  .tokens td { padding: 0 var(--space-5); height: 52px; border-bottom: 1px solid var(--divider); vertical-align: middle; }
+  .tokens tr:last-child td { border-bottom: 0; }
+  .tokens td.var { white-space: nowrap; }
+  .tokens .grp td { height: 36px; background: var(--surface-2); color: var(--text-2); font-weight: 600; font-size: var(--text-xs); }
+  .sw { display: inline-flex; align-items: center; gap: var(--space-3); font-weight: 500; }
+  .sw i { width: 28px; height: 28px; border-radius: var(--radius-sm); box-shadow: inset 0 0 0 1px rgba(127,127,140,.3); flex: none; }
+  .hex { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-2); }
+  .var { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--accent-text); }
+
+  /* ── Type ── */
+  .fam { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+  .fam .card { padding: var(--space-6); }
+  .fam .big { font-size: 56px; line-height: 1; letter-spacing: -0.03em; font-weight: 600; margin: var(--space-4) 0 var(--space-5); }
+  .fam .glyphs { color: var(--text-2); font-size: var(--text-lg); line-height: 1.6; }
+  .scale .row { display: grid; grid-template-columns: 220px 1fr; align-items: baseline; gap: var(--space-6); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--divider); }
+  .scale .row:last-child { border-bottom: 0; }
+  .scale .spec { font-size: var(--text-xs); color: var(--text-3); line-height: 1.4; }
+
+  /* ── Space / radius / depth ── */
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+  .sp { display: grid; grid-template-columns: 76px 1fr 32px; align-items: center; gap: var(--space-3); height: 26px; font-size: var(--text-xs); color: var(--text-2); }
+  .sp b { height: 8px; border-radius: 2px; background: var(--series-1); font-weight: 400; }
+  .radii { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+  .radii div { height: 64px; border: 1px solid var(--border-strong); background: var(--surface-2); display: flex; align-items: end; padding: var(--space-2); font-size: var(--text-xs); color: var(--text-2); }
+  .depth { display: grid; gap: var(--space-4); }
+  .depth div { background: var(--overlay); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); font-size: var(--text-sm); color: var(--text-2); }
+
+  /* ── Buttons ── */
+  .row-wrap { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+  .label { width: 100%; font-size: var(--text-xs); color: var(--text-3); margin-top: var(--space-5); }
+  .label:first-child { margin-top: 0; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); height: var(--control); padding: 0 var(--space-4); border-radius: var(--radius-sm); border: 1px solid transparent; font: 500 var(--text-md) / 1 var(--font-sans); cursor: pointer; white-space: nowrap; transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+  .btn-sm { height: var(--control-sm); padding: 0 var(--space-3); font-size: var(--text-sm); }
+  .btn-lg { height: 40px; padding: 0 var(--space-5); }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.14); }
+  .btn-primary:hover, .btn-primary.h { background: var(--accent-hover); }
+  .btn-primary:active, .btn-primary.a { background: var(--accent-pressed); }
+  .btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); box-shadow: var(--shadow-sm); }
+  .btn-secondary:hover, .btn-secondary.h { background: var(--surface-3); border-color: var(--border-strong); }
+  .btn-inverse { background: var(--text); color: var(--bg); }
+  .btn-inverse:hover { opacity: .88; }
+  .btn-ghost { background: transparent; color: var(--text-2); }
+  .btn-ghost:hover, .btn-ghost.h { background: var(--surface-3); color: var(--text); }
+  .btn-danger { background: var(--danger-solid); color: #fff; }
+  .btn-danger:hover { filter: brightness(1.08); }
+  .btn-danger-outline { background: transparent; color: var(--danger); border-color: var(--danger-border); }
+  .btn-danger-outline:hover { background: var(--danger-subtle); }
+  .btn.f { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .btn:disabled { background: var(--surface-2); color: var(--text-disabled); border-color: var(--border); box-shadow: none; cursor: not-allowed; }
+  .spin { animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Inputs ── */
+  .fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-5); }
+  .field { display: grid; gap: 6px; align-content: start; }
+  .field > label { font-size: var(--text-sm); font-weight: 500; }
+  .input { height: var(--control); width: 100%; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface); padding: 0 var(--space-3); color: var(--text); font: var(--text-md) var(--font-sans); transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+  .input::placeholder { color: var(--text-3); }
+  .input:hover { border-color: var(--text-3); }
+  .input:focus, .input.f { outline: none; border-color: var(--accent-text); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 35%, transparent); }
+  .input.err { border-color: var(--danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 30%, transparent); }
+  .input:disabled { background: var(--surface-2); color: var(--text-disabled); border-color: var(--border); }
+  select.input { appearance: none; padding-right: 34px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238b8b94' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m7 15 5 5 5-5'/%3E%3Cpath d='m7 9 5-5 5 5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+  .hint { font-size: var(--text-xs); line-height: var(--lh-xs); color: var(--text-3); }
+  .hint.e { color: var(--danger); display: flex; gap: 6px; }
+  .hint.e svg.lucide { width: 14px; height: 14px; margin-top: 1px; }
+  .toggles { display: flex; gap: var(--space-8); margin-top: var(--space-6); flex-wrap: wrap; }
+  .check { display: inline-flex; align-items: center; gap: var(--space-2); }
+  .check input { width: 16px; height: 16px; margin: 0; }
+  .switch { all: unset; box-sizing: border-box; cursor: pointer; position: relative; width: 34px; height: 20px; border-radius: var(--radius-full); background: var(--accent); flex: none; }
+  .switch::after { content: ""; position: absolute; top: 2px; left: 16px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: var(--shadow-sm); }
+  .switch[aria-checked="false"] { background: var(--border-strong); } .switch[aria-checked="false"]::after { left: 2px; }
+  .switch:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  /* ── Badges ── */
+  .badge { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 var(--space-2); border-radius: var(--radius-full); border: 1px solid; font-size: var(--text-xs); font-weight: 500; white-space: nowrap; }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .badge svg.lucide { width: 13px; height: 13px; stroke-width: 2; }
+  .b-run { color: var(--info); background: var(--info-subtle); border-color: var(--info-border); }
+  .b-run .dot { animation: pulse 1.6s var(--ease) infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  .b-ok { color: var(--success); background: var(--success-subtle); border-color: var(--success-border); }
+  .b-warn { color: var(--warning); background: var(--warning-subtle); border-color: var(--warning-border); }
+  .b-bad { color: var(--danger); background: var(--danger-subtle); border-color: var(--danger-border); }
+  .b-neutral { color: var(--text-2); background: var(--surface-2); border-color: var(--border); }
+  .b-accent { color: var(--accent-text); background: var(--accent-subtle); border-color: var(--accent-border); }
+  .id { font: 500 var(--text-xs) var(--font-mono); color: var(--text-2); background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 1px 6px; white-space: nowrap; }
+
+  /* ── Signature: run timeline ── */
+  .run-top { display: flex; justify-content: space-between; align-items: start; gap: var(--space-6); padding: var(--space-5); }
+  .run-top h3 { margin: var(--space-2) 0 var(--space-1); font-size: var(--text-xl); line-height: var(--lh-xl); font-weight: 600; letter-spacing: var(--tracking-snug); }
+  .meta-row { display: flex; gap: var(--space-5); flex-wrap: wrap; color: var(--text-3); font-size: var(--text-sm); }
+  .meta-row span { display: inline-flex; gap: 6px; align-items: center; }
+  .meta-row b { color: var(--text); font-weight: 500; }
+  .timeline { padding: 0 var(--space-5) var(--space-5); }
+  .tl-bar { display: flex; gap: 3px; height: 40px; align-items: stretch; }
+  .tl-bar i { flex: 1; border-radius: 3px; background: var(--series-3); transform-origin: bottom; animation: grow var(--dur-slow) var(--ease) both; }
+  .tl-bar i.rb { background: var(--series-4); }
+  .tl-bar i.cur { background: var(--series-1); outline: 2px solid var(--series-1); outline-offset: 2px; }
+  .tl-bar i.src { background: repeating-linear-gradient(135deg, var(--series-5) 0 3px, transparent 3px 6px); box-shadow: inset 0 0 0 1px var(--series-5); }
+  @keyframes grow { from { transform: scaleY(.2); opacity: 0; } }
+  .tl-axis { display: flex; justify-content: space-between; margin-top: var(--space-2); font: var(--text-xs) var(--font-mono); color: var(--text-3); }
+  .tl-notes { display: flex; gap: var(--space-5); margin-top: var(--space-4); flex-wrap: wrap; font-size: var(--text-sm); color: var(--text-2); }
+  .tl-notes span { display: inline-flex; align-items: center; gap: var(--space-2); }
+  .tl-notes i { width: 10px; height: 10px; border-radius: 3px; }
+  .steps { border-top: 1px solid var(--border); }
+  .step { display: grid; grid-template-columns: 40px 20px minmax(0, 1fr) auto; align-items: center; column-gap: var(--space-3); min-height: var(--row); padding: var(--space-2) var(--space-5); border-bottom: 1px solid var(--divider); font-size: var(--text-sm); }
+  .step:last-child { border-bottom: 0; }
+  .step .n { font: var(--text-xs) var(--font-mono); color: var(--text-3); }
+  .step code { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ic-ok { color: var(--success); } .ic-rb { color: var(--warning); } .ic-fl { color: var(--danger); }
+  .step.rb code { color: var(--text-3); text-decoration: line-through; text-decoration-color: var(--warning); }
+  .step .why { grid-column: 3 / 5; padding-top: 2px; font-size: var(--text-xs); color: var(--text-3); }
+  .step.cur { background: var(--accent-subtle); }
+
+  /* ── Chart ── */
+  .two { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--space-4); align-items: start; }
+  .figs { display: flex; gap: var(--space-10); padding: var(--space-5) var(--space-5) 0; }
+  .fig small { display: block; font-size: var(--text-sm); color: var(--text-3); margin-bottom: 2px; }
+  .fig b { font-size: var(--text-3xl); line-height: var(--lh-3xl); font-weight: 600; letter-spacing: var(--tracking-tight); }
+  .fig em { font-style: normal; font-size: var(--text-sm); margin-left: var(--space-2); display: inline-flex; align-items: center; gap: 2px; }
+  .fig em svg.lucide { width: 12px; height: 12px; stroke-width: 2; }
+  .up { color: var(--success); } .down { color: var(--danger); }
+  .chart { padding: var(--space-4) var(--space-5) var(--space-3); }
+  .chart svg { width: 100%; height: 200px; display: block; }
+  .legend { display: flex; gap: var(--space-4); flex-wrap: wrap; font-size: var(--text-xs); color: var(--text-2); padding: 0 var(--space-5) var(--space-5); }
+  .legend span { display: inline-flex; gap: 6px; align-items: center; }
+  .legend i { width: 8px; height: 8px; border-radius: 2px; }
+  .series { display: grid; gap: var(--space-3); padding: var(--space-5); }
+  .series div { display: grid; grid-template-columns: 22px 1fr auto; align-items: center; gap: var(--space-3); font-size: var(--text-sm); }
+  .series i { height: 22px; border-radius: var(--radius-xs); }
+
+  /* ── Table ── */
+  .tbl { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+  .tbl th { text-align: left; font-weight: 500; color: var(--text-3); height: 40px; padding: 0 var(--space-5); border-bottom: 1px solid var(--border); background: var(--surface-2); white-space: nowrap; }
+  .tbl th button { all: unset; cursor: pointer; display: inline-flex; gap: 4px; align-items: center; }
+  .tbl th button:hover { color: var(--text); }
+  .tbl th button svg.lucide { width: 13px; height: 13px; }
+  .tbl td { height: 60px; padding: 0 var(--space-5); border-bottom: 1px solid var(--divider); }
+  .tbl tr:last-child td { border-bottom: 0; }
+  .tbl tbody tr { transition: background var(--dur-fast) var(--ease); }
+  .tbl tbody tr:hover { background: var(--surface-3); }
+  .tbl .r { text-align: right; }
+  .tbl .t b { display: block; font-weight: 500; }
+  .tbl .t span { color: var(--text-3); font-size: var(--text-xs); }
+  .mini { display: flex; gap: 1px; width: 148px; height: 16px; }
+  .mini i { flex: 1; border-radius: 1px; background: var(--series-3); }
+  .mini i.rb { background: var(--series-4); } .mini i.fl { background: var(--series-5); } .mini i.e { background: var(--border); }
+
+  /* ── Review ── */
+  .review { background: var(--overlay); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); overflow: hidden; max-width: 760px; }
+  .rv-head { display: flex; gap: var(--space-4); padding: var(--space-5) var(--space-6); border-bottom: 1px solid var(--border); }
+  .rv-icon { width: 36px; height: 36px; border-radius: var(--radius-sm); background: var(--danger-subtle); border: 1px solid var(--danger-border); color: var(--danger); display: grid; place-items: center; flex: none; }
+  .rv-icon svg.lucide { width: 18px; height: 18px; }
+  .rv-head h3 { margin: 0; font-size: var(--text-lg); line-height: var(--lh-lg); font-weight: 600; }
+  .rv-head p { margin: 4px 0 0; color: var(--text-2); font-size: var(--text-sm); }
+  .rv-body { padding: var(--space-5) var(--space-6); display: grid; gap: var(--space-5); }
+  .facts { display: grid; grid-template-columns: 150px 1fr; gap: var(--space-3) var(--space-4); margin: 0; font-size: var(--text-sm); }
+  .facts dt { color: var(--text-3); } .facts dd { margin: 0; }
+  .facts code { font-size: var(--text-xs); background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 1px 5px; }
+  .diff { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; font: var(--text-sm) / 22px var(--font-mono); }
+  .diff-h { display: flex; justify-content: space-between; padding: var(--space-2) var(--space-3); background: var(--surface-2); border-bottom: 1px solid var(--border); font-size: var(--text-xs); color: var(--text-2); }
+  .dl { display: grid; grid-template-columns: 44px 18px 1fr; padding: 0 var(--space-3) 0 0; }
+  .dl span:first-child { text-align: right; padding-right: var(--space-3); color: var(--text-3); }
+  .dl.add { background: var(--diff-add-bg); color: var(--diff-add-text); }
+  .dl.del { background: var(--diff-del-bg); color: var(--diff-del-text); }
+  .dl mark { background: var(--danger-border); color: var(--text); border-radius: 3px; padding: 0 2px; }
+  .rv-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--space-6); border-top: 1px solid var(--border); background: var(--surface-2); }
+  .rv-foot p { margin: 0; display: flex; gap: var(--space-2); align-items: center; font-size: var(--text-xs); color: var(--text-3); }
+  .rv-foot p svg.lucide { width: 14px; height: 14px; }
+
+  /* ── Feedback ── */
+  .alert { display: flex; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); border: 1px solid; font-size: var(--text-sm); color: var(--text); }
+  .alert b { display: block; font-weight: 600; margin-bottom: 2px; }
+  .alert svg.lucide { margin-top: 2px; }
+  .al-info { background: var(--info-subtle); border-color: var(--info-border); } .al-info svg { color: var(--info); }
+  .al-warn { background: var(--warning-subtle); border-color: var(--warning-border); } .al-warn svg { color: var(--warning); }
+  .al-bad { background: var(--danger-subtle); border-color: var(--danger-border); } .al-bad svg { color: var(--danger); }
+  .stack { display: grid; gap: var(--space-3); }
+  .toast { display: flex; align-items: center; gap: var(--space-3); width: fit-content; padding: var(--space-3) var(--space-4); background: var(--overlay); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: var(--text-sm); }
+  .toast svg.lucide { color: var(--success); }
+  .empty { display: grid; justify-items: center; text-align: center; padding: var(--space-12) var(--space-8); border: 1px dashed var(--border); border-radius: var(--radius-md); }
+  .ghost-tl { display: flex; gap: 3px; width: 220px; height: 28px; margin-bottom: var(--space-5); }
+  .ghost-tl i { flex: 1; border-radius: 3px; border: 1px dashed var(--border-strong); }
+  .ghost-tl i:first-child { border: 0; background: var(--accent); }
+  .empty h3 { margin: 0; font-size: var(--text-lg); font-weight: 600; }
+  .empty p { margin: var(--space-2) 0 var(--space-5); color: var(--text-2); max-width: 44ch; font-size: var(--text-sm); line-height: 1.4rem; }
+
+  @media (max-width: 1100px) {
+    .wrap { grid-template-columns: minmax(0, 1fr); padding: var(--space-8) var(--space-6) var(--space-16); }
+    .toc { display: none; }
+    .tabs .tab:nth-child(n+5) { display: none; }
+    .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .two, .fam, .three { grid-template-columns: 1fr; }
+    .search { display: none; }
+  }
+  @media (max-width: 720px) {
+    .wrap { padding: var(--space-6) var(--space-4) var(--space-12); }
+    .tabs, .slash, .org small { display: none; }
+    .page-head { flex-direction: column; align-items: start; gap: var(--space-4); }
+    .fields { grid-template-columns: 1fr; }
+    .scale .row { grid-template-columns: 1fr; gap: var(--space-2); }
+    .facts { grid-template-columns: 1fr; gap: var(--space-1) 0; }
+    .radii { grid-template-columns: repeat(2, 1fr); }
+    .big { font-size: 40px !important; line-height: 1.1; }
+    table.tokens, table.tbl { min-width: 640px; }
+    .tbl .t { min-width: 240px; }
+    .run-top, .rv-foot { flex-wrap: wrap; gap: var(--space-3); }
+    .run-top .row-wrap, .rv-foot .row-wrap { min-width: 0; flex-basis: 100%; flex-wrap: wrap !important; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="mark"><i data-lucide="git-pull-request-arrow"></i></span>
+  <span class="slash">/</span>
+  <span class="org"><span class="av"></span>acme-labs <small>Owner</small><i data-lucide="chevrons-up-down" style="color:var(--text-3)"></i></span>
+  <nav class="tabs" aria-label="Main">
+    <a class="tab" href="#">Overview</a>
+    <a class="tab" href="#" aria-current="page">Runs</a>
+    <a class="tab" href="#">Findings<span class="count">2</span></a>
+    <a class="tab" href="#">Audit log</a>
+    <a class="tab" href="#">Members</a>
+    <a class="tab" href="#">Usage</a>
+    <a class="tab" href="#">Settings</a>
+  </nav>
+  <span class="grow"></span>
+  <span class="search"><i data-lucide="search"></i>Search runs<kbd>⌘K</kbd></span>
+  <button class="icon-btn" id="themeBtn" aria-label="Switch to light theme"><i data-lucide="sun"></i></button>
+  <span class="me">AJ</span>
+</header>
+
+<div class="wrap">
+  <nav class="toc" aria-label="On this page">
+    <p>On this page</p>
+    <a href="#colour" class="on">Colour</a><a href="#type">Typography</a><a href="#space">Space &amp; shape</a><a href="#buttons">Buttons</a><a href="#forms">Forms</a><a href="#status">Status</a><a href="#timeline">Run timeline</a><a href="#data">Data</a><a href="#table">Tables</a><a href="#review">Review</a><a href="#feedback">Feedback</a>
+  </nav>
+
+  <main>
+    <div class="page-head">
+      <div>
+        <h1>Resolver design system</h1>
+        <p class="lead">Colours, type and components for Autonomous GitHub Resolver. Dark is the default; every token has a light value. Sample data on this page is illustrative.</p>
+      </div>
+      <div class="seg" role="group" aria-label="Theme"><button id="segDark" aria-pressed="true"><i data-lucide="moon"></i>Dark</button><button id="segLight" aria-pressed="false"><i data-lucide="sun"></i>Light</button></div>
+    </div>
+
+    <section id="colour">
+      <h2>Colour</h2>
+      <p class="sec-lead">Neutral structure drawn in hairlines lets one brand violet and four state colours do all the talking. Swatches follow the active theme; both values are listed.</p>
+      <div class="card" style="overflow-x:auto">
+        <table class="tokens">
+          <thead><tr><th>Token</th><th>Variable</th><th>Dark</th><th>Light</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr class="grp"><td colspan="5">Surfaces and lines</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--bg)"></i>Background</span></td><td class="var">--bg</td><td class="hex">#09090B</td><td class="hex">#FFFFFF</td><td class="muted">Page canvas</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--surface)"></i>Surface</span></td><td class="var">--surface</td><td class="hex">#111113</td><td class="hex">#FFFFFF</td><td class="muted">Cards, panels, inputs</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--surface-2)"></i>Surface 2</span></td><td class="var">--surface-2</td><td class="hex">#18181B</td><td class="hex">#FAFAFA</td><td class="muted">Table heads, code wells, nested panels</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--surface-3)"></i>Surface 3</span></td><td class="var">--surface-3</td><td class="hex">#1F1F23</td><td class="hex">#F4F4F5</td><td class="muted">Hover</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--border)"></i>Border</span></td><td class="var">--border</td><td class="hex">#27272A</td><td class="hex">#E4E4E7</td><td class="muted">Hairlines, card edges</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--border-strong)"></i>Border strong</span></td><td class="var">--border-strong</td><td class="hex">#66666F</td><td class="hex">#8E8E96</td><td class="muted">Input borders (3.3:1)</td></tr>
+            <tr class="grp"><td colspan="5">Text</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--text)"></i>Text</span></td><td class="var">--text</td><td class="hex">#FAFAFA</td><td class="hex">#09090B</td><td class="muted">Primary text (19:1)</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--text-2)"></i>Text 2</span></td><td class="var">--text-2</td><td class="hex">#A1A1AA</td><td class="hex">#52525B</td><td class="muted">Secondary text (7.4:1)</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--text-3)"></i>Text 3</span></td><td class="var">--text-3</td><td class="hex">#8B8B94</td><td class="hex">#67676F</td><td class="muted">Captions and labels (4.8:1 or better)</td></tr>
+            <tr class="grp"><td colspan="5">Brand</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--accent)"></i>Accent</span></td><td class="var">--accent</td><td class="hex">#6550F0</td><td class="hex">#5B47E0</td><td class="muted">Primary buttons</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--accent-text)"></i>Accent text</span></td><td class="var">--accent-text</td><td class="hex">#9B8CFF</td><td class="hex">#5B47E0</td><td class="muted">Links, selection, focus ring</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--accent-subtle)"></i>Accent subtle</span></td><td class="var">--accent-subtle</td><td class="hex">#1E1A33</td><td class="hex">#EFECFF</td><td class="muted">Selected rows, current step</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--brand-gradient)"></i>Brand gradient</span></td><td class="var">--brand-gradient</td><td class="hex">#8B7CFF → #3BC9DB</td><td class="hex">#6C5CF5 → #14B8C8</td><td class="muted">Logo mark and empty states only</td></tr>
+            <tr class="grp"><td colspan="5">State</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--success)"></i>Success</span></td><td class="var">--success</td><td class="hex">#3DD68C</td><td class="hex">#15803D</td><td class="muted">Passed, approved, PR opened</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--warning)"></i>Warning</span></td><td class="var">--warning</td><td class="hex">#F5B544</td><td class="hex">#B45309</td><td class="muted">Rolled back, awaiting review</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--danger)"></i>Danger</span></td><td class="var">--danger</td><td class="hex">#FF6369</td><td class="hex">#C81E1E</td><td class="muted">Security flags, failed, rejected</td></tr>
+            <tr><td><span class="sw"><i style="background:var(--info)"></i>Info</span></td><td class="var">--info</td><td class="hex">#52A8FF</td><td class="hex">#2563EB</td><td class="muted">Running, queued notices</td></tr>
+            <tr class="grp"><td colspan="5">Data series</td></tr>
+            <tr><td><span class="sw"><i style="background:linear-gradient(90deg,var(--series-1) 0 20%,var(--series-2) 20% 40%,var(--series-3) 40% 60%,var(--series-4) 60% 80%,var(--series-5) 80%)"></i>Series 1–5</span></td><td class="var">--series-1…5</td><td class="hex">#8B7CFF #3BC9DB #3DD68C #F5B544 #FF6369</td><td class="hex">#5B47E0 #0E9FB5 #16A34A #D97706 #DC2626</td><td class="muted">Charts and timelines</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="type">
+      <h2>Typography</h2>
+      <p class="sec-lead">Host Grotesk for the interface: a crisp, slightly technical grotesk that stays clear of the fonts every AI tool ships. JetBrains Mono for commands, logs, hashes and diffs.</p>
+      <div class="fam">
+        <div class="card"><span class="muted" style="font-size:var(--text-sm)">Interface · 400 500 600 700</span><div class="big">Host Grotesk</div><div class="glyphs">Aa Bb Cc Gg Qq Rr 0123456789<br>Resolve, review, open the pull request.</div></div>
+        <div class="card"><span class="muted" style="font-size:var(--text-sm)">Code · 400 500 600</span><div class="big" style="font-family:var(--font-mono);font-size:44px;font-weight:500;letter-spacing:-0.02em">JetBrains Mono</div><div class="glyphs" style="font-family:var(--font-mono);font-size:var(--text-md)">0O 1lI {} [] =&gt; !=<br>sha256 9f2c41e0b7a3</div></div>
+      </div>
+      <div class="card scale" style="margin-top:var(--space-4)">
+        <div class="row"><div class="spec">3xl · 36/40 · 600 · −2%<br><span class="var">--text-3xl</span></div><div style="font-size:var(--text-3xl);line-height:var(--lh-3xl);font-weight:600;letter-spacing:var(--tracking-tight)">94.2% resolved</div></div>
+        <div class="row"><div class="spec">2xl · 28/36 · 600 · −2%<br><span class="var">--text-2xl</span></div><div style="font-size:var(--text-2xl);line-height:var(--lh-2xl);font-weight:600;letter-spacing:var(--tracking-tight)">Refund webhook double-charges on retry</div></div>
+        <div class="row"><div class="spec">xl · 20/28 · 600 · −1%<br><span class="var">--text-xl</span></div><div style="font-size:var(--text-xl);line-height:var(--lh-xl);font-weight:600;letter-spacing:var(--tracking-snug)">Review flagged change</div></div>
+        <div class="row"><div class="spec">lg · 16/24 · 600<br><span class="var">--text-lg</span></div><div style="font-size:var(--text-lg);line-height:var(--lh-lg);font-weight:600">Step history</div></div>
+        <div class="row"><div class="spec">md · 14/20 · 400<br><span class="var">--text-md</span></div><div>The agent restored the workspace to checkpoint CP-10 and trimmed its memory to step 10 after the dependency change broke 14 tests.</div></div>
+        <div class="row"><div class="spec">sm · 13/20 · 400<br><span class="var">--text-sm</span></div><div style="font-size:var(--text-sm);color:var(--text-2)">acme-labs/payments-api · opened 2 days ago by r.okafor</div></div>
+        <div class="row"><div class="spec">xs · 12/16 · 400 (minimum)<br><span class="var">--text-xs</span></div><div style="font-size:var(--text-xs);color:var(--text-3)">Updated 4 seconds ago</div></div>
+        <div class="row"><div class="spec">mono · 13/20 · 400<br><span class="var">--font-mono</span></div><div class="mono">$ pytest tests/webhooks -x  →  14 passed in 3.21s</div></div>
+      </div>
+    </section>
+
+    <section id="space">
+      <h2>Space, shape and elevation</h2>
+      <p class="sec-lead">A 4px grid with generous gaps between groups. Corners are small and consistent. Elevation is a soft shadow plus a hairline ring, never a glow.</p>
+      <div class="three">
+        <div class="card pad">
+          <div class="sp"><span class="var">space-1</span><b style="width:4px"></b>4</div><div class="sp"><span class="var">space-2</span><b style="width:8px"></b>8</div><div class="sp"><span class="var">space-3</span><b style="width:12px"></b>12</div><div class="sp"><span class="var">space-4</span><b style="width:16px"></b>16</div><div class="sp"><span class="var">space-5</span><b style="width:20px"></b>20</div><div class="sp"><span class="var">space-6</span><b style="width:24px"></b>24</div><div class="sp"><span class="var">space-8</span><b style="width:32px"></b>32</div><div class="sp"><span class="var">space-12</span><b style="width:48px"></b>48</div><div class="sp"><span class="var">space-16</span><b style="width:64px"></b>64</div><div class="sp"><span class="var">space-20</span><b style="width:80px"></b>80</div>
+        </div>
+        <div class="card pad"><div class="radii"><div style="border-radius:var(--radius-xs)">xs 4</div><div style="border-radius:var(--radius-sm)">sm 6</div><div style="border-radius:var(--radius-md)">md 8</div><div style="border-radius:var(--radius-lg)">lg 12</div><div style="border-radius:var(--radius-full);justify-content:center">full</div></div><p class="muted" style="font-size:var(--text-xs);margin:var(--space-4) 0 0;line-height:1.4">xs badges, kbd · sm buttons, inputs · md cards · lg dialogs, popovers · full pills, avatars</p></div>
+        <div class="card pad depth" style="background:var(--surface-2)"><div style="box-shadow:var(--shadow-sm),0 0 0 1px var(--border)">shadow-sm · buttons</div><div style="box-shadow:var(--shadow-md)">shadow-md · menus, popovers</div><div style="box-shadow:var(--shadow-lg)">shadow-lg · dialogs, toasts</div></div>
+      </div>
+    </section>
+
+    <section id="buttons">
+      <h2>Buttons</h2>
+      <p class="sec-lead">One primary action per view, in brand violet. Labels name the action. Destructive actions are red and kept apart from everything else.</p>
+      <div class="card pad">
+        <div class="row-wrap">
+          <span class="label">Variants</span>
+          <button class="btn btn-primary"><i data-lucide="play"></i>Start run</button>
+          <button class="btn btn-secondary"><i data-lucide="download"></i>Export log</button>
+          <button class="btn btn-inverse"><i data-lucide="github"></i>Continue with GitHub</button>
+          <button class="btn btn-ghost">View details</button>
+          <button class="btn btn-danger-outline"><i data-lucide="square"></i>Cancel run</button>
+          <button class="btn btn-danger">Reject change</button>
+          <span class="label">Sizes</span>
+          <button class="btn btn-primary btn-sm">Small</button><button class="btn btn-primary">Default</button><button class="btn btn-primary btn-lg">Large</button>
+          <button class="btn btn-secondary btn-sm"><i data-lucide="copy"></i>Copy hash</button>
+          <span class="label">States: hover, pressed, focus, disabled, loading</span>
+          <button class="btn btn-primary h">Hover</button><button class="btn btn-primary a">Pressed</button><button class="btn btn-primary f">Focus</button><button class="btn btn-secondary h">Hover</button><button class="btn btn-primary" disabled>Start run</button><button class="btn btn-primary" aria-busy="true"><i data-lucide="loader-circle" class="spin"></i>Starting sandbox…</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="forms">
+      <h2>Forms</h2>
+      <p class="sec-lead">36px controls with a visible border, a violet focus ring, and errors that say how to fix them.</p>
+      <div class="card pad">
+        <div class="fields">
+          <div class="field"><label for="f1">Repository</label><select id="f1" class="input"><option>acme-labs/payments-api</option></select><span class="hint">From your connected GitHub account</span></div>
+          <div class="field"><label for="f2">Issue</label><input id="f2" class="input f" value="#482 Refund webhook double-charges"><span class="hint">Focused</span></div>
+          <div class="field"><label for="f3">Invite by GitHub username</label><input id="f3" class="input err" value="@r okafor"><span class="hint e"><i data-lucide="circle-alert"></i>Usernames can't contain spaces. Try r-okafor.</span></div>
+          <div class="field"><label for="f4">Model</label><input id="f4" class="input" disabled value="Choose an issue first"><span class="hint">Unlocks once an issue is chosen</span></div>
+        </div>
+        <div class="toggles">
+          <label class="check"><input type="checkbox" checked> Open the pull request as a draft</label>
+          <label class="check"><input type="checkbox"> Email me when a run needs review</label>
+          <label class="check"><button type="button" class="switch" role="switch" aria-checked="true"></button>Block PRs that add dependencies</label>
+          <label class="check"><button type="button" class="switch" role="switch" aria-checked="false"></button>Allow CI file changes</label>
+        </div>
+      </div>
+    </section>
+
+    <section id="status">
+      <h2>Status</h2>
+      <p class="sec-lead">Every status pairs a colour with a dot or icon and a word, so it reads without colour too.</p>
+      <div class="card pad row-wrap">
+        <span class="badge b-run"><span class="dot"></span>Running</span>
+        <span class="badge b-neutral"><i data-lucide="clock"></i>Queued</span>
+        <span class="badge b-ok"><i data-lucide="circle-check"></i>Passed</span>
+        <span class="badge b-warn"><i data-lucide="undo-2"></i>Rolled back</span>
+        <span class="badge b-warn"><i data-lucide="eye"></i>Awaiting review</span>
+        <span class="badge b-bad"><i data-lucide="shield-alert"></i>Flagged</span>
+        <span class="badge b-bad"><i data-lucide="circle-x"></i>Failed</span>
+        <span class="badge b-bad"><i data-lucide="ban"></i>Rejected</span>
+        <span class="badge b-ok"><i data-lucide="git-pull-request"></i>PR opened</span>
+        <span class="badge b-neutral"><i data-lucide="square"></i>Cancelled</span>
+        <span class="badge b-accent"><i data-lucide="sparkles"></i>Claude Sonnet</span>
+        <span class="id">RUN-0142</span><span class="id">CP-10</span><span class="id">FLAG-3</span>
+      </div>
+    </section>
+
+    <section id="timeline">
+      <h2>Run timeline</h2>
+      <p class="sec-lead">The signature component. Every step of a run is one segment: green passed, amber rolled back, red flagged, violet current. A run's whole history reads in a second, on the run page and in every run list.</p>
+      <div class="card">
+        <div class="run-top">
+          <div>
+            <div class="row-wrap" style="gap:var(--space-2)"><span class="id">RUN-0142</span><span class="badge b-warn"><i data-lucide="eye"></i>Awaiting review</span></div>
+            <h3>Refund webhook double-charges on retry</h3>
+            <div class="meta-row"><span><i data-lucide="git-branch"></i><b>payments-api</b> #482</span><span><i data-lucide="sparkles"></i><b>Claude Sonnet</b></span><span><i data-lucide="timer"></i><b>06:42</b> elapsed</span><span><i data-lucide="coins"></i><b>182,430</b> tokens</span></div>
+          </div>
+          <div class="row-wrap" style="flex-wrap:nowrap"><button class="btn btn-danger-outline btn-sm"><i data-lucide="square"></i>Cancel run</button><button class="btn btn-primary btn-sm"><i data-lucide="eye"></i>Review change</button></div>
+        </div>
+        <div class="timeline">
+          <div class="tl-bar" id="tl" role="img" aria-label="37 steps: 33 passed, 2 rolled back, 1 flag source, 1 current"></div>
+          <div class="tl-axis"><span>step 1</span><span>10</span><span>20</span><span>30</span><span>37</span></div>
+          <div class="tl-notes"><span><i style="background:var(--series-3)"></i>33 passed</span><span><i style="background:var(--series-4)"></i>2 rolled back</span><span><i style="background:repeating-linear-gradient(135deg,var(--series-5) 0 2px,transparent 2px 4px);box-shadow:inset 0 0 0 1px var(--series-5)"></i>Flag source (step 4)</span><span><i style="background:var(--series-1)"></i>Current step</span></div>
+        </div>
+        <div class="steps">
+          <div class="step"><span class="n">09</span><i data-lucide="circle-check" class="ic-ok"></i><code>pytest tests/webhooks -x</code><span class="muted" style="font-size:var(--text-xs)">3.2s</span></div>
+          <div class="step rb"><span class="n">11</span><i data-lucide="undo-2" class="ic-rb"></i><code>pip install requests==2.19.0</code><span class="badge b-warn">Rolled back to CP-10</span><span class="why">The downgrade broke 14 tests. Files restored and memory trimmed to step 10.</span></div>
+          <div class="step rb"><span class="n">13</span><i data-lucide="crosshair" class="ic-rb"></i><code>rm -rf migrations/0042_*</code><span class="badge b-warn">Root cause · CP-12</span><span class="why">FALAT traced 5 consecutive failures back to this step.</span></div>
+          <div class="step cur"><span class="n">37</span><i data-lucide="shield-alert" class="ic-fl"></i><code>gh pr create --draft</code><span class="badge b-bad">Held by FLAG-3</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="data">
+      <h2>Data</h2>
+      <p class="sec-lead">Charts use the five-colour series on a quiet grid. Figures that change over time show their trend.</p>
+      <div class="two">
+        <div class="card">
+          <div class="card-head"><div><h3>Runs this fortnight</h3><p>acme-labs · all members</p></div><div class="seg"><button aria-pressed="false">7d</button><button aria-pressed="true">14d</button><button aria-pressed="false">30d</button></div></div>
+          <div class="figs"><div class="fig"><small>Pull requests opened</small><b>128</b><em class="up"><i data-lucide="arrow-up-right"></i>18%</em></div><div class="fig"><small>Rejected at the gate</small><b>9</b><em class="down"><i data-lucide="arrow-up-right"></i>3</em></div></div>
+          <div class="chart"><svg id="chart" viewBox="0 0 640 200" preserveAspectRatio="none" role="img" aria-label="Stacked daily runs over 14 days"></svg></div>
+          <div class="legend"><span><i style="background:var(--series-3)"></i>PR opened</span><span><i style="background:var(--series-4)"></i>Recovered, then opened</span><span><i style="background:var(--series-5)"></i>Rejected</span><span><i style="background:var(--border-strong)"></i>Cancelled</span></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div><h3>Data series</h3><p>Use in this order</p></div></div>
+          <div class="series">
+            <div><i style="background:var(--series-1)"></i>Series 1 · brand, totals<span class="hex">--series-1</span></div>
+            <div><i style="background:var(--series-2)"></i>Series 2 · comparison<span class="hex">--series-2</span></div>
+            <div><i style="background:var(--series-3)"></i>Series 3 · passed, opened<span class="hex">--series-3</span></div>
+            <div><i style="background:var(--series-4)"></i>Series 4 · rolled back<span class="hex">--series-4</span></div>
+            <div><i style="background:var(--series-5)"></i>Series 5 · flagged, failed<span class="hex">--series-5</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="table">
+      <h2>Tables</h2>
+      <p class="sec-lead">Roomy rows, sortable headers, right-aligned figures, and each run's timeline in miniature.</p>
+      <div class="card" style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr><th><button>Run <i data-lucide="arrow-down"></i></button></th><th>Issue</th><th>Status</th><th>Timeline</th><th><button>Started by</button></th><th class="r">Tokens</th><th class="r">Cost</th></tr></thead>
+          <tbody>
+            <tr><td><span class="id">RUN-0142</span></td><td class="t"><b>Refund webhook double-charges on retry</b><span>payments-api #482</span></td><td><span class="badge b-warn"><i data-lucide="eye"></i>Awaiting review</span></td><td><div class="mini" data-p="11111111111rr11r1111111111111111f"></div></td><td>Adan J.</td><td class="r">182,430</td><td class="r">$1.64</td></tr>
+            <tr><td><span class="id">RUN-0141</span></td><td class="t"><b>Chart tooltip clips on narrow screens</b><span>web-dashboard #219</span></td><td><span class="badge b-run"><span class="dot"></span>Running</span></td><td><div class="mini" data-p="1111111111111111111eeeeeeeeeeeee"></div></td><td>R. Okafor</td><td class="r">241,905</td><td class="r">$2.18</td></tr>
+            <tr><td><span class="id">RUN-0140</span></td><td class="t"><b>Session cookie missing SameSite flag</b><span>auth-service #77</span></td><td><span class="badge b-ok"><i data-lucide="git-pull-request"></i>PR opened</span></td><td><div class="mini" data-p="11111r1111111111111111111111111"></div></td><td>M. Chen</td><td class="r">96,120</td><td class="r">$0.87</td></tr>
+            <tr><td><span class="id">RUN-0139</span></td><td class="t"><b>Pin provider versions in staging</b><span>infra-terraform #12</span></td><td><span class="badge b-bad"><i data-lucide="ban"></i>Rejected</span></td><td><div class="mini" data-p="1111111rr11111fffeeeeeeeeeeeee"></div></td><td>S. Iqbal</td><td class="r">51,377</td><td class="r">$0.46</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="review">
+      <h2>Review</h2>
+      <p class="sec-lead">When the gate pauses a run, the reviewer sees what was flagged, where it came from, and the exact diff. Only a person can approve.</p>
+      <div class="review">
+        <div class="rv-head"><span class="rv-icon"><i data-lucide="shield-alert"></i></span><div><h3>New URL introduced from an untrusted log</h3><p><span class="id">FLAG-3</span> on <span class="id">RUN-0142</span> · the pull request stays closed until you decide</p></div></div>
+        <div class="rv-body">
+          <dl class="facts"><dt>What was flagged</dt><dd>New URL <code>https://hooks.pay-relay.io/v2/ack</code> that isn't in the base branch</dd><dt>Where it came from</dt><dd>Step 4, when the agent read <code>logs/stripe-replay.log</code>, an untrusted file</dd><dt>Why it matters</dt><dd>Refund acknowledgements would be sent to an outside host</dd></dl>
+          <div class="diff"><div class="diff-h"><span>app/refunds.py</span><span>+1 −1</span></div>
+            <div class="dl"><span>118</span><span></span><span>def acknowledge(refund_id):</span></div>
+            <div class="dl del"><span>119</span><span>−</span><span>    url = settings.STRIPE_ACK_URL</span></div>
+            <div class="dl add"><span>119</span><span>+</span><span>    url = "<mark>https://hooks.pay-relay.io/v2/ack</mark>"</span></div>
+            <div class="dl"><span>120</span><span></span><span>    return post(url, {"id": refund_id})</span></div>
+          </div>
+        </div>
+        <div class="rv-foot"><p><i data-lucide="lock"></i>The agent can't approve its own changes.</p><div class="row-wrap" style="flex-wrap:nowrap"><button class="btn btn-secondary">Approve and open PR</button><button class="btn btn-danger"><i data-lucide="x"></i>Reject and stop run</button></div></div>
+      </div>
+    </section>
+
+    <section id="feedback">
+      <h2>Feedback</h2>
+      <p class="sec-lead">Notices say what happened and what to do next. Toasts confirm actions. Empty states show the first step.</p>
+      <div class="two">
+        <div class="stack">
+          <div class="alert al-info"><i data-lucide="info"></i><div><b>3 runs can be live at once</b>New runs wait in the queue until a sandbox frees up.</div></div>
+          <div class="alert al-warn"><i data-lucide="eye"></i><div><b>2 runs are waiting for review</b>Their pull requests stay closed until someone approves or rejects them.</div></div>
+          <div class="alert al-bad"><i data-lucide="triangle-alert"></i><div><b>Deleting acme-labs stops 3 running sandboxes</b>All runs and audit logs are removed. This can't be undone.</div></div>
+          <div class="toast"><i data-lucide="circle-check"></i>Pull request #1287 opened on payments-api. <a href="#">View on GitHub</a></div>
+        </div>
+        <div class="empty"><div class="ghost-tl" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><h3>No runs yet</h3><p>Pick a repository and an open issue. The agent works on it in a sealed sandbox, and you review anything risky before a pull request opens.</p><button class="btn btn-primary"><i data-lucide="play"></i>Start your first run</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  lucide.createIcons();
+  document.querySelectorAll(".switch").forEach((s) => s.addEventListener("click", () => s.setAttribute("aria-checked", s.getAttribute("aria-checked") !== "true")));
+
+  // Theme switch (remembered per viewer when storage is available)
+  const root = document.documentElement;
+  const setTheme = (t) => {
+    root.dataset.theme = t;
+    document.getElementById('segDark').setAttribute('aria-pressed', t === 'dark');
+    document.getElementById('segLight').setAttribute('aria-pressed', t === 'light');
+    const b = document.getElementById('themeBtn');
+    b.setAttribute('aria-label', t === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+    b.innerHTML = '<i data-lucide="' + (t === 'dark' ? 'sun' : 'moon') + '"></i>';
+    lucide.createIcons();
+    try { localStorage.setItem('resolver-theme', t); } catch (e) {}
+  };
+  document.getElementById('segDark').onclick = () => setTheme('dark');
+  document.getElementById('segLight').onclick = () => setTheme('light');
+  document.getElementById('themeBtn').onclick = () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+  setTheme(root.dataset.theme || 'dark');
+
+  // Run timeline: 37 steps
+  const tl = document.getElementById('tl');
+  for (let i = 1; i <= 37; i++) {
+    const s = document.createElement('i');
+    if (i === 11 || i === 13) s.className = 'rb';
+    else if (i === 4) s.className = 'src';
+    else if (i === 37) s.className = 'cur';
+    s.style.animationDelay = (i * 12) + 'ms';
+    s.title = 'Step ' + i;
+    tl.appendChild(s);
+  }
+
+  // Mini timelines in the table
+  document.querySelectorAll('.mini').forEach((m) => {
+    for (const c of m.dataset.p) {
+      const s = document.createElement('i');
+      if (c === 'r') s.className = 'rb'; else if (c === 'f') s.className = 'fl'; else if (c === 'e') s.className = 'e';
+      m.appendChild(s);
+    }
+  });
+
+  // Stacked bar chart (14 days)
+  const data = [[6,1,0,1],[8,2,1,0],[7,1,0,1],[9,2,0,0],[5,1,1,1],[3,0,0,0],[2,1,0,0],[10,2,1,1],[11,3,0,0],[9,1,2,1],[12,2,1,0],[10,3,1,1],[4,1,0,0],[3,0,1,0]];
+  const svg = document.getElementById('chart');
+  const ns = 'http://www.w3.org/2000/svg', H = 184, max = 18, w = 640 / data.length;
+  const cols = ['var(--series-3)', 'var(--series-4)', 'var(--series-5)', 'var(--border-strong)'];
+  [0, 6, 12, 18].forEach((v) => {
+    const y = H - (v / max) * H + 8; const l = document.createElementNS(ns, 'line');
+    l.setAttribute('x1', 0); l.setAttribute('x2', 640); l.setAttribute('y1', y); l.setAttribute('y2', y);
+    l.setAttribute('stroke', 'var(--border)'); if (v) l.setAttribute('stroke-dasharray', '3 4'); svg.appendChild(l);
+  });
+  data.forEach((d, i) => {
+    let y = H + 8;
+    d.forEach((v, k) => {
+      if (!v) return; const h = (v / max) * H; y -= h;
+      const r = document.createElementNS(ns, 'rect');
+      r.setAttribute('x', i * w + w * 0.2); r.setAttribute('width', w * 0.6); r.setAttribute('y', y + 1); r.setAttribute('height', Math.max(h - 2, 1));
+      r.setAttribute('rx', 2); r.setAttribute('fill', cols[k]); svg.appendChild(r);
+    });
+  });
+
+  // Highlight the current section in the side list
+  const links = [...document.querySelectorAll('.toc a')];
+  const obs = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) links.forEach((a) => a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id));
+  }), { rootMargin: '-30% 0px -60% 0px' });
+  document.querySelectorAll('main section').forEach((s) => obs.observe(s));
+</script>
+</body>
+</html>

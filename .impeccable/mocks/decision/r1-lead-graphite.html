@@ -1,0 +1,76 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:wght@400;500;600;700&family=Martian+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;background:#0C0E12;color:#D7DAE0;font:14px/20px "Mona Sans",sans-serif;display:grid;grid-template-rows:56px 64px 1fr;gap:1px}
+.top{background:#111318;display:flex;align-items:center;gap:20px;padding:0 20px}
+.logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#B48EF0,#6CB6FF)}
+.crumb{color:#8B93A1}.crumb b{color:#F2F4F8;font-weight:600}
+.top nav{display:flex;gap:4px;margin-left:24px}.top nav a{padding:6px 12px;border-radius:6px;color:#8B93A1}.top nav a.on{background:#1D2129;color:#F2F4F8}
+.sp{flex:1}
+.cancel{border:1px solid #5A2A30;color:#F2707A;background:transparent;padding:7px 14px;border-radius:6px;font:600 13px "Mona Sans";margin-left:40px}
+.life{background:#111318;display:grid;grid-template-columns:360px 1fr;align-items:center;padding:0 20px;gap:24px}
+.title b{display:block;font-size:17px;font-weight:700;color:#F2F4F8}.title span{font:12px "Martian Mono";color:#8B93A1}
+.stages{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.stg{height:36px;border-radius:6px;background:#181B22;border:1px solid #262A33;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:13px;color:#8B93A1}
+.stg i{width:8px;height:8px;border-radius:50%;background:#3A3F4B}
+.stg.done{color:#C9CDD5}.stg.done i{background:#8BD49C}
+.stg.rec{color:#F0B45C;border-color:#5C4422}.stg.rec i{background:#F0B45C}
+.stg.now{background:#2A2033;border-color:#B48EF0;color:#F2F4F8;box-shadow:0 0 0 3px rgba(180,142,240,.15)}.stg.now i{background:#B48EF0}
+.panes{display:grid;grid-template-columns:520px 1fr 420px;gap:1px;min-height:0}
+.pane{background:#14171D;display:flex;flex-direction:column;min-height:0}
+.ph{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #222630;font:600 12px "Mona Sans";letter-spacing:.06em;text-transform:uppercase;color:#8B93A1}
+.ph em{font-style:normal;text-transform:none;letter-spacing:0;color:#6B7280;font-weight:500}
+.st{display:grid;grid-template-columns:44px 1fr auto;align-items:center;height:36px;padding:0 16px;font:13px "Martian Mono";border-bottom:1px solid #1B1F27}
+.n{color:#5B6270;font-size:12px}
+.k{color:#B48EF0}.p{color:#8BD49C}.num{color:#F0B45C}.f{color:#6CB6FF}.c{color:#5B6270}
+.ok{font:500 12px "Mona Sans";color:#8BD49C}
+.rb{background:repeating-linear-gradient(135deg,#1A1418 0 6px,#17131A 6px 12px)}
+.rb .cmd{text-decoration:line-through;text-decoration-color:#F2707A;text-decoration-thickness:2px;opacity:.75}
+.tag{font:600 11px "Mona Sans";color:#F2707A;border:1px solid #5A2A30;border-radius:4px;padding:2px 6px}
+.why{padding:6px 16px 10px 60px;font:12px "Mona Sans";color:#E69AA1;border-bottom:1px solid #1B1F27;background:#17131A}
+.cur{background:#211A2B;box-shadow:inset 2px 0 0 #B48EF0}
+.hold{font:600 11px "Mona Sans";color:#F0B45C;border:1px solid #5C4422;border-radius:4px;padding:2px 6px}
+pre{font:12.5px/21px "Martian Mono";padding:12px 16px;color:#C9CDD5;white-space:pre}
+.dim{color:#5B6270}.r{color:#F2707A}.g{color:#8BD49C}
+.flag{margin:16px;border:1px solid #5A2A30;border-radius:10px;background:#1A1216;overflow:hidden}
+.fh{padding:14px 16px;border-bottom:1px solid #3A1E24}.fh b{display:block;color:#F7C4C9;font-size:15px}.fh span{font-size:12px;color:#B98A90}
+.dl{font:12px/22px "Martian Mono";padding:0 12px}.dl.d{background:#2A1519;color:#F2A3AA}.dl.a{background:#13261B;color:#A6E3B4}
+.act{display:flex;gap:8px;padding:14px 16px}
+.btn{flex:1;padding:9px;border-radius:6px;font:600 13px "Mona Sans";text-align:center;border:1px solid #2C313C;color:#D7DAE0;background:#1D2129}
+.btn.rej{background:#F2707A;border-color:#F2707A;color:#1A0C0E}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;padding:0 16px 8px;font-size:13px}.kv dt{color:#6B7280}
+</style></head><body>
+<header class="top"><span class="logo"></span><span class="crumb">acme-labs / payments-api / <b>RUN-0142</b></span>
+<nav><a>Overview</a><a class="on">Runs</a><a>Findings</a><a>Audit log</a><a>Members</a></nav><span class="sp"></span>
+<span style="font:12px 'Martian Mono';color:#8B93A1">06:42 · step 37 · 182,430 tok</span><button class="cancel">Cancel run</button></header>
+<section class="life"><div class="title"><b>Refund webhook double-charges on retry</b><span>#482 · claude-sonnet · 2 rollbacks</span></div>
+<div class="stages"><div class="stg done"><i></i>Queued</div><div class="stg done"><i></i>Running</div><div class="stg rec"><i></i>Recovered ×2</div><div class="stg now"><i></i>Review · FLAG-3</div><div class="stg"><i></i>Pull request</div></div></section>
+<main class="panes">
+<div class="pane"><div class="ph">Steps <em>CP-1 → CP-36</em></div>
+<div class="st"><span class="n">09</span><span class="cmd"><span class="k">pytest</span> <span class="p">tests/webhooks</span> <span class="c">-x</span></span><span class="ok">passed</span></div>
+<div class="st"><span class="n">10</span><span class="cmd"><span class="k">sed</span> <span class="c">-i</span> <span class="p">'s/retry=3/retry=0/'</span> <span class="p">app/refunds.py</span></span><span class="ok">CP-10</span></div>
+<div class="st rb"><span class="n">11</span><span class="cmd"><span class="k">pip install</span> <span class="f">requests</span>==<span class="num">2.19.0</span></span><span class="tag">↶ rolled back</span></div>
+<div class="why">Reverted to CP-10 · broke 14 tests · memory trimmed to step 10</div>
+<div class="st"><span class="n">12</span><span class="cmd"><span class="k">git diff</span> <span class="p">app/refunds.py</span></span><span class="ok">CP-12</span></div>
+<div class="st rb"><span class="n">13</span><span class="cmd"><span class="k">rm</span> <span class="c">-rf</span> <span class="p">migrations/0042_*</span></span><span class="tag">↶ root cause</span></div>
+<div class="why">FALAT traced 5 failures to this step · reverted to CP-12</div>
+<div class="st"><span class="n">14</span><span class="cmd"><span class="k">pytest</span> <span class="p">tests</span> <span class="c">-q</span></span><span class="ok">passed</span></div>
+<div class="st cur"><span class="n">37</span><span class="cmd"><span class="k">gh pr create</span> <span class="c">--draft</span></span><span class="hold">held</span></div></div>
+<div class="pane"><div class="ph">Live log <em>sandbox · network none</em></div>
+<pre><span class="dim">$ python scripts/provenance_scan.py --base main</span>
+scanning 6 changed files
+app/refunds.py          <span class="g">+42</span> <span class="r">−11</span>
+app/idempotency.py      <span class="g">+88</span> <span class="r">−0</span>
+tests/test_refunds.py   <span class="g">+61</span> <span class="r">−4</span>
+<span class="g">✓ no new dependencies</span>
+<span class="r">✗ FLAG-3  new URL  https://hooks.pay-relay.io/v2/ack</span>
+<span class="dim">    first seen: step 4 · read logs/stripe-replay.log</span>
+<span class="dim">    STRIPE_KEY=████████████ (masked)</span>
+gate: run paused · status <span class="num">awaiting_review</span></pre></div>
+<div class="pane"><div class="ph">Provenance <em>1 of 1 flags</em></div>
+<div class="flag"><div class="fh"><b>New URL from an untrusted log</b><span>FLAG-3 · traced to step 4 · logs/stripe-replay.log</span></div>
+<div style="padding:8px 0"><div class="dl">118  def acknowledge(refund_id):</div><div class="dl d">119 −    url = settings.STRIPE_ACK_URL</div><div class="dl a">119 +    url = "https://hooks.pay-relay.io/v2/ack"</div></div>
+<dl class="kv"><dt>Recorded by</dt><dd>agent · step 37</dd><dt>Approved by</dt><dd style="color:#F0B45C">awaiting you</dd></dl>
+<div class="act"><span class="btn rej">Reject</span><span class="btn">Approve &amp; open PR</span></div></div></div>
+</main></body></html>
